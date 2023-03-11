@@ -22,4 +22,18 @@ interface SlugifyFn {
   (input: string): string;
 }
 
-export {EleventyPluginInterlinkOptions};
+type WikilinkMeta = {
+  title: string|null,
+  name: string,
+  link: string,
+  slug: string,
+  isEmbed: boolean
+}
+
+interface WikiLinkParserInterface {
+  wikiLinkRegExp: RegExp;
+  parseSingle(link: string): WikilinkMeta;
+  parseMultiple(links: Array<string>): Array<WikilinkMeta>;
+}
+
+export {EleventyPluginInterlinkOptions, SlugifyFn, WikiLinkParserInterface, WikilinkMeta};
