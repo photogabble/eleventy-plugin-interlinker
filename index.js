@@ -1,5 +1,7 @@
-const { EleventyRenderPlugin } = require("@11ty/eleventy");
-const chalk = require("chalk");
+const {wikilinkInlineRule, wikilinkRenderRule} = require('./src/markdown-ext');
+const { EleventyRenderPlugin } = require('@11ty/eleventy');
+const WikilinkParser = require('./src/wikilink-parser');
+const chalk = require('chalk');
 
 /**
  * Some code borrowed from:
@@ -23,25 +25,7 @@ module.exports = function (eleventyConfig, options = {}) {
   }, options);
 
   const rm = new EleventyRenderPlugin.RenderManager();
-
-  // This regex finds all WikiLink style links: [[id|optional text]] as well as WikiLink style embeds: ![[id]]
-  const wikiLinkRegExp = /(?<!!)(!?)\[\[([^|]+?)(\|([\s\S]+?))?\]\]/g;
-
-  const parseWikiLink = (link) => {
-    const isEmbed = link.startsWith('!');
-    const parts = link.slice((isEmbed ? 3 : 2), -2).split("|").map(part => part.trim());
-    const slug = opts.slugifyFn(parts[0].replace(/.(md|markdown)\s?$/i, "").trim());
-
-    return {
-      title: parts.length === 2 ? parts[1] : null,
-      name: parts[0],
-      link,
-      slug,
-      isEmbed
-    }
-  };
-
-  const parseWikiLinks = (arr) => arr.map(link => parseWikiLink(link));
+  const wikilinkParser = new WikilinkParser(opts);
 
   const compileTemplate = async (data) => {
     if (compiledEmbeds.has(data.inputPath)) return;
@@ -90,53 +74,20 @@ module.exports = function (eleventyConfig, options = {}) {
   // Teach Markdown-It how to display MediaWiki Links.
   eleventyConfig.amendLibrary('md', (md) => {
     // WikiLink Embed
-    md.inline.ruler.push('inline_wikilink_embed', (state, silent) => {
-      // Have we found the start of a WikiLink Embed `![[`
-      if (state.src.charAt(state.pos) === '!' && state.src.substring(state.pos, state.pos + 3) === '![[') {
-        if (!silent) {
-          const token = state.push('inline_wikilink_embed', '', 0)
-          const wikiLink = parseWikiLink(state.src);
-          token.content = wikiLink.slug;
-          state.pos = state.posMax;
-        }
-        return true;
-      }
-    });
+    md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
+      wikilinkParser,
+      linkMapCache,
+      deadWikiLinks,
+      opts
+    ));
 
-    md.renderer.rules.inline_wikilink_embed = (tokens, idx) => {
-      const token = tokens[idx];
-      const link = linkMapCache.get(token.content);
-      if (!link) {
-        console.error(chalk.blue('[@photogabble/wikilinks]'), chalk.red('ERROR'), `WikiLink Embed found pointing to non-existent [${token.content}], doesn't exist.`);
-        return (typeof opts.unableToLocateEmbedFn === 'function')
-          ? opts.unableToLocateEmbedFn(token.content)
-          : '';
-      }
-
-      const templateContent = compiledEmbeds.get(link.page.inputPath);
-      if (!templateContent) throw new Error(`WikiLink Embed found pointing to [${token.content}], has no compiled template.`);
-
-      return compiledEmbeds.get(link.page.inputPath);
-    }
-
-    // WikiLink via linkify
-    md.linkify.add("[[", {
-      validate: /^\s?([^\[\]\|\n\r]+)(\|[^\[\]\|\n\r]+)?\s?\]\]/,
-      normalize: match => {
-        const wikiLink = parseWikiLink(match.raw);
-        const found = linkMapCache.get(wikiLink.slug);
-
-        if (!found) {
-          deadWikiLinks.add(wikiLink.slug);
-          match.text = wikiLink.title ?? wikiLink.name;
-          match.url = '/stubs';
-          return;
-        }
-
-        match.text = wikiLink.title ?? found.title;
-        match.url = found.page.url;
-      }
-    });
+    md.renderer.rules.inline_wikilink = wikilinkRenderRule(
+      wikilinkParser,
+      linkMapCache,
+      compiledEmbeds,
+      deadWikiLinks,
+      opts
+    );
   });
 
   // Add backlinks computed global data, this is executed before the templates are compiled and thus markdown parsed.
@@ -179,8 +130,8 @@ module.exports = function (eleventyConfig, options = {}) {
       allPages.forEach(page => {
         if (!page.data.outboundLinks) {
           const pageContent = page.template.frontMatter.content;
-          const outboundLinks = (pageContent.match(wikiLinkRegExp) || []);
-          page.data.outboundLinks = parseWikiLinks(outboundLinks);
+          const outboundLinks = (pageContent.match(wikilinkParser.wikiLinkRegExp) || []);
+          page.data.outboundLinks = wikilinkParser.parseMultiple(outboundLinks);
 
           page.data.outboundLinks
             .filter(link => link.isEmbed && compiledEmbeds.has(link.slug) === false)
