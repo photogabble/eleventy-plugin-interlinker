@@ -8,10 +8,7 @@ const wikilinkParser = new WikilinkParser({slugifyFn: (text) => slugify(text)});
 test('inline rule correctly parses single wikilink', t => {
   const md = require('markdown-it')({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser,
-    new Map,
-    new Set,
-    {}
+    wikilinkParser
   ));
 
   const parsed = md.parseInline('Hello world, this is some text with a [[wiki link]] inside!', {});
@@ -25,10 +22,7 @@ test('inline rule correctly parses single wikilink', t => {
 test('inline rule correctly parses multiple wikilink', t => {
   const md = require('markdown-it')({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser,
-    new Map,
-    new Set,
-    {}
+    wikilinkParser
   ));
 
   const parsed = md.parseInline('Hello world, this is some text with two [[wiki links]] inside! The second one is [[here]].', {});
@@ -44,10 +38,7 @@ test('inline rule correctly parses multiple wikilink', t => {
 test('inline rule correctly parses single wikilink embed', t => {
   const md = require('markdown-it')({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser,
-    new Map,
-    new Set,
-    {}
+    wikilinkParser
   ));
 
   const parsed = md.parseInline('Hello world, this is some text with a ![[wiki link embed]] inside!', {});
@@ -61,10 +52,7 @@ test('inline rule correctly parses single wikilink embed', t => {
 test('inline rule correctly parses multiple wikilink embeds', t => {
   const md = require('markdown-it')({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser,
-    new Map,
-    new Set,
-    {}
+    wikilinkParser
   ));
 
   const parsed = md.parseInline('Hello world, this is some text with two ![[wiki link embeds]] inside! The second one is ![[here]].', {});
@@ -78,10 +66,7 @@ test('inline rule correctly parses multiple wikilink embeds', t => {
 test('inline rule correctly parses mixed wikilink and wikilink embeds', t => {
   const md = require('markdown-it')({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser,
-    new Map,
-    new Set,
-    {}
+    wikilinkParser
   ));
 
   const parsed = md.parseInline('Hello world, this is some text with mixed ![[wiki link embeds]] inside! The wiki link is [[here]].', {});
