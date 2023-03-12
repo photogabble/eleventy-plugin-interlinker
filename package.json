@@ -1,14 +1,15 @@
 {
   "name": "@photogabble/eleventy-plugin-interlinker",
   "version": "1.0.0",
-  "description": "Font Subsetting made easier for Eleventy.js",
+  "description": "Obsidian WikiLinks, BackLinks and Embed support for 11ty",
   "keywords": [
     "11ty",
     "eleventy",
     "eleventy-plugin",
     "backlinks",
     "wikilinks",
-    "embedding"
+    "embedding",
+    "obsidian"
   ],
   "main": "index.js",
   "scripts": {
