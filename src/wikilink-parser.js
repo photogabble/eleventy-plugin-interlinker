@@ -1,12 +1,9 @@
-/**
- * @implements {import('@photogabble/eleventy-plugin-interlinker').WikiLinkParserInterface}
- */
 module.exports = class WikilinkParser {
   /**
    * This regex finds all WikiLink style links: [[id|optional text]] as well as WikiLink style embeds: ![[id]]
    * @type {RegExp}
    */
-  wikiLinkRegExp = /(?<!!)(!?)\[\[([^|]+?)(\|([\s\S]+?))?\]\]/g;
+  wikiLinkRegExp = /(?<!!)(!?)\[\[([^|]+?)(\|([\s\S]+?))?]]/g;
 
   slugifyFn
 
