@@ -30,10 +30,4 @@ type WikilinkMeta = {
   isEmbed: boolean
 }
 
-interface WikiLinkParserInterface {
-  wikiLinkRegExp: RegExp;
-  parseSingle(link: string): WikilinkMeta;
-  parseMultiple(links: Array<string>): Array<WikilinkMeta>;
-}
-
-export {EleventyPluginInterlinkOptions, SlugifyFn, WikiLinkParserInterface, WikilinkMeta};
+export {EleventyPluginInterlinkOptions, SlugifyFn, WikilinkMeta};

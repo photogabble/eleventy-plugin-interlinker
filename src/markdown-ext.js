@@ -3,7 +3,7 @@ const chalk = require('chalk');
 /**
  * This rule will be looped through an inline token by markdown-it.
  *
- * @param { import('@photogabble/eleventy-plugin-interlinker').WikiLinkParserInterface } wikilinkParser
+ * @param {WikilinkParser} wikilinkParser
  * @returns {(function(*, *): (boolean|undefined))|*}
  */
 const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
@@ -44,7 +44,7 @@ const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
 
 /**
  *
- * @param { import('@photogabble/eleventy-plugin-interlinker').WikiLinkParserInterface } wikilinkParser
+ * @param {WikilinkParser} wikilinkParser
  * @param { Map } linkMapCache
  * @param { Map } compiledEmbeds
  * @param { Set } deadWikiLinks
