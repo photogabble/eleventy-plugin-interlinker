@@ -76,9 +76,6 @@ module.exports = function (eleventyConfig, options = {}) {
     // WikiLink Embed
     md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
       wikilinkParser,
-      linkMapCache,
-      deadWikiLinks,
-      opts
     ));
 
     md.renderer.rules.inline_wikilink = wikilinkRenderRule(
