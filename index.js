@@ -143,7 +143,7 @@ module.exports = function (eleventyConfig, options = {}) {
 
               return aliases.has(link.slug);
             }))
-            .filter(link => (typeof link !== undefined))
+            .filter(link => (typeof link !== 'undefined'))
             .forEach(link => compilePromises.push(compileTemplate(link)))
         }
 
