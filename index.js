@@ -14,7 +14,9 @@ module.exports = function (eleventyConfig, options = {}) {
   /** @var { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts */
   const opts = Object.assign({
     defaultLayout: null,
+    defaultLayoutLang: null,
     layoutKey: 'embedLayout',
+    layoutTemplateLangKey: 'embedLayoutLanguage',
     unableToLocateEmbedFn: () => '[UNABLE TO LOCATE EMBED]',
     slugifyFn: (input) => {
       const slugify = eleventyConfig.getFilter('slugify');
@@ -36,11 +38,17 @@ module.exports = function (eleventyConfig, options = {}) {
       ? data.data[opts.layoutKey]
       : opts.defaultLayout;
 
+    const language = (data.data.hasOwnProperty(opts.layoutTemplateLangKey))
+      ? data.data[opts.layoutTemplateLangKey]
+      : opts.defaultLayoutLang === null
+        ? data.page.templateSyntax
+        : opts.defaultLayoutLang;
+
     const tpl = layout === null
       ? frontMatter.content
       : `{% layout "${layout}" %} {% block content %} ${frontMatter.content} {% endblock %}`;
 
-    const fn = await rm.compile(tpl, data.page.templateSyntax, {templateConfig, extensionMap});
+    const fn = await rm.compile(tpl, language, {templateConfig, extensionMap});
     const result = await fn(data.data);
 
     compiledEmbeds.set(data.inputPath, result);

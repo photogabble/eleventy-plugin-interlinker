@@ -15,24 +15,34 @@ npm i @photogabble/eleventy-plugin-interlinker
 
 ```ts
 type EleventyPluginInterlinkOptions = {
-    // defaultLayout is the optional default layout you would like
-    // to use for wrapping your embeds.
-    defaultLayout?: string,
+  // defaultLayout is the optional default layout you would like
+  // to use for wrapping your embeds.
+  defaultLayout?: string,
 
-    // layoutKey is the front-matter value used for a per embed
-    // template, if found it will replace defaultLayout for
-    // that embed. This will always default to `embedLayout`.
-    layoutKey?: string,
+  // defaultLayoutLang is the optional default engine(s) used to render
+  // your embed layout. This defaults to your 11ty project default for
+  // the embed source file; typically: liquid,md.
+  defaultLayoutLang?: string,
 
-    // unableToLocateEmbedFn is invoked when an embed is unable
-    // to be found, this is normally due to a typo in the
-    // slug that you are using. This defaults to a function
-    // that returns [UNABLE TO LOCATE EMBED].
-    unableToLocateEmbedFn?: ErrorRenderFn,
+  // layoutKey is the front-matter value used for a per embed
+  // template, if found it will replace defaultLayout for
+  // that embed. This will always default to `embedLayout`.
+  layoutKey?: string,
 
-    // slugifyFn is used to slugify strings. If a function
-    // isn't set then the default 11ty slugify filter is used.
-    slugifyFn?: SlugifyFn
+  // layoutTemplateLangKey is the front-matter value used for setting the
+  // layout engine(s) to render the embed's layout. This defaults to your
+  // 11ty project default for the embed source file; typically: liquid,md.
+  layoutTemplateLangKey?: string,
+
+  // unableToLocateEmbedFn is invoked when an embed is unable
+  // to be found, this is normally due to a typo in the
+  // slug that you are using. This defaults to a function
+  // that returns [UNABLE TO LOCATE EMBED].
+  unableToLocateEmbedFn?: ErrorRenderFn,
+
+  // slugifyFn is used to slugify strings. If a function
+  // isn't set then the default 11ty slugify filter is used.
+  slugifyFn?: SlugifyFn
 }
 ```
 
@@ -52,7 +62,7 @@ module.exports = (eleventyConfig) => {
 
 ### Internal Links / Wikilinks
 
-This plugin will now parse all Wiki Links formatted for example, `[[Eleventy.js Interlink Plugin]]` appears as [[Eleventy.js Interlink Plugin]].
+This plugin will now parse all Wiki Links formatted for example, `[[Eleventy.js Interlink Plugin]]` appears as [Eleventy.js Interlink Plugin](https://photogabble.co.uk/projects/eleventyjs-interlink-plugin/).
 
 Using the vertical bar (`|`) you can change the text used to display a link. This can be useful when you want to work a link into a sentence without using the title of the file, for example: `[[Eleventy.js Interlink Plugin|custom display text]]` appears as [custom display text](https://www.photogabble.co.uk/projects/eleventyjs-interlink-plugin/).
 
@@ -65,6 +75,33 @@ Aliases provide you a way of referencing a file using different names, use the `
 Embedding files allows you to reuse content across your website while tracking what pages have used it.
 
 To embed a file add an exclamation mark (`!`) in front of any wiki link for example: `![Artificial Intelligence]`. The embedded file will be rendered using 11ty's Template Engine. If you have defined a default embedding layout through `defaultLayout` or the page being embedded has front matter keyed as `layoutKey` then the embed will be rendered wrapped with the discovered template.
+
+For example, with the default `layoutKey` your front matter might look like:
+
+```yaml
+---
+embedLayout: 'layouts/bookmark-embed.liquid'
+---
+```
+
+When embedding that page its data and content will be injected in to `layouts/bookmark-embed.liquid`, rendered and replace the embed declaration.
+
+#### Inline Embeds
+
+When rendering each embed this plugin will use the template engine as set on the file being embedded.
+
+For most 11ty projects this defaults to `liquid,md`. The Markdown parser will wrap any inline html elements in a pair of `<p>` tags which may not be what you want to happen, especially if your using the embed inline within a paragraph of text. To overcome this you may define which template language(s) should be used to compile the embed layout by using front matter keyed as `layoutTemplateLangKey`.
+
+For example, you might have a folder of bookmarks that you would like to embed into other pages as inline links, your `bookmarks.11tydata.js` might look like the following:
+
+```js
+module.exports = {
+  embedLayout: 'layouts/bookmark-embed.liquid',
+  embedLayoutLanguage: 'liquid',
+}
+```
+
+This will disable the Markdown parser for the defined `embedLayout` resulting in the correct behaviour for inline embeds.
 
 ### Back Links
 

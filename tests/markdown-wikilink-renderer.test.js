@@ -32,8 +32,6 @@ test('inline rule correctly parses single wikilink', t => {
     opts
   );
 
-  const rendered =
-
   t.is(
     "<p>Hello world, this is some text with a <a href=\"/wiki-link\">Wiki Link</a> inside!</p>\n",
     md.render('Hello world, this is some text with a [[wiki link]] inside!', {})
@@ -72,11 +70,10 @@ test('inline rule correctly parses multiple wikilinks', t => {
     opts
   );
 
-  const rendered =
-    t.is(
-      "<p>Hello world, this is some text with a <a href=\"/wiki-link\">Wiki Link</a> inside! There is also <a href=\"/another-wiki-link\">Another Wiki Link</a> in the same string.</p>\n",
-      md.render('Hello world, this is some text with a [[wiki link]] inside! There is also [[another wiki link]] in the same string.', {})
-    );
+  t.is(
+    "<p>Hello world, this is some text with a <a href=\"/wiki-link\">Wiki Link</a> inside! There is also <a href=\"/another-wiki-link\">Another Wiki Link</a> in the same string.</p>\n",
+    md.render('Hello world, this is some text with a [[wiki link]] inside! There is also [[another wiki link]] in the same string.', {})
+  );
 });
 
 test('inline rule correctly parses single embed', t => {
