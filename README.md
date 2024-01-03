@@ -66,6 +66,8 @@ This plugin will now parse all Wiki Links formatted for example, `[[Eleventy.js 
 
 Using the vertical bar (`|`) you can change the text used to display a link. This can be useful when you want to work a link into a sentence without using the title of the file, for example: `[[Eleventy.js Interlink Plugin|custom display text]]` appears as [custom display text](https://www.photogabble.co.uk/projects/eleventyjs-interlink-plugin/).
 
+> NOTE: By default this plugin will use the `title` front-matter attribute of your pages or one of the aliases (as detailed below).
+
 ### Aliases
 
 Aliases provide you a way of referencing a file using different names, use the `aliases` property in your font matter to list one or more aliases that can be used to reference the file from a Wiki Link. For example, you might add _AI_ as an alias of a file titled _Artificial Intelligence_ which would then be linkable via `[[AI]]`.
