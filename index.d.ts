@@ -1,3 +1,9 @@
+type LinkMapping = {
+  title: string,
+  href: string,
+  aliases?: Array<string>,
+}
+
 type EleventyPluginInterlinkOptions = {
   // defaultLayout is the optional default layout you would like to use for wrapping your embeds.
   defaultLayout?: string,
@@ -19,7 +25,12 @@ type EleventyPluginInterlinkOptions = {
   unableToLocateEmbedFn?: ErrorRenderFn,
 
   // slugifyFn is used to slugify strings. If a function isn't set then the default 11ty slugify filter is used.
-  slugifyFn?: SlugifyFn
+  slugifyFn?: SlugifyFn,
+
+  // extraLinkMapping is used to preload the plugin with your own mapping of wiki link to url. This can be useful for
+  // cases where you want to assign a wiki link to an external url, or have generated pages that this plugin is unable
+  // to index which you want to be able to link to.
+  extraLinkMapping?: Array<LinkMapping>,
 }
 
 interface ErrorRenderFn {
