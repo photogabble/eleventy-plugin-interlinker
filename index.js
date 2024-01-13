@@ -49,7 +49,7 @@ module.exports = function (eleventyConfig, options = {}) {
       : `{% layout "${layout}" %} {% block content %} ${frontMatter.content} {% endblock %}`;
 
     const fn = await rm.compile(tpl, language, {templateConfig, extensionMap});
-    const result = await fn(data.data);
+    const result = await fn({content: frontMatter.content, ...data.data});
 
     compiledEmbeds.set(data.inputPath, result);
   }
@@ -144,7 +144,7 @@ module.exports = function (eleventyConfig, options = {}) {
               const found = (page.fileSlug === link.slug || (page.data.title && opts.slugifyFn(page.data.title) === link.slug));
               if (found) return true;
 
-              const aliases = (page.aliases ?? []).reduce(function(set, alias){
+              const aliases = (page.data.aliases ?? []).reduce(function(set, alias){
                 set.add(opts.slugifyFn(alias));
                 return set;
               }, new Set());
