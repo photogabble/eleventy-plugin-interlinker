@@ -49,7 +49,7 @@ module.exports = function (eleventyConfig, options = {}) {
       : `{% layout "${layout}" %} {% block content %} ${frontMatter.content} {% endblock %}`;
 
     const fn = await rm.compile(tpl, language, {templateConfig, extensionMap});
-    const result = await fn(data.data);
+    const result = await fn({content: frontMatter.content, ...data.data});
 
     compiledEmbeds.set(data.inputPath, result);
   }
