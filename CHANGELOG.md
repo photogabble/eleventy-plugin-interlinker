@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.4]
 
-- Bugfix template `content` variable not being set when rendering embed
-- Bugfix incorrect alias lookup when only embedded as alias
+- Bugfix template `content` variable not being set when rendering embed (#10)
+- Bugfix incorrect alias lookup when only embedded as alias (#11)
 
 ## [1.0.3]
 
