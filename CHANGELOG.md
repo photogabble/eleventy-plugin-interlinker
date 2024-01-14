@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5]
+
+- Change to use `url` instead of `inputPath` for unique page key, this is because some pages can share the same `inputPath` such as those generated via pagination.
+
 ## [1.0.4]
 
 - Bugfix template `content` variable not being set when rendering embed (#10)
