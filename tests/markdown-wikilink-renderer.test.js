@@ -15,7 +15,7 @@ test('inline rule correctly parses single wikilink', t => {
   linkMapCache.set('wiki-link', {
     title: 'Wiki Link',
     page: {
-      url: '/wiki-link'
+      url: '/wiki-link/'
     }
   });
 
@@ -33,7 +33,7 @@ test('inline rule correctly parses single wikilink', t => {
   );
 
   t.is(
-    "<p>Hello world, this is some text with a <a href=\"/wiki-link\">Wiki Link</a> inside!</p>\n",
+    "<p>Hello world, this is some text with a <a href=\"/wiki-link/\">Wiki Link</a> inside!</p>\n",
     md.render('Hello world, this is some text with a [[wiki link]] inside!', {})
   );
 });
@@ -46,14 +46,14 @@ test('inline rule correctly parses multiple wikilinks', t => {
   linkMapCache.set('wiki-link', {
     title: 'Wiki Link',
     page: {
-      url: '/wiki-link'
+      url: '/wiki-link/'
     }
   });
 
   linkMapCache.set('another-wiki-link', {
     title: 'Another Wiki Link',
     page: {
-      url: '/another-wiki-link'
+      url: '/another-wiki-link/'
     }
   });
 
@@ -71,7 +71,7 @@ test('inline rule correctly parses multiple wikilinks', t => {
   );
 
   t.is(
-    "<p>Hello world, this is some text with a <a href=\"/wiki-link\">Wiki Link</a> inside! There is also <a href=\"/another-wiki-link\">Another Wiki Link</a> in the same string.</p>\n",
+    "<p>Hello world, this is some text with a <a href=\"/wiki-link/\">Wiki Link</a> inside! There is also <a href=\"/another-wiki-link/\">Another Wiki Link</a> in the same string.</p>\n",
     md.render('Hello world, this is some text with a [[wiki link]] inside! There is also [[another wiki link]] in the same string.', {})
   );
 });
@@ -85,11 +85,11 @@ test('inline rule correctly parses single embed', t => {
     title: 'Wiki Embed',
     page: {
       inputPath: '/src/wiki-embed.md',
-      url: '/wiki-embed'
+      url: '/wiki-embed/'
     }
   });
 
-  compiledEmbeds.set('/src/wiki-embed.md', '<span>Wiki Embed Test</span>');
+  compiledEmbeds.set('/wiki-embed/', '<span>Wiki Embed Test</span>');
 
   const md = require('markdown-it')({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
@@ -119,7 +119,7 @@ test('inline rule correctly parses mixed wikilink and embed in multiline input',
     title: 'Inline Embed',
     page: {
       inputPath: '/src/inline-embed.md',
-      url: '/inline-embed'
+      url: '/inline-embed/'
     }
   });
 
@@ -127,7 +127,7 @@ test('inline rule correctly parses mixed wikilink and embed in multiline input',
     title: 'This is an embed on its own',
     page: {
       inputPath: '/src/lonely-embed.md',
-      url: '/lonely-embed'
+      url: '/lonely-embed/'
     }
   });
 
@@ -135,12 +135,12 @@ test('inline rule correctly parses mixed wikilink and embed in multiline input',
     title: 'Wiki Link',
     page: {
       inputPath: '/src/wiki-link.md',
-      url: '/wiki-link'
+      url: '/wiki-link/'
     }
   });
 
-  compiledEmbeds.set('/src/inline-embed.md', '<span>inline embed</span>');
-  compiledEmbeds.set('/src/lonely-embed.md', '<div>Embed on its own</div>');
+  compiledEmbeds.set('/inline-embed/', '<span>inline embed</span>');
+  compiledEmbeds.set('/lonely-embed/', '<div>Embed on its own</div>');
 
   const md = require('markdown-it')({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(

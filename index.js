@@ -30,7 +30,7 @@ module.exports = function (eleventyConfig, options = {}) {
   const wikilinkParser = new WikilinkParser(opts);
 
   const compileTemplate = async (data) => {
-    if (compiledEmbeds.has(data.inputPath)) return;
+    if (compiledEmbeds.has(data.url)) return;
 
     const frontMatter = data.template.frontMatter;
 
@@ -51,7 +51,7 @@ module.exports = function (eleventyConfig, options = {}) {
     const fn = await rm.compile(tpl, language, {templateConfig, extensionMap});
     const result = await fn({content: frontMatter.content, ...data.data});
 
-    compiledEmbeds.set(data.inputPath, result);
+    compiledEmbeds.set(data.url, result);
   }
 
   let templateConfig;
@@ -107,14 +107,14 @@ module.exports = function (eleventyConfig, options = {}) {
       const currentSlug = opts.slugifyFn(data.title);
       let backlinks = [];
       let currentSlugs = new Set([currentSlug, data.page.fileSlug]);
-      const currentPage = allPages.find(page => page.inputPath === data.page.inputPath);
+      const currentPage = allPages.find(page => page.url === data.page.url);
 
       // Populate our link map for use later in replacing WikiLinks with page permalinks.
       // Pages can list aliases in their front matter, if those exist we should map them
       // as well.
 
       linkMapCache.set(currentSlug, {
-        page: data.collections.all.find(page => page.inputPath === data.page.inputPath),
+        page: data.collections.all.find(page => page.url === data.page.url),
         title: data.title
       });
 

@@ -64,10 +64,10 @@ const wikilinkRenderRule = (wikilinkParser, linkMapCache, compiledEmbeds, deadWi
         : '';
     }
 
-    const templateContent = compiledEmbeds.get(link.page.inputPath);
+    const templateContent = compiledEmbeds.get(link.page.url);
     if (!templateContent) throw new Error(`WikiLink Embed found pointing to [${token.content}], has no compiled template.`);
 
-    return compiledEmbeds.get(link.page.inputPath);
+    return compiledEmbeds.get(link.page.url);
   }
 
   const anchor = {
