@@ -72,6 +72,26 @@ Using the vertical bar (`|`) you can change the text used to display a link. Thi
 
 Aliases provide you a way of referencing a file using different names, use the `aliases` property in your font matter to list one or more aliases that can be used to reference the file from a Wiki Link. For example, you might add _AI_ as an alias of a file titled _Artificial Intelligence_ which would then be linkable via `[[AI]]`.
 
+### Linking to Pagination generated pages
+
+A common use of pagination in 11ty is [pagination of an object](https://www.11ty.dev/docs/pagination/#paging-an-object) or data file, by default these generated pages aren't included in the all pages collection and therefore are invisible to this plugin unless you set `addAllPagesToCollections: true`.
+
+Once done you will also need to set the title of each generated page so that this plugin can reference them, that can be done with `eleventyComputed` for example:
+
+```yaml
+---
+pagination:
+  data: collections.lists
+  size: 1
+  alias: list
+  addAllPagesToCollections: true
+permalink: "{{ list.permalink }}"
+folder: lists
+eleventyComputed:
+  title: "{{ list.title }}"
+---
+```
+
 ### Embedding
 
 Embedding files allows you to reuse content across your website while tracking what pages have used it.
