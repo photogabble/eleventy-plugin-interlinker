@@ -62,6 +62,6 @@ module.exports = function (eleventyConfig, options = {}) {
 
   // Add backlinks computed global data, this is executed before the templates are compiled and thus markdown parsed.
   eleventyConfig.addGlobalData('eleventyComputed', {
-    backlinks: interlinker.computeBacklinks
+    backlinks: async (data) => await interlinker.computeBacklinks(data)
   });
 };
