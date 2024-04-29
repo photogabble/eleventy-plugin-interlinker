@@ -32,7 +32,9 @@ module.exports = function (eleventyConfig, options = {}) {
     interlinker.templateConfig = cfg;
   });
 
-  // TODO: document
+  // This triggers on an undocumented internal 11ty event that is triggered once EleventyExtensionMap
+  // has been loaded. This is used by the EleventyRenderPlugin which is made user of within the
+  // compileTemplate method of the Interlinker class.
   eleventyConfig.on("eleventy.extensionmap", (map) => {
     interlinker.extensionMap = map;
   });
