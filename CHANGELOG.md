@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.6]
+
+- Bugfix ensuring aliases value is array when treated as one (#17)
+- Updated npm dependencies
+
 ## [1.0.5]
 
 - Change to use `url` instead of `inputPath` for unique page key, this is because some pages can share the same `inputPath` such as those generated via pagination.
@@ -40,3 +45,4 @@ First release
 [1.0.3]: https://github.com/photogabble/eleventy-plugin-font-subsetting/releases/tag/v1.0.3
 [1.0.4]: https://github.com/photogabble/eleventy-plugin-font-subsetting/releases/tag/v1.0.4
 [1.0.5]: https://github.com/photogabble/eleventy-plugin-font-subsetting/releases/tag/v1.0.5
+[1.0.5]: https://github.com/photogabble/eleventy-plugin-font-subsetting/releases/tag/v1.0.6
