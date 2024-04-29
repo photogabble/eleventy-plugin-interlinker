@@ -25,7 +25,7 @@ class Interlinker {
   }
 
   /**
-   * @todo document
+   * Compiles the template associated with a WikiLink when invoked via the ![[embed syntax]]
    * @param data
    * @return {Promise<*>}
    */
