@@ -29,6 +29,16 @@
   "11ty": {
     "compatibility": ">=2.0.0"
   },
+  "ava": {
+    "failFast": true,
+    "files": [
+      "./tests/*.test.js"
+    ],
+    "ignoredByWatcher": [
+      "**/_site/**",
+      ".cache"
+    ]
+  },
   "files": [
     "index.js",
     "index.d.ts",
