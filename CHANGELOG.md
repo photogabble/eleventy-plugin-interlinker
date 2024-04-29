@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Bugfix ensuring aliases value is array when treated as one
+
 ## [1.0.5]
 
 - Change to use `url` instead of `inputPath` for unique page key, this is because some pages can share the same `inputPath` such as those generated via pagination.
