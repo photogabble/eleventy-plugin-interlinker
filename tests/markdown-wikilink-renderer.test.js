@@ -1,5 +1,6 @@
 const {wikilinkInlineRule, wikilinkRenderRule} = require('../src/markdown-ext');
 const WikilinkParser = require('../src/wikilink-parser');
+const {normalize} = require('./helpers');
 const slugify = require('slugify');
 const test = require('ava');
 const fs = require('fs');
@@ -158,5 +159,8 @@ test('inline rule correctly parses mixed wikilink and embed in multiline input',
   const markdown = fs.readFileSync(__dirname + '/fixtures/multiline.md', {encoding:'utf8', flag:'r'});
   const html = fs.readFileSync(__dirname + '/fixtures/multiline.html', {encoding:'utf8', flag:'r'});
 
-  t.is(md.render(markdown), html);
+  t.is(
+    normalize(md.render(markdown)),
+    normalize(html)
+  );
 });

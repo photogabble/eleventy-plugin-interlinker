@@ -1,9 +1,6 @@
 const test = require("ava");
 const Eleventy = require("@11ty/eleventy");
-
-function normalize(str) {
-  return str.trim().replace(/\r\n/g, "\n");
-}
+const{normalize} = require('./helpers');
 
 test("Sample page (wikilink from markdown to liquid)", async t => {
   let elev = new Eleventy(`${__dirname}/fixtures/sample-small-website/`, `${__dirname}/fixtures/sample-small-website/_site`, {
