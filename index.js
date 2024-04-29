@@ -39,6 +39,9 @@ module.exports = function (eleventyConfig, options = {}) {
     interlinker.extensionMap = map;
   });
 
+  // After 11ty has finished generating the site output a list of wikilinks that do not link to
+  // anything.
+  // TODO: 1.1.0 have this contain more details such as which file(s) are linking
   eleventyConfig.on('eleventy.after', () => interlinker.deadLinksReport());
 
   // Teach Markdown-It how to display MediaWiki Links.
