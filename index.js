@@ -144,7 +144,7 @@ module.exports = function (eleventyConfig, options = {}) {
               const found = (page.fileSlug === link.slug || (page.data.title && opts.slugifyFn(page.data.title) === link.slug));
               if (found) return true;
 
-              const aliases = (page.data.aliases ?? []).reduce(function(set, alias){
+              const aliases = ((page.data.aliases && Array.isArray(page.data.aliases)) ? page.data.aliases : []).reduce(function(set, alias){
                 set.add(opts.slugifyFn(alias));
                 return set;
               }, new Set());
