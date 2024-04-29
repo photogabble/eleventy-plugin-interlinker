@@ -26,13 +26,8 @@
     "url": "https://github.com/photogabble/eleventy-plugin-interlinker/issues"
   },
   "homepage": "https://github.com/photogabble/eleventy-plugin-interlinker#readme",
-  "peerDependencies": {
-    "@11ty/eleventy": ">=2.0.0-beta.1"
-  },
-  "peerDependenciesMeta": {
-    "@11ty/eleventy": {
-      "optional": true
-    }
+  "11ty": {
+    "compatibility": ">=2.0.0"
   },
   "files": [
     "index.js",
