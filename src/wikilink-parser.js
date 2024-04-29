@@ -5,8 +5,6 @@ module.exports = class WikilinkParser {
    */
   wikiLinkRegExp = /(?<!!)(!?)\[\[([^|]+?)(\|([\s\S]+?))?]]/g;
 
-  slugifyFn
-
   /**
    * @param { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts
    */
@@ -14,7 +12,7 @@ module.exports = class WikilinkParser {
     this.slugifyFn = opts.slugifyFn;
   }
 
-  parseSingle (link) {
+  parseSingle(link) {
     const isEmbed = link.startsWith('!');
     const parts = link.slice((isEmbed ? 3 : 2), -2).split("|").map(part => part.trim());
     const slug = this.slugifyFn(parts[0].replace(/.(md|markdown)\s?$/i, "").trim());
@@ -37,7 +35,7 @@ module.exports = class WikilinkParser {
     }
   }
 
-  parseMultiple (links) {
+  parseMultiple(links) {
     return links.map(link => this.parseSingle(link));
   }
 }

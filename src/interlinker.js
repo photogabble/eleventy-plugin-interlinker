@@ -29,12 +29,12 @@ class Interlinker {
    * @param data
    * @return {Promise<*>}
    */
-  async compileTemplate (data) {
+  async compileTemplate(data) {
     if (this.compiledEmbeds.has(data.url)) return;
 
     const frontMatter = data.template.frontMatter;
 
-    const layout =  (data.data.hasOwnProperty(this.opts.layoutKey))
+    const layout = (data.data.hasOwnProperty(this.opts.layoutKey))
       ? data.data[this.opts.layoutKey]
       : this.opts.defaultLayout;
 
@@ -67,7 +67,7 @@ class Interlinker {
    * @param {Object} data
    * @return {Promise<Array<any>>}
    */
-  async computeBacklinks (data) {
+  async computeBacklinks(data) {
     // 11ty will invoke this several times during its build cycle, accessing the values we
     // need helps 11ty automatically detect data dependency and invoke the function only
     // once they are met.
@@ -88,8 +88,8 @@ class Interlinker {
     // Pages can list aliases in their front matter, if those exist we should map them
     // as well.
 
-    // TODO: 1.1.0 key files by pathname
-    // TODO: 1.1.0 key files by title
+    // TODO: 1.1.0 key files by pathname (#13)
+    // TODO: 1.1.0 key files by title (#5)
     this.linkMapCache.set(currentSlug, {
       page: data.collections.all.find(page => page.url === data.page.url),
       title: data.title
@@ -122,7 +122,7 @@ class Interlinker {
             const found = (page.fileSlug === link.slug || (page.data.title && slugifyFn(page.data.title) === link.slug));
             if (found) return true;
 
-            const aliases = ((page.data.aliases && Array.isArray(page.data.aliases)) ? page.data.aliases : []).reduce(function(set, alias){
+            const aliases = ((page.data.aliases && Array.isArray(page.data.aliases)) ? page.data.aliases : []).reduce(function (set, alias) {
               set.add(slugifyFn(alias));
               return set;
             }, new Set());
@@ -150,7 +150,7 @@ class Interlinker {
     return backlinks;
   }
 
-  deadLinksReport () {
+  deadLinksReport() {
     this.deadWikiLinks.forEach(
       slug => console.warn(chalk.blue('[@photogabble/wikilinks]'), chalk.yellow('WARNING'), `WikiLink found pointing to non-existent [${slug}], has been set to default stub.`)
     )

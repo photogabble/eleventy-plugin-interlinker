@@ -11,6 +11,7 @@ const {Interlinker} = require("./src/interlinker");
 module.exports = function (eleventyConfig, options = {}) {
   /** @var { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts */
   const opts = Object.assign({
+    // TODO: 1.1.0 add custom resolving functions (#19)
     defaultLayout: null,
     defaultLayoutLang: null,
     layoutKey: 'embedLayout',
@@ -18,7 +19,7 @@ module.exports = function (eleventyConfig, options = {}) {
     unableToLocateEmbedFn: () => '[UNABLE TO LOCATE EMBED]',
     slugifyFn: (input) => {
       const slugify = eleventyConfig.getFilter('slugify');
-      if(typeof slugify !== 'function') throw new Error('Unable to load slugify filter.');
+      if (typeof slugify !== 'function') throw new Error('Unable to load slugify filter.');
 
       return slugify(input);
     },
