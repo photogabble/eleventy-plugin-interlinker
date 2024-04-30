@@ -1,6 +1,7 @@
 module.exports = class WikilinkParser {
   /**
    * This regex finds all WikiLink style links: [[id|optional text]] as well as WikiLink style embeds: ![[id]]
+   *
    * @type {RegExp}
    */
   wikiLinkRegExp = /(?<!!)(!?)\[\[([^|]+?)(\|([\s\S]+?))?]]/g;
@@ -12,6 +13,15 @@ module.exports = class WikilinkParser {
     this.slugifyFn = opts.slugifyFn;
   }
 
+  /**
+   * Parses a single WikiLink into the link object understood by the Interlinker.
+   *
+   * @todo add parsing of namespace (#14)
+   * @todo add support for referencing file by path (#13)
+   *
+   * @param {string} link
+   * @return {{isEmbed: boolean, anchor: (string|null), name: string, link: string, title: (string|null), slug: string}}
+   */
   parseSingle(link) {
     const isEmbed = link.startsWith('!');
     const parts = link.slice((isEmbed ? 3 : 2), -2).split("|").map(part => part.trim());
@@ -37,5 +47,16 @@ module.exports = class WikilinkParser {
 
   parseMultiple(links) {
     return links.map(link => this.parseSingle(link));
+  }
+
+  /**
+   * Finds all wikilinks within a document (HTML or otherwise).
+   * @param {string} document
+   * @return {{isEmbed: boolean, anchor: (string|null), name: string, link: string, title: (string|null), slug: string}}
+   */
+  find(document) {
+    return this.parseMultiple(
+      (document.match(this.wikiLinkRegExp) || [])
+    )
   }
 }
