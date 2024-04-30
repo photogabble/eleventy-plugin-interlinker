@@ -1,5 +1,6 @@
 const {EleventyRenderPlugin} = require("@11ty/eleventy");
 const WikilinkParser = require("./wikilink-parser");
+const HTMLLinkParser = require("./html-link-parser");
 const chalk = require("chalk");
 
 class Interlinker {
@@ -21,7 +22,9 @@ class Interlinker {
 
     // TODO: document
     this.rm = new EleventyRenderPlugin.RenderManager();
+
     this.wikiLinkParser = new WikilinkParser(opts);
+    this.HTMLLinkParser = new HTMLLinkParser();
   }
 
   /**
@@ -67,7 +70,7 @@ class Interlinker {
    * @param {Object} data
    * @return {Promise<Array<any>>}
    */
-  async computeBacklinks(data) {
+  async compute(data) {
     // 11ty will invoke this several times during its build cycle, accessing the values we
     // need helps 11ty automatically detect data dependency and invoke the function only
     // once they are met.
@@ -80,7 +83,6 @@ class Interlinker {
     const compilePromises = [];
     const allPages = data.collections.all;
     const currentSlug = slugifyFn(data.title);
-    let backlinks = [];
     let currentSlugs = new Set([currentSlug, data.page.fileSlug]);
     const currentPage = allPages.find(page => page.url === data.page.url);
 
@@ -108,46 +110,60 @@ class Interlinker {
       }
     }
 
-    // Loop over all pages and build their outbound links if they have not already been parsed.
+    // Identify this pages outbound internal links both as wikilink _and_ regular html anchor tags. For each outlink
+    // lookup the other page and add this to its backlinks data value.
+    if (currentPage.template.frontMatter?.content) {
+      const pageContent = currentPage.template.frontMatter.content;
+      const outboundLinks  = [
+        ...this.wikiLinkParser.find(pageContent),
+        ...this.HTMLLinkParser.find(pageContent),
+      ].map((link) => {
+        // Lookup the page this link, links to and add this page to its backlinks
+        const page = allPages.find((page) => {
+          if (link.href && (page.url === link.href || page.url === `${link.href}/`)) {
+            return true;
+          }
 
-    allPages.forEach(page => {
-      if (!page.data.outboundLinks) {
-        const pageContent = page.template.frontMatter.content;
-        const outboundLinks = (pageContent.match(this.wikiLinkParser.wikiLinkRegExp) || []);
-        page.data.outboundLinks = this.wikiLinkParser.parseMultiple(outboundLinks);
+          if (page.fileSlug === link.slug || (page.data.title && slugifyFn(page.data.title) === link.slug)) {
+            return true;
+          }
 
-        page.data.outboundLinks
-          .filter(link => link.isEmbed && this.compiledEmbeds.has(link.slug) === false)
-          .map(link => allPages.find(page => {
-            const found = (page.fileSlug === link.slug || (page.data.title && slugifyFn(page.data.title) === link.slug));
-            if (found) return true;
+          const aliases = ((page.data.aliases && Array.isArray(page.data.aliases)) ? page.data.aliases : []).reduce(function (set, alias) {
+            set.add(slugifyFn(alias));
+            return set;
+          }, new Set());
 
-            const aliases = ((page.data.aliases && Array.isArray(page.data.aliases)) ? page.data.aliases : []).reduce(function (set, alias) {
-              set.add(slugifyFn(alias));
-              return set;
-            }, new Set());
+          return aliases.has(link.slug);
+        });
 
-            return aliases.has(link.slug);
-          }))
-          .filter(link => (typeof link !== 'undefined'))
-          .forEach(link => compilePromises.push(this.compileTemplate(link)))
-      }
+        if (!page.data.backlinks) {
+          page.data.backlinks = [];
+        }
 
-      // If the page links to our current page either by its title or by its aliases then
-      // add that page to our current page's backlinks.
-      if (page.data.outboundLinks.some(link => currentSlugs.has(link.slug))) {
-        backlinks.push({
-          url: page.url,
-          title: page.data.title,
-        })
-      }
-    });
+        page.data.backlinks.push({
+          url: currentPage.url,
+          title: currentPage.data.title,
+        });
 
-    // Block iteration until compilation complete.
-    if (compilePromises.length > 0) await Promise.all(compilePromises);
+        // If this is an embed and the embed template hasn't been compiled, add this to the queue
+        if (link.isEmbed && this.compiledEmbeds.has(link.slug) === false) {
+          compilePromises.push(this.compileTemplate(link));
+        }
 
-    // The backlinks for the current page.
-    return backlinks;
+        return {
+          ...link,
+          href: page.url,
+        }
+      });
+
+      // Block iteration until compilation complete.
+      if (compilePromises.length > 0) await Promise.all(compilePromises);
+
+      // The computed outbound links for the current page.
+      return outboundLinks;
+    }
+
+    return [];
   }
 
   deadLinksReport() {

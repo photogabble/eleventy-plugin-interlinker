@@ -60,8 +60,9 @@ module.exports = function (eleventyConfig, options = {}) {
     );
   });
 
-  // Add backlinks computed global data, this is executed before the templates are compiled and thus markdown parsed.
+  // Add outboundLinks computed global data, this is executed before the templates are compiled and
+  // thus markdown parsed.
   eleventyConfig.addGlobalData('eleventyComputed', {
-    backlinks: async (data) => await interlinker.computeBacklinks(data)
+    outboundLinks: async (data) => await interlinker.compute(data)
   });
 };
