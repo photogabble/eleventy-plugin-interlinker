@@ -97,7 +97,7 @@ class Interlinker {
 
     // If a page has defined aliases, then add those to the link map. These must be unique.
 
-    if (data.aliases) {
+    if (data.aliases && Array.isArray(data.aliases)) {
       for (const alias of data.aliases) {
         const aliasSlug = slugifyFn(alias);
         this.linkMapCache.set(aliasSlug, {
