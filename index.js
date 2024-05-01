@@ -65,4 +65,6 @@ module.exports = function (eleventyConfig, options = {}) {
   eleventyConfig.addGlobalData('eleventyComputed', {
     outboundLinks: async (data) => await interlinker.compute(data)
   });
+
+  // TODO: 1.1.0 Make Interlinker class available via global data
 };
