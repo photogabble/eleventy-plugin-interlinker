@@ -1,5 +1,5 @@
 const {wikilinkInlineRule, wikilinkRenderRule} = require('./src/markdown-ext');
-const {Interlinker} = require("./src/interlinker");
+const Interlinker = require("./src/interlinker");
 
 /**
  * Some code borrowed from:

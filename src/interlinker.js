@@ -3,7 +3,11 @@ const WikilinkParser = require("./wikilink-parser");
 const HTMLLinkParser = require("./html-link-parser");
 const chalk = require("chalk");
 
-class Interlinker {
+/**
+ * Interlinker:
+ *
+ */
+module.exports = class Interlinker {
   constructor(opts) {
     this.opts = opts
 
@@ -171,8 +175,4 @@ class Interlinker {
       slug => console.warn(chalk.blue('[@photogabble/wikilinks]'), chalk.yellow('WARNING'), `WikiLink found pointing to non-existent [${slug}], has been set to default stub.`)
     )
   }
-}
-
-module.exports = {
-  Interlinker
 }
