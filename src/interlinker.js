@@ -28,7 +28,7 @@ module.exports = class Interlinker {
     // TODO: document
     this.rm = new EleventyRenderPlugin.RenderManager();
 
-    this.wikiLinkParser = new WikilinkParser(opts);
+    this.wikiLinkParser = new WikilinkParser(opts, this.deadWikiLinks);
     this.HTMLLinkParser = new HTMLLinkParser();
   }
 
@@ -123,7 +123,7 @@ module.exports = class Interlinker {
     if (currentPage.template.frontMatter?.content) {
       const pageContent = currentPage.template.frontMatter.content;
       const outboundLinks  = [
-        ...this.wikiLinkParser.find(pageContent),
+        ...this.wikiLinkParser.find(pageContent, pageDirectory),
         ...this.HTMLLinkParser.find(pageContent),
       ].map((link) => {
         // Lookup the page this link, links to and add this page to its backlinks
