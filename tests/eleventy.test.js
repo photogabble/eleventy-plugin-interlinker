@@ -11,6 +11,10 @@ function findResultByUrl(results, url) {
 const fixturePath = (p) => path.normalize(path.join(__dirname, 'fixtures', p));
 
 test("Sample page (wikilinks and regular links)", async t => {
+
+  console.log('===FIXTURE PATH', fixturePath('sample-small-website'));
+  console.log('===DIRNAME', __dirname);
+
   let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
     configPath: fixturePath('sample-small-website/eleventy.config.js'),
   });
