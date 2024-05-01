@@ -144,10 +144,7 @@ module.exports = class Interlinker {
           compilePromises.push(this.compileTemplate(link));
         }
 
-        return {
-          ...link,
-          href: page.url,
-        }
+        return link;
       });
 
       // Block iteration until compilation complete.
