@@ -11,25 +11,21 @@ function findResultByUrl(results, url) {
 const fixturePath = (p) => path.normalize(path.join(__dirname, 'fixtures', p));
 
 test("Sample page (wikilinks and regular links)", async t => {
-
-  console.log('===FIXTURE PATH', fixturePath('sample-small-website'));
-  console.log('===DIRNAME', __dirname);
-
   let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
     configPath: fixturePath('sample-small-website/eleventy.config.js'),
   });
 
   let results = await elev.toJSON();
 
-  t.is(2, results.length);
+  t.is(results.length, 2);
 
   t.is(
-    `<div><p>This is to show that we can link between Markdown files and <a href="/hello/">liquid files</a>.</p></div><div><a href="/hello/">Hello</a></div>`,
-    normalize(findResultByUrl(results, '/about/').content)
+    normalize(findResultByUrl(results, '/about/').content),
+    `<div><p>This is to show that we can link between Markdown files and <a href="/hello/">liquid files</a>.</p></div><div><a href="/hello/">Hello</a></div>`
   );
 
   t.is(
+    normalize(findResultByUrl(results, '/hello/').content),
     '<div>This is to show that we can link back via <a href="/about">regular <em>internal</em> links</a>.</div><div><a href="/about/">About</a></div>',
-    normalize(findResultByUrl(results, '/hello/').content)
   );
 });
