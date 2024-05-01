@@ -4,6 +4,7 @@ const Interlinker = require("./src/interlinker");
 /**
  * Some code borrowed from:
  * @see https://git.sr.ht/~boehs/site/tree/master/item/html/pages/garden/garden.11tydata.js
+ * @see https://github.com/oleeskild/digitalgarden/blob/main/src/helpers/linkUtils.js
  *
  * @param { import('@11ty/eleventy/src/UserConfig') } eleventyConfig
  * @param { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } options
