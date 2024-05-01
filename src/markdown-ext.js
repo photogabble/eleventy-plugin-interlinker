@@ -32,9 +32,13 @@ const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
 
   if (!found) return false;
 
-  const token = state.push('inline_wikilink', '', 0);
-  const wikiLink = wikilinkParser.parseSingle(text);
+  const wikiLink = wikilinkParser.linkCache.get(text);
 
+  // By this time in the execution cycle the wikilink parser's cache should contain all
+  // wikilinks. In the unlikely case that it doesn't we ignore the wikilink.
+  if (!wikiLink) return false;
+
+  const token = state.push('inline_wikilink', '', 0);
   token.content = wikiLink.slug;
   token.meta = wikiLink;
 
@@ -43,7 +47,6 @@ const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
 };
 
 /**
- *
  * @param {WikilinkParser} wikilinkParser
  * @param { Map } linkMapCache
  * @param { Map } compiledEmbeds
@@ -53,10 +56,12 @@ const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
  */
 const wikilinkRenderRule = (wikilinkParser, linkMapCache, compiledEmbeds, deadWikiLinks, opts) => (tokens, idx) => {
   const token = tokens[idx];
-  const link = linkMapCache.get(token.content);
-  const wikilink = token.meta;
+  const link = token.meta;
 
-  if (token.meta.isEmbed) {
+  // TODO: remove dependency upon linkMapCache and deadWikiLinks
+
+  if (link.isEmbed) {
+    // TODO: move embed not found error handling to wikilinkInlineRule (refactor)
     if (!link) {
       console.error(chalk.blue('[@photogabble/wikilinks]'), chalk.red('ERROR'), `WikiLink Embed found pointing to non-existent [${token.content}], doesn't exist.`);
       return (typeof opts.unableToLocateEmbedFn === 'function')
@@ -64,24 +69,19 @@ const wikilinkRenderRule = (wikilinkParser, linkMapCache, compiledEmbeds, deadWi
         : '';
     }
 
-    const templateContent = compiledEmbeds.get(link.page.url);
+    // TODO: compiledEmbeds should be keyed by wikilink text because with namespacing (#14) and custom resolving functions (#19) we can have different rendered output based upon either
+    const templateContent = compiledEmbeds.get(link.href);
     if (!templateContent) throw new Error(`WikiLink Embed found pointing to [${token.content}], has no compiled template.`);
-
-    return compiledEmbeds.get(link.page.url);
+    return templateContent;
   }
 
   const anchor = {
-    href: '#',
-    text: '',
+    href: link.href,
+    text: link.title ?? link.name,
   };
 
-  if (!link) {
-    deadWikiLinks.add(token.content);
-    anchor.text = wikilink.title ?? wikilink.name;
-    anchor.href = '/stubs';
-  } else {
-    anchor.text = wikilink.title ?? link.title;
-    anchor.href = link.page.url;
+  if (link.anchor) {
+    anchor.href = `${anchor.href}#${link.anchor}`;
   }
 
   return `<a href="${anchor.href}">${anchor.text}</a>`;
