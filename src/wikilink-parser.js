@@ -15,7 +15,7 @@ module.exports = class WikilinkParser {
     this.slugifyFn = opts.slugifyFn;
     this.deadWikiLinks = deadWikiLinks;
 
-    // TODO: when 11ty is in serve mode, this cache should clear at the beginning of each build (add issue)
+    // TODO: when 11ty is in serve mode, this cache should clear at the beginning of each build (#24)
     this.linkCache = new Map();
   }
 
@@ -71,7 +71,7 @@ module.exports = class WikilinkParser {
       // If this wikilink goes to a page that doesn't exist, add to deadWikiLinks list and
       // update href for stub post.
       this.deadWikiLinks.add(link);
-      // @todo make the stub post url configurable, or even able to be disabled. (add issue)
+      // @todo make the stub post url configurable, or even able to be disabled. (#25)
       meta.href = '/stubs';
     }
 
