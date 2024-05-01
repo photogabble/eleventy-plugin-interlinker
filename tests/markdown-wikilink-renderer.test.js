@@ -5,7 +5,9 @@ const slugify = require('slugify');
 const test = require('ava');
 const fs = require('fs');
 
-const opts = {slugifyFn: (text) => slugify(text)};
+const opts = {
+  slugifyFn: (text) => slugify(text),
+};
 
 test('inline rule correctly parses single wikilink', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set);
@@ -146,3 +148,34 @@ test('inline rule correctly parses mixed wikilink and embed in multiline input',
     normalize(html)
   );
 });
+
+test('inline rule correctly displays unable to load embed content', t => {
+  const wikilinkParser = new WikilinkParser(opts, new Set);
+  const compiledEmbeds = new Map;
+
+  wikilinkParser.linkCache.set('![[wiki-embed]]', {
+    title: 'Wiki Embed',
+    href: '/wiki-embed/',
+    link: '![[wiki-embed]]',
+    isEmbed: true,
+  });
+
+  const md = require('markdown-it')({html: true});
+  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
+    wikilinkParser
+  ));
+
+  md.renderer.rules.inline_wikilink = wikilinkRenderRule(
+    wikilinkParser,
+    compiledEmbeds,
+    {
+      ...opts,
+      unableToLocateEmbedFn: () => '[TESTING]'
+    }
+  );
+
+  t.is(
+    md.render('Hello world this is a ![[wiki-embed]]'),
+    "<p>Hello world this is a [TESTING]</p>\n"
+  );
+})

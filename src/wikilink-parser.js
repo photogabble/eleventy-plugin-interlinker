@@ -11,6 +11,7 @@ module.exports = class WikilinkParser {
    * @param { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts
    */
   constructor(opts, deadWikiLinks) {
+    this.opts = opts;
     this.slugifyFn = opts.slugifyFn;
     this.deadWikiLinks = deadWikiLinks;
 

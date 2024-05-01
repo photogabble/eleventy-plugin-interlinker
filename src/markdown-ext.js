@@ -57,17 +57,14 @@ const wikilinkRenderRule = (wikilinkParser, compiledEmbeds, opts) => (tokens, id
   const link = token.meta;
 
   if (link.isEmbed) {
-    // TODO: move embed not found error handling to wikilinkInlineRule (refactor)
-    if (!link) {
-      console.error(chalk.blue('[@photogabble/wikilinks]'), chalk.red('ERROR'), `WikiLink Embed found pointing to non-existent [${token.content}], doesn't exist.`);
+    // TODO: compiledEmbeds should be keyed by wikilink text because with namespacing (#14) and custom resolving functions (#19) we can have different rendered output based upon either
+    const templateContent = compiledEmbeds.get(link.href);
+    if (!templateContent) {
       return (typeof opts.unableToLocateEmbedFn === 'function')
         ? opts.unableToLocateEmbedFn(token.content)
         : '';
     }
 
-    // TODO: compiledEmbeds should be keyed by wikilink text because with namespacing (#14) and custom resolving functions (#19) we can have different rendered output based upon either
-    const templateContent = compiledEmbeds.get(link.href);
-    if (!templateContent) throw new Error(`WikiLink Embed found pointing to [${token.content}], has no compiled template.`);
     return templateContent;
   }
 
