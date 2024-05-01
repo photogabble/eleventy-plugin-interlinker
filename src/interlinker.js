@@ -2,6 +2,7 @@ const {EleventyRenderPlugin} = require("@11ty/eleventy");
 const WikilinkParser = require("./wikilink-parser");
 const HTMLLinkParser = require("./html-link-parser");
 const chalk = require("chalk");
+const {pageLookup} = require("./find-page");
 
 /**
  * Interlinker:
@@ -85,10 +86,13 @@ module.exports = class Interlinker {
     const {slugifyFn} = this.opts;
 
     const compilePromises = [];
-    const allPages = data.collections.all;
+    const pageDirectory = pageLookup(
+      data.collections.all,
+      slugifyFn
+    );
     const currentSlug = slugifyFn(data.title);
     let currentSlugs = new Set([currentSlug, data.page.fileSlug]);
-    const currentPage = allPages.find(page => page.url === data.page.url);
+    const currentPage = pageDirectory.findByFile(data);
 
     // Populate our link map for use later in replacing WikiLinks with page permalinks.
     // Pages can list aliases in their front matter, if those exist we should map them
@@ -123,22 +127,7 @@ module.exports = class Interlinker {
         ...this.HTMLLinkParser.find(pageContent),
       ].map((link) => {
         // Lookup the page this link, links to and add this page to its backlinks
-        const page = allPages.find((page) => {
-          if (link.href && (page.url === link.href || page.url === `${link.href}/`)) {
-            return true;
-          }
-
-          if (page.fileSlug === link.slug || (page.data.title && slugifyFn(page.data.title) === link.slug)) {
-            return true;
-          }
-
-          const aliases = ((page.data.aliases && Array.isArray(page.data.aliases)) ? page.data.aliases : []).reduce(function (set, alias) {
-            set.add(slugifyFn(alias));
-            return set;
-          }, new Set());
-
-          return aliases.has(link.slug);
-        });
+        const page = pageDirectory.findByLink(link);
 
         if (!page.data.backlinks) {
           page.data.backlinks = [];
