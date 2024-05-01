@@ -178,4 +178,32 @@ test('inline rule correctly displays unable to load embed content', t => {
     md.render('Hello world this is a ![[wiki-embed]]'),
     "<p>Hello world this is a [TESTING]</p>\n"
   );
+});
+
+test('inline rule correctly displays anchor links', t => {
+  const wikilinkParser = new WikilinkParser(opts, new Set);
+  const compiledEmbeds = new Map;
+
+  wikilinkParser.linkCache.set('[[wiki link#heading-id]]', {
+    title: 'Wiki Link',
+    href: '/wiki-link/',
+    anchor: 'heading-id',
+    isEmbed: false,
+  });
+
+  const md = require('markdown-it')({html: true});
+  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
+    wikilinkParser
+  ));
+
+  md.renderer.rules.inline_wikilink = wikilinkRenderRule(
+    wikilinkParser,
+    compiledEmbeds,
+    opts
+  );
+
+  t.is(
+    "<p>Hello world, this is some text with a <a href=\"/wiki-link/#heading-id\">Wiki Link</a> inside!</p>\n",
+    md.render('Hello world, this is some text with a [[wiki link#heading-id]] inside!', {})
+  );
 })
