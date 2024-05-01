@@ -30,12 +30,30 @@ interface SlugifyFn {
   (input: string): string;
 }
 
-type WikilinkMeta = {
-  title: string|null,
-  name: string,
-  link: string,
-  slug: string,
-  isEmbed: boolean
+// Data structure for internal links identified by HTMLLinkParser.
+// This is a subset of WikilinkMeta.
+type LinkMeta = {
+  href: string
+  isEmbed: false
 }
 
-export {EleventyPluginInterlinkOptions, SlugifyFn, WikilinkMeta};
+// Data structure for wikilinks identified by WikiLinkParser.
+type WikilinkMeta = {
+  title: string|null
+  name: string
+  anchor: string|null
+  link: string
+  slug: string
+  isEmbed: boolean
+
+  // href and path are loaded from the linked page
+  href?: string
+  path?: string
+}
+
+interface PageDirectoryService {
+  findByLink(link : WikilinkMeta|LinkMeta): any;
+  findByFile(file : any): any;
+}
+
+export {EleventyPluginInterlinkOptions, SlugifyFn, WikilinkMeta, LinkMeta, PageDirectoryService};
