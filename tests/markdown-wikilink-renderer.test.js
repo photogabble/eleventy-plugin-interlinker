@@ -6,18 +6,18 @@ const test = require('ava');
 const fs = require('fs');
 
 const opts = {slugifyFn: (text) => slugify(text)};
-const wikilinkParser = new WikilinkParser(opts);
 
 test('inline rule correctly parses single wikilink', t => {
+  const wikilinkParser = new WikilinkParser(opts, new Set);
+
   const linkMapCache = new Map;
   const compiledEmbeds = new Map;
   const deadWikiLinks = new Set;
 
-  linkMapCache.set('wiki-link', {
+  wikilinkParser.linkCache.set('[[wiki link]]', {
     title: 'Wiki Link',
-    page: {
-      url: '/wiki-link/'
-    }
+    href: '/wiki-link/',
+    isEmbed: false,
   });
 
   const md = require('markdown-it')({html: true});
@@ -40,22 +40,22 @@ test('inline rule correctly parses single wikilink', t => {
 });
 
 test('inline rule correctly parses multiple wikilinks', t => {
+  const wikilinkParser = new WikilinkParser(opts, new Set);
+
   const linkMapCache = new Map;
   const compiledEmbeds = new Map;
   const deadWikiLinks = new Set;
 
-  linkMapCache.set('wiki-link', {
+  wikilinkParser.linkCache.set('[[wiki link]]', {
     title: 'Wiki Link',
-    page: {
-      url: '/wiki-link/'
-    }
+    href: '/wiki-link/',
+    isEmbed: false,
   });
 
-  linkMapCache.set('another-wiki-link', {
+  wikilinkParser.linkCache.set('[[another wiki link]]', {
     title: 'Another Wiki Link',
-    page: {
-      url: '/another-wiki-link/'
-    }
+    href: '/another-wiki-link/',
+    isEmbed: false,
   });
 
   const md = require('markdown-it')({html: true});
@@ -78,16 +78,16 @@ test('inline rule correctly parses multiple wikilinks', t => {
 });
 
 test('inline rule correctly parses single embed', t => {
+  const wikilinkParser = new WikilinkParser(opts, new Set);
+
   const linkMapCache = new Map;
   const compiledEmbeds = new Map;
   const deadWikiLinks = new Set;
 
-  linkMapCache.set('wiki-embed', {
+  wikilinkParser.linkCache.set('![[wiki-embed]]', {
     title: 'Wiki Embed',
-    page: {
-      inputPath: '/src/wiki-embed.md',
-      url: '/wiki-embed/'
-    }
+    href: '/wiki-embed/',
+    isEmbed: true,
   });
 
   compiledEmbeds.set('/wiki-embed/', '<span>Wiki Embed Test</span>');
@@ -112,32 +112,34 @@ test('inline rule correctly parses single embed', t => {
 });
 
 test('inline rule correctly parses mixed wikilink and embed in multiline input', t => {
+  const wikilinkParser = new WikilinkParser(opts, new Set);
+
   const linkMapCache = new Map;
   const compiledEmbeds = new Map;
   const deadWikiLinks = new Set;
 
-  linkMapCache.set('inline-embed', {
+  wikilinkParser.linkCache.set('![[inline embed]]', {
     title: 'Inline Embed',
-    page: {
-      inputPath: '/src/inline-embed.md',
-      url: '/inline-embed/'
-    }
+    href: '/inline-embed/',
+    isEmbed: true,
   });
 
-  linkMapCache.set('this-is-an-embed-on-its-own', {
+  wikilinkParser.linkCache.set('![[this is an embed on its own]]', {
     title: 'This is an embed on its own',
-    page: {
-      inputPath: '/src/lonely-embed.md',
-      url: '/lonely-embed/'
-    }
+    href: '/lonely-embed/',
+    isEmbed: true,
   });
 
-  linkMapCache.set('wiki-link', {
+  wikilinkParser.linkCache.set('[[wiki link]]', {
     title: 'Wiki Link',
-    page: {
-      inputPath: '/src/wiki-link.md',
-      url: '/wiki-link/'
-    }
+    href: '/wiki-link/',
+    isEmbed: false,
+  });
+
+  wikilinkParser.linkCache.set('[[wiki link|Wikilinks]]', {
+    title: 'Wikilinks',
+    href: '/wiki-link/',
+    isEmbed: false,
   });
 
   compiledEmbeds.set('/inline-embed/', '<span>inline embed</span>');
