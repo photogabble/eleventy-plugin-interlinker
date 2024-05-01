@@ -7,16 +7,20 @@ module.exports = class WikilinkParser {
   wikiLinkRegExp = /(?<!!)(!?)\[\[([^|]+?)(\|([\s\S]+?))?]]/g;
 
   /**
-   * @param {Set<string>} deadWikiLinks
    * @param { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts
+   * @param { DeadLinks } deadLinks
    */
-  constructor(opts, deadWikiLinks) {
+  constructor(opts, deadLinks) {
     this.opts = opts;
     this.slugifyFn = opts.slugifyFn;
-    this.deadWikiLinks = deadWikiLinks;
+    this.deadLinks = deadLinks;
 
     // TODO: when 11ty is in serve mode, this cache should clear at the beginning of each build (#24)
     this.linkCache = new Map();
+  }
+
+  setPage(page) {
+    this.page = page;
   }
 
   /**
@@ -68,9 +72,9 @@ module.exports = class WikilinkParser {
       meta.href = page.url;
       meta.path = page.inputPath;
     } else {
-      // If this wikilink goes to a page that doesn't exist, add to deadWikiLinks list and
+      // If this wikilink goes to a page that doesn't exist, add to deadLinks list and
       // update href for stub post.
-      this.deadWikiLinks.add(link);
+      this.deadLinks.add(link);
       // @todo make the stub post url configurable, or even able to be disabled. (#25)
       meta.href = '/stubs';
     }

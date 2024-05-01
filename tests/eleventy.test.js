@@ -1,7 +1,8 @@
-const test = require("ava");
 const Eleventy = require("@11ty/eleventy");
-const {normalize} = require('./helpers');
 const path = require('node:path');
+const {normalize} = require('./helpers');
+const sinon = require('sinon');
+const test = require("ava");
 
 function findResultByUrl(results, url) {
   const [result] = results.filter(result => result.url === url);
@@ -28,4 +29,39 @@ test("Sample page (wikilinks and regular links)", async t => {
     normalize(findResultByUrl(results, '/hello/').content),
     '<div>This is to show that we can link back via <a href="/about">regular <em>internal</em> links</a>.</div><div><a href="/about/">About</a></div>',
   );
+});
+
+test("Broken page (wikilinks and regular links)", async t => {
+  const messages = [];
+  const consoleStub = sinon.stub(console, 'warn').callsFake(msg => messages.push());
+
+  let elev = new Eleventy(fixturePath('website-with-broken-links'), fixturePath('website-with-broken-links/_site'), {
+    configPath: fixturePath('website-with-broken-links/eleventy.config.js'),
+  });
+
+  let results = await elev.toJSON();
+
+  let logLines = [];
+  for (let i = 0; i < consoleStub.callCount; i++) {
+    const line = normalize(consoleStub.getCall(i).args.join(' '))
+    // Sometimes 11ty will output benchmark info, failing the test randomly.
+    if (line.includes('[11ty]')) continue;
+    logLines.push(line);
+  }
+
+  consoleStub.restore();
+
+  // Markdown will have the link href set to /stubs
+  t.is(
+    normalize(findResultByUrl(results, '/something/').content),
+    `<div><p>This page has a <a href="/stubs">broken link</a>.</p></div>`
+  );
+
+  // HTML
+  t.is(
+    normalize(findResultByUrl(results, '/hello/').content),
+    `<div>This is to show that we can identify <a href="/broken">broken <em>internal</em> links</a>.</div>`
+  );
+
+  t.is(logLines.length, 4, 'console.warn should be called three times');
 });

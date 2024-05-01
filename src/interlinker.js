@@ -1,8 +1,9 @@
-const {EleventyRenderPlugin} = require("@11ty/eleventy");
-const WikilinkParser = require("./wikilink-parser");
 const HTMLLinkParser = require("./html-link-parser");
-const chalk = require("chalk");
+const WikilinkParser = require("./wikilink-parser");
+const {EleventyRenderPlugin} = require("@11ty/eleventy");
+const DeadLinks = require("./dead-links");
 const {pageLookup} = require("./find-page");
+const chalk = require("chalk");
 
 /**
  * Interlinker:
@@ -13,7 +14,7 @@ module.exports = class Interlinker {
     this.opts = opts
 
     // Set of WikiLinks pointing to non-existent pages
-    this.deadWikiLinks = new Set();
+    this.deadLinks = new DeadLinks();
 
     // Map of what WikiLinks to what
     this.linkMapCache = new Map();
@@ -28,14 +29,16 @@ module.exports = class Interlinker {
     // TODO: document
     this.rm = new EleventyRenderPlugin.RenderManager();
 
-    this.wikiLinkParser = new WikilinkParser(opts, this.deadWikiLinks);
-    this.HTMLLinkParser = new HTMLLinkParser();
+    this.wikiLinkParser = new WikilinkParser(opts, this.deadLinks);
+
+    // TODO: pass through deadWikiLinks and have HTMLLinkParser look up pages
+    this.HTMLLinkParser = new HTMLLinkParser(this.deadLinks);
   }
 
   /**
    * Compiles the template associated with a WikiLink when invoked via the ![[embed syntax]]
    * @param data
-   * @return {Promise<string>}
+   * @return {Promise<string|undefined>}
    */
   async compileTemplate(data) {
     if (this.compiledEmbeds.has(data.url)) return;
@@ -94,6 +97,8 @@ module.exports = class Interlinker {
     let currentSlugs = new Set([currentSlug, data.page.fileSlug]);
     const currentPage = pageDirectory.findByFile(data);
 
+    this.deadLinks.setFileSrc(currentPage.inputPath);
+
     // Populate our link map for use later in replacing WikiLinks with page permalinks.
     // Pages can list aliases in their front matter, if those exist we should map them
     // as well.
@@ -124,10 +129,11 @@ module.exports = class Interlinker {
       const pageContent = currentPage.template.frontMatter.content;
       const outboundLinks  = [
         ...this.wikiLinkParser.find(pageContent, pageDirectory),
-        ...this.HTMLLinkParser.find(pageContent),
+        ...this.HTMLLinkParser.find(pageContent, pageDirectory),
       ].map((link) => {
         // Lookup the page this link, links to and add this page to its backlinks
         const page = pageDirectory.findByLink(link);
+        if (!page) return link;
 
         if (!page.data.backlinks) {
           page.data.backlinks = [];
@@ -155,11 +161,5 @@ module.exports = class Interlinker {
     }
 
     return [];
-  }
-
-  deadLinksReport() {
-    this.deadWikiLinks.forEach(
-      slug => console.warn(chalk.blue('[@photogabble/wikilinks]'), chalk.yellow('WARNING'), `WikiLink found pointing to non-existent [${slug}], has been set to default stub.`)
-    )
   }
 }
