@@ -1,16 +1,18 @@
 const test = require("ava");
 const Eleventy = require("@11ty/eleventy");
 const {normalize} = require('./helpers');
-const path = require("path");
+const path = require('node:path');
 
 function findResultByUrl(results, url) {
   const [result] = results.filter(result => result.url === url);
   return result;
 }
 
+const fixturePath = (p) => path.normalize(path.join(__dirname, 'fixtures', p));
+
 test("Sample page (wikilinks and regular links)", async t => {
-  let elev = new Eleventy(path.join(__dirname, '/fixtures/sample-small-website'), path.join(__dirname, '/fixtures/sample-small-website/_site'), {
-    configPath: path.join(__dirname, '/fixtures/sample-small-website/eleventy.config.js'),
+  let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
+    configPath: fixturePath('sample-small-website/eleventy.config.js'),
   });
 
   let results = await elev.toJSON();
