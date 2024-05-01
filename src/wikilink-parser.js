@@ -20,7 +20,8 @@ module.exports = class WikilinkParser {
    * @todo add support for referencing file by path (#13)
    *
    * @param {string} link
-   * @return {{isEmbed: boolean, anchor: (string|null), name: string, link: string, title: (string|null), slug: string}}
+   * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
+   * @return {import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta}
    */
   parseSingle(link) {
     const isEmbed = link.startsWith('!');
@@ -52,7 +53,8 @@ module.exports = class WikilinkParser {
   /**
    * Finds all wikilinks within a document (HTML or otherwise).
    * @param {string} document
-   * @return {{isEmbed: boolean, anchor: (string|null), name: string, link: string, title: (string|null), slug: string}}
+   * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
+   * @return {Array<import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta>}
    */
   find(document) {
     return this.parseMultiple(

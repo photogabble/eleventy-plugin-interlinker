@@ -12,7 +12,7 @@ module.exports = class HTMLLinkParser {
    * care about the href so that we can look up the linked page record.
    *
    * @param {string} link
-   * @return {{isEmbed: boolean, href: string}}
+   * @return {import('@photogabble/eleventy-plugin-interlinker').LinkMeta}
    */
   parseSingle(link) {
     return {
@@ -25,14 +25,18 @@ module.exports = class HTMLLinkParser {
     }
   }
 
+  /**
+   * @param {Array<string>} links
+   * @return {Array<import('@photogabble/eleventy-plugin-interlinker').LinkMeta>}
+   */
   parseMultiple(links) {
     return links.map(link => this.parseSingle(link));
   }
 
   /**
-   * Find's all internal href links within an HTML document.
+   * Find's all internal href links within an HTML document and returns the parsed result.
    * @param {string} document
-   * @return {Array<{isEmbed: false, href: string}>}
+   * @return {Array<import('@photogabble/eleventy-plugin-interlinker').LinkMeta>}
    */
   find(document) {
     return this.parseMultiple(

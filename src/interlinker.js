@@ -34,7 +34,7 @@ module.exports = class Interlinker {
   /**
    * Compiles the template associated with a WikiLink when invoked via the ![[embed syntax]]
    * @param data
-   * @return {Promise<*>}
+   * @return {Promise<string>}
    */
   async compileTemplate(data) {
     if (this.compiledEmbeds.has(data.url)) return;
