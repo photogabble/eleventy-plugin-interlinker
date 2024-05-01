@@ -48,17 +48,13 @@ const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
 
 /**
  * @param {WikilinkParser} wikilinkParser
- * @param { Map } linkMapCache
  * @param { Map } compiledEmbeds
- * @param { Set } deadWikiLinks
  * @param { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts
  * @returns {(function(*, *): (string))|*}
  */
-const wikilinkRenderRule = (wikilinkParser, linkMapCache, compiledEmbeds, deadWikiLinks, opts) => (tokens, idx) => {
+const wikilinkRenderRule = (wikilinkParser, compiledEmbeds, opts) => (tokens, idx) => {
   const token = tokens[idx];
   const link = token.meta;
-
-  // TODO: remove dependency upon linkMapCache and deadWikiLinks
 
   if (link.isEmbed) {
     // TODO: move embed not found error handling to wikilinkInlineRule (refactor)

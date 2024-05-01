@@ -53,9 +53,7 @@ module.exports = function (eleventyConfig, options = {}) {
 
     md.renderer.rules.inline_wikilink = wikilinkRenderRule(
       interlinker.wikiLinkParser,
-      interlinker.linkMapCache,
       interlinker.compiledEmbeds,
-      interlinker.deadWikiLinks,
       opts
     );
   });

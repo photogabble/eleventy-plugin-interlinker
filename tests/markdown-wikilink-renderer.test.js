@@ -9,10 +9,7 @@ const opts = {slugifyFn: (text) => slugify(text)};
 
 test('inline rule correctly parses single wikilink', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set);
-
-  const linkMapCache = new Map;
   const compiledEmbeds = new Map;
-  const deadWikiLinks = new Set;
 
   wikilinkParser.linkCache.set('[[wiki link]]', {
     title: 'Wiki Link',
@@ -27,9 +24,7 @@ test('inline rule correctly parses single wikilink', t => {
 
   md.renderer.rules.inline_wikilink = wikilinkRenderRule(
     wikilinkParser,
-    linkMapCache,
     compiledEmbeds,
-    deadWikiLinks,
     opts
   );
 
@@ -41,10 +36,7 @@ test('inline rule correctly parses single wikilink', t => {
 
 test('inline rule correctly parses multiple wikilinks', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set);
-
-  const linkMapCache = new Map;
   const compiledEmbeds = new Map;
-  const deadWikiLinks = new Set;
 
   wikilinkParser.linkCache.set('[[wiki link]]', {
     title: 'Wiki Link',
@@ -65,9 +57,7 @@ test('inline rule correctly parses multiple wikilinks', t => {
 
   md.renderer.rules.inline_wikilink = wikilinkRenderRule(
     wikilinkParser,
-    linkMapCache,
     compiledEmbeds,
-    deadWikiLinks,
     opts
   );
 
@@ -79,10 +69,7 @@ test('inline rule correctly parses multiple wikilinks', t => {
 
 test('inline rule correctly parses single embed', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set);
-
-  const linkMapCache = new Map;
   const compiledEmbeds = new Map;
-  const deadWikiLinks = new Set;
 
   wikilinkParser.linkCache.set('![[wiki-embed]]', {
     title: 'Wiki Embed',
@@ -99,9 +86,7 @@ test('inline rule correctly parses single embed', t => {
 
   md.renderer.rules.inline_wikilink = wikilinkRenderRule(
     wikilinkParser,
-    linkMapCache,
     compiledEmbeds,
-    deadWikiLinks,
     opts
   );
 
@@ -113,10 +98,7 @@ test('inline rule correctly parses single embed', t => {
 
 test('inline rule correctly parses mixed wikilink and embed in multiline input', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set);
-
-  const linkMapCache = new Map;
   const compiledEmbeds = new Map;
-  const deadWikiLinks = new Set;
 
   wikilinkParser.linkCache.set('![[inline embed]]', {
     title: 'Inline Embed',
@@ -152,9 +134,7 @@ test('inline rule correctly parses mixed wikilink and embed in multiline input',
 
   md.renderer.rules.inline_wikilink = wikilinkRenderRule(
     wikilinkParser,
-    linkMapCache,
     compiledEmbeds,
-    deadWikiLinks,
     opts
   );
 
