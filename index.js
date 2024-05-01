@@ -44,7 +44,7 @@ module.exports = function (eleventyConfig, options = {}) {
   // anything.
   // TODO: 1.1.0 have this contain more details such as which file(s) are linking (#23)
   // TODO: 1.1.0 have this clear the interlinker cache so that next time 11ty builds its starting from fresh data! (#24)
-  eleventyConfig.on('eleventy.after', () => interlinker.deadLinksReport());
+  eleventyConfig.on('eleventy.after', () => interlinker.deadLinks.report());
 
   // Teach Markdown-It how to display MediaWiki Links.
   eleventyConfig.amendLibrary('md', (md) => {
