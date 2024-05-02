@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Add inclusion of html internal links to backlink computation
+- Add inclusion of html internal links to backlink computation (#22)
 - Add detailed bad link report (#26)
 
 ## [1.0.6]
