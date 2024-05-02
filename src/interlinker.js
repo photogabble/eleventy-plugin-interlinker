@@ -84,7 +84,7 @@ module.exports = class Interlinker {
     // once they are met.
     // @see https://www.11ty.dev/docs/data-computed/#declaring-your-dependencies
     const dependencies = [data.title, data.page, data.collections.all];
-    if (dependencies[0] === undefined || !dependencies[1].fileSlug || dependencies[2].length === 0) return [];
+    if (dependencies[0] === undefined || !dependencies[1].inputPath || dependencies[2].length === 0) return [];
 
     const {slugifyFn} = this.opts;
 
