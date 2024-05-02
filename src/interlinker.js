@@ -3,7 +3,6 @@ const WikilinkParser = require("./wikilink-parser");
 const {EleventyRenderPlugin} = require("@11ty/eleventy");
 const DeadLinks = require("./dead-links");
 const {pageLookup} = require("./find-page");
-const chalk = require("chalk");
 
 /**
  * Interlinker:
