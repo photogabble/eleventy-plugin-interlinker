@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Bugfix pass 11ty page object to embed compiler function
 - Add inclusion of html internal links to backlink computation (#22)
 - Add detailed bad link report (#26)
 
@@ -49,3 +50,4 @@ First release
 [1.0.4]: https://github.com/photogabble/eleventy-plugin-font-subsetting/releases/tag/v1.0.4
 [1.0.5]: https://github.com/photogabble/eleventy-plugin-font-subsetting/releases/tag/v1.0.5
 [1.0.5]: https://github.com/photogabble/eleventy-plugin-font-subsetting/releases/tag/v1.0.6
+[Unreleased]: https://github.com/photogabble/eleventy-plugin-interlinker/tree/v1.1.0
