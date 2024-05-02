@@ -149,7 +149,7 @@ module.exports = class Interlinker {
         // If this is an embed and the embed template hasn't been compiled, add this to the queue
         // @TODO compiledEmbeds should be keyed by the wikilink text as i'll be allowing setting embed values via namespace, or other method e.g ![[ident||template]]
         if (link.isEmbed && this.compiledEmbeds.has(link.slug) === false) {
-          compilePromises.push(this.compileTemplate(link));
+          compilePromises.push(this.compileTemplate(page));
         }
 
         return link;
