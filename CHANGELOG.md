@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add inclusion of html internal links to backlink computation
+- Add detailed bad link report (#26)
+
 ## [1.0.6]
 
 - Bugfix ensuring aliases value is array when treated as one (#17)
