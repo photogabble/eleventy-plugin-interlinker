@@ -1,5 +1,5 @@
 ---
-title: Homepage
+title: Something
 layout: default.liquid
 ---
 
