@@ -85,6 +85,8 @@ module.exports = class Interlinker {
     const dependencies = [data.title, data.page, data.collections.all];
     if (dependencies[0] === undefined || !dependencies[1].inputPath || dependencies[2].length === 0) return [];
 
+    this.deadLinks.setFileSrc(data.page.inputPath);
+
     const {slugifyFn} = this.opts;
 
     const compilePromises = [];
@@ -98,8 +100,7 @@ module.exports = class Interlinker {
     const currentSlug = slugifyFn(data.title);
     let currentSlugs = new Set([currentSlug, data.page.fileSlug]);
     const currentPage = pageDirectory.findByFile(data);
-
-    this.deadLinks.setFileSrc(currentPage.inputPath);
+    if (!currentPage) return [];
 
     // Populate our link map for use later in replacing WikiLinks with page permalinks.
     // Pages can list aliases in their front matter, if those exist we should map them

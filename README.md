@@ -62,11 +62,11 @@ module.exports = (eleventyConfig) => {
 
 ### Internal Links / Wikilinks
 
-This plugin will now parse all Wiki Links formatted for example, `[[Eleventy.js Interlink Plugin]]` appears as [Eleventy.js Interlink Plugin](https://photogabble.co.uk/projects/eleventyjs-interlink-plugin/).
+This plugin will parse both Wikilinks and internal anchor links. The Wikilink format is a **page reference** wrapped in double square brackets, for example: `[[Eleventy.js Interlink Plugin]]` will appear as [Eleventy.js Interlink Plugin](https://photogabble.co.uk/projects/eleventyjs-interlink-plugin/).
 
 Using the vertical bar (`|`) you can change the text used to display a link. This can be useful when you want to work a link into a sentence without using the title of the file, for example: `[[Eleventy.js Interlink Plugin|custom display text]]` appears as [custom display text](https://www.photogabble.co.uk/projects/eleventyjs-interlink-plugin/).
 
-> NOTE: By default this plugin will use the `title` front-matter attribute of your pages or one of the aliases (as detailed below).
+> **NOTE**: By default this plugin will use the `title` front-matter attribute of your pages or one of the aliases (as detailed below) as the **page reference**.
 
 ### Aliases
 
@@ -143,6 +143,10 @@ You can then display this information in any way you would like, I use the below
     </nav>
 {% endif %}
 ```
+
+### Pages Excluded from Collections
+
+Due to how this plugin obtains a pages template content, all pages with `eleventyExcludeFromCollections:true` set will **NOT** be parsed by the interlinker.
 
 ## Known Caveats
 
