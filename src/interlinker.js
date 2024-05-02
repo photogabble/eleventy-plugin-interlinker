@@ -3,7 +3,6 @@ const WikilinkParser = require("./wikilink-parser");
 const {EleventyRenderPlugin} = require("@11ty/eleventy");
 const DeadLinks = require("./dead-links");
 const {pageLookup} = require("./find-page");
-const chalk = require("chalk");
 
 /**
  * Interlinker:
@@ -84,7 +83,7 @@ module.exports = class Interlinker {
     // once they are met.
     // @see https://www.11ty.dev/docs/data-computed/#declaring-your-dependencies
     const dependencies = [data.title, data.page, data.collections.all];
-    if (dependencies[0] === undefined || !dependencies[1].fileSlug || dependencies[2].length === 0) return [];
+    if (dependencies[0] === undefined || !dependencies[1].inputPath || dependencies[2].length === 0) return [];
 
     const {slugifyFn} = this.opts;
 
@@ -93,6 +92,9 @@ module.exports = class Interlinker {
       data.collections.all,
       slugifyFn
     );
+
+    // TODO: 1.1.0 remove currentSlug as part of (#13)
+
     const currentSlug = slugifyFn(data.title);
     let currentSlugs = new Set([currentSlug, data.page.fileSlug]);
     const currentPage = pageDirectory.findByFile(data);
@@ -147,7 +149,7 @@ module.exports = class Interlinker {
         // If this is an embed and the embed template hasn't been compiled, add this to the queue
         // @TODO compiledEmbeds should be keyed by the wikilink text as i'll be allowing setting embed values via namespace, or other method e.g ![[ident||template]]
         if (link.isEmbed && this.compiledEmbeds.has(link.slug) === false) {
-          compilePromises.push(this.compileTemplate(link));
+          compilePromises.push(this.compileTemplate(page));
         }
 
         return link;

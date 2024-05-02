@@ -62,8 +62,8 @@ module.exports = function (eleventyConfig, options = {}) {
 
   // Add outboundLinks computed global data, this is executed before the templates are compiled and
   // thus markdown parsed.
-  eleventyConfig.addGlobalData('eleventyComputed', {
-    outboundLinks: async (data) => await interlinker.compute(data)
+  eleventyConfig.addGlobalData('eleventyComputed.outboundLinks', () => {
+    return async (data) => interlinker.compute(data);
   });
 
   // TODO: 1.1.0 Make Interlinker class available via global data
