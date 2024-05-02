@@ -92,6 +92,9 @@ module.exports = class Interlinker {
       data.collections.all,
       slugifyFn
     );
+
+    // TODO: 1.1.0 remove currentSlug as part of (#13)
+
     const currentSlug = slugifyFn(data.title);
     let currentSlugs = new Set([currentSlug, data.page.fileSlug]);
     const currentPage = pageDirectory.findByFile(data);
