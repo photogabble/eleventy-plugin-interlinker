@@ -65,3 +65,23 @@ test("Broken page (wikilinks and regular links)", async t => {
 
   t.is(logLines.length, 4, 'console.warn should be called three times');
 });
+
+test("Sample page (with embed)", async t => {
+  let elev = new Eleventy(fixturePath('sample-with-simple-embed'), fixturePath('sample-with-simple-embed/_site'), {
+    configPath: fixturePath('sample-with-simple-embed/eleventy.config.js'),
+  });
+
+  let results = await elev.toJSON();
+
+  // Embedded page is aware of its embedding
+  t.is(
+    normalize(findResultByUrl(results, '/about/').content),
+    `<div><p>Hello world.</p></div><div><a href="/">Homepage</a></div>`
+  );
+
+  // Embed shows
+  t.is(
+    normalize(findResultByUrl(results, '/').content),
+    `<div><p><p>Hello world.</p></p></div><div></div>`
+  );
+});
