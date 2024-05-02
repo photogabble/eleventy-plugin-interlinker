@@ -1,15 +1,13 @@
 const Eleventy = require("@11ty/eleventy");
 const path = require('node:path');
-const {normalize} = require('./helpers');
-const sinon = require('sinon');
+const {normalize, consoleMockMessages, findResultByUrl, fixturePath} = require('./helpers');
 const test = require("ava");
+const sinon = require("sinon");
 
-function findResultByUrl(results, url) {
-  const [result] = results.filter(result => result.url === url);
-  return result;
-}
-
-const fixturePath = (p) => path.normalize(path.join(__dirname, 'fixtures', p));
+// NOTE: Tests using sinon to mock console.warn need to be run with
+// `test.serial` so that they don't run at the same time as one another to
+// avoid the "Attempted to wrap warn which is already wrapped" error.
+// @see https://stackoverflow.com/a/37900956/1225977
 
 test("Sample page (wikilinks and regular links)", async t => {
   let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
@@ -31,25 +29,15 @@ test("Sample page (wikilinks and regular links)", async t => {
   );
 });
 
-test("Broken page (wikilinks and regular links)", async t => {
-  const messages = [];
-  const consoleStub = sinon.stub(console, 'warn').callsFake(msg => messages.push());
+test.serial("Broken page (wikilinks and regular links)", async t => {
+  const mock = sinon.stub(console, 'warn');
 
   let elev = new Eleventy(fixturePath('website-with-broken-links'), fixturePath('website-with-broken-links/_site'), {
     configPath: fixturePath('website-with-broken-links/eleventy.config.js'),
   });
 
   let results = await elev.toJSON();
-
-  let logLines = [];
-  for (let i = 0; i < consoleStub.callCount; i++) {
-    const line = normalize(consoleStub.getCall(i).args.join(' '))
-    // Sometimes 11ty will output benchmark info, failing the test randomly.
-    if (line.includes('[11ty]')) continue;
-    logLines.push(line);
-  }
-
-  consoleStub.restore();
+  mock.restore();
 
   // Markdown will have the link href set to /stubs
   t.is(
@@ -63,7 +51,7 @@ test("Broken page (wikilinks and regular links)", async t => {
     `<div>This is to show that we can identify <a href="/broken">broken <em>internal</em> links</a>.</div>`
   );
 
-  t.is(logLines.length, 4, 'console.warn should be called three times');
+  t.is(consoleMockMessages(mock).length, 4, 'console.warn should be called four times');
 });
 
 test("Sample page (markdown with embed)", async t => {
@@ -83,5 +71,30 @@ test("Sample page (markdown with embed)", async t => {
   t.is(
     normalize(findResultByUrl(results, '/').content),
     `<div><p><p>Hello world.</p></p></div><div></div>`
+  );
+});
+
+test.serial("Sample page (eleventyExcludeFromCollections set true)", async t => {
+  const mock = sinon.stub(console, 'warn');
+
+  let elev = new Eleventy(fixturePath('sample-with-excluded-file'), fixturePath('sample-with-excluded-file/_site'), {
+    configPath: fixturePath('sample-with-excluded-file/eleventy.config.js'),
+  });
+
+  let results = await elev.toJSON();
+
+  mock.restore();
+  t.is(consoleMockMessages(mock).length, 2, 'console.warn should be called twice');
+
+  // Embedded page is aware of its embedding
+  t.is(
+    normalize(findResultByUrl(results, '/about/').content),
+    `<div><p>This wikilink to <a href="/stubs">something</a> will not parse because the destination has eleventyExcludeFromCollections set true.</p></div><div></div>`
+  );
+
+  // Embed shows
+  t.is(
+    normalize(findResultByUrl(results, '/').content),
+    `<div><p>Hello World, no links, wiki or otherwise will be parsed by the interlinker due to being excluded from collections.</p></div><div></div>`
   );
 });
