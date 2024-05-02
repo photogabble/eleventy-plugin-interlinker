@@ -19,10 +19,6 @@ module.exports = class WikilinkParser {
     this.linkCache = new Map();
   }
 
-  setPage(page) {
-    this.page = page;
-  }
-
   /**
    * Parses a single WikiLink into the link object understood by the Interlinker.
    *
