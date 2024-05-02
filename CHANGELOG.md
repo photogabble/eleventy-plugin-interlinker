@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Bugfix pass 11ty page object to embed compiler function
+- Bugfix do not exclude root index page
+- Bugfix pass 11ty page object to embed compiler function (#29)
 - Add inclusion of html internal links to backlink computation (#22)
 - Add detailed bad link report (#26)
 
