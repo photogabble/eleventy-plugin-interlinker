@@ -123,3 +123,17 @@ test("Sample page (files with hash in title)", async t => {
     `<div><p>This link should be to <a href="/page/hello/#some-heading">a fragment identifier</a>.</p><p><p>Hello world.</p></p></div><div></div>`
   );
 });
+
+test("Sample with simple embed (broken embed)", async t => {
+  let elev = new Eleventy(fixturePath('sample-with-simple-embed'), fixturePath('sample-with-simple-embed/_site'), {
+    configPath: fixturePath('sample-with-simple-embed/eleventy.config.js'),
+  });
+
+  let results = await elev.toJSON();
+
+  // Bad Wikilink Embed shows default text
+  t.is(
+    normalize(findResultByUrl(results, '/broken/').content),
+    `<div><p>[UNABLE TO LOCATE EMBED]</p></div><div></div>`
+  );
+});
