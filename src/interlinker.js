@@ -114,6 +114,7 @@ module.exports = class Interlinker {
     });
 
     // If a page has defined aliases, then add those to the link map. These must be unique.
+    // TODO: 1.1.0 keep track of defined aliases and throw exception if duplicates are found
 
     if (data.aliases && Array.isArray(data.aliases)) {
       for (const alias of data.aliases) {
