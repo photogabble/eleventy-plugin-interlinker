@@ -98,14 +98,18 @@ test.serial("Sample page (eleventyExcludeFromCollections set true)", async t => 
   );
 });
 
-test("Sample page (file with hash in title)", async t => {
-
+test("Sample page (files with hash in title)", async t => {
   let elev = new Eleventy(fixturePath('sample-with-hash-in-title'), fixturePath('sample-with-hash-in-title/_site'), {
     configPath: fixturePath('sample-with-hash-in-title/eleventy.config.js'),
   });
 
   let results = await elev.toJSON();
 
+  // Linked page is aware of its linking
+  t.is(
+    normalize(findResultByUrl(results, '/page/hello/').content),
+    `<div><p>Howdy!</p></div><div><a href="/">Something</a></div>`
+  );
 
   // Embedded page is aware of its embedding
   t.is(
@@ -116,6 +120,6 @@ test("Sample page (file with hash in title)", async t => {
   // Embed shows
   t.is(
     normalize(findResultByUrl(results, '/').content),
-    `<div><p>Hello world.</p></div><div></div>`
+    `<div><p>This link should be to <a href="/page/hello/#some-heading">a fragment identifier</a>.</p><p><p>Hello world.</p></p></div><div></div>`
   );
 });
