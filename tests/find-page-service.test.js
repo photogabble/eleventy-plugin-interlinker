@@ -36,9 +36,9 @@ test('pageLookup (find by href)', t => {
 test('pageLookup (find by wikilink)', t => {
   t.is(pageDirectory.findByLink({
     title: 'Hello World, Title',
-    name: 'hello-world',
+    name: 'Hello World, Title',
     anchor: null,
-    link: '[[hello-world]]',
+    link: '[[Hello World, Title]]',
     slug: 'hello-world',
     isEmbed: false,
   }).fileSlug, 'hello-world');
@@ -54,3 +54,5 @@ test('pageLookup (find by alias)', t => {
     isEmbed: false,
   }).fileSlug, 'something-else');
 });
+
+// TODO: add testing when two pages share the same alias, what _should_ happen ?

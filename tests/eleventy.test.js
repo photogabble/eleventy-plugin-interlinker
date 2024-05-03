@@ -1,5 +1,4 @@
 const Eleventy = require("@11ty/eleventy");
-const path = require('node:path');
 const {normalize, consoleMockMessages, findResultByUrl, fixturePath} = require('./helpers');
 const test = require("ava");
 const sinon = require("sinon");
@@ -96,5 +95,31 @@ test.serial("Sample page (eleventyExcludeFromCollections set true)", async t => 
   t.is(
     normalize(findResultByUrl(results, '/').content),
     `<div><p>Hello World, no links, wiki or otherwise will be parsed by the interlinker due to being excluded from collections.</p></div><div></div>`
+  );
+});
+
+test("Sample page (files with hash in title)", async t => {
+  let elev = new Eleventy(fixturePath('sample-with-hash-in-title'), fixturePath('sample-with-hash-in-title/_site'), {
+    configPath: fixturePath('sample-with-hash-in-title/eleventy.config.js'),
+  });
+
+  let results = await elev.toJSON();
+
+  // Linked page is aware of its linking
+  t.is(
+    normalize(findResultByUrl(results, '/page/hello/').content),
+    `<div><p>Howdy!</p></div><div><a href="/">Something</a></div>`
+  );
+
+  // Embedded page is aware of its embedding
+  t.is(
+    normalize(findResultByUrl(results, '/building-a-self-contained-game-in-c-under-2-kilobytes/').content),
+    `<div><p>Hello world.</p></div><div><a href="/">Something</a></div>`
+  );
+
+  // Embed shows
+  t.is(
+    normalize(findResultByUrl(results, '/').content),
+    `<div><p>This link should be to <a href="/page/hello/#some-heading">a fragment identifier</a>.</p><p><p>Hello world.</p></p></div><div></div>`
   );
 });

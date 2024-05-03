@@ -13,6 +13,8 @@ const pageLookup = (allPages = [], slugifyFn) => {
         return true;
       }
 
+      // TODO: is there a need to slug the page title for comparison? We can match on link.name === page.data.title!
+
       if (page.fileSlug === link.slug || (page.data.title && slugifyFn(page.data.title) === link.slug)) {
         return true;
       }
