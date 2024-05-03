@@ -54,8 +54,11 @@ module.exports = class WikilinkParser {
 
     if (name.includes('#')) {
       const nameParts = parts[0].split('#').map(part => part.trim());
-      name = nameParts[0];
-      anchor = nameParts[1];
+      // Allow for escaping a # when prefixed with a /
+      if (nameParts[0].at(-1) !== '/') {
+        name = nameParts[0];
+        anchor = nameParts[1];
+      }
     }
 
     const slug = this.slugifyFn(name);
