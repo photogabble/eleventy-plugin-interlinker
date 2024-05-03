@@ -74,7 +74,8 @@ module.exports = class WikilinkParser {
       anchor,
       link,
       slug,
-      isEmbed
+      isEmbed,
+      exists: false,
     }
 
     // Lookup page data from 11ty's collection to obtain url and title if currently null
@@ -83,6 +84,7 @@ module.exports = class WikilinkParser {
       if (meta.title === null && page.data.title) meta.title = page.data.title;
       meta.href = page.url;
       meta.path = page.inputPath;
+      meta.exists = true;
     } else {
       // If this wikilink goes to a page that doesn't exist, add to deadLinks list and
       // update href for stub post.
