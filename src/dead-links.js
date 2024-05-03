@@ -17,7 +17,7 @@ module.exports = class DeadLinks {
     if (!this.fileSrc) this.fileSrc = 'unknown';
 
     const names = this.gravestones.has(link)
-      ? this.gravestones.get(this.fileSrc)
+      ? this.gravestones.get(link)
       : [];
 
     names.push(this.fileSrc)

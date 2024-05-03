@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Bugfix broken dead-links lookup due to typo (#38)
 - Bugfix do not render embeds if the page linked doesn't exist (#35)
 - Bugfix do not parse links in pages excluded from collections (#30)
 - Bugfix do not exclude root index page
