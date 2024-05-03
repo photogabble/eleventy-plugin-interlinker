@@ -34,9 +34,22 @@ module.exports = class WikilinkParser {
       return this.linkCache.get(link);
     }
 
+    // Wikilinks starting with a ! are considered Embeds e.g. `![[ ident ]]`
     const isEmbed = link.startsWith('!');
+
+    // By default, we display the linked page's title (or alias if used for lookup). This can be overloaded by
+    // defining the link text prefixed by a | character, e.g. `[[ ident | custom link text ]]`
     const parts = link.slice((isEmbed ? 3 : 2), -2).split("|").map(part => part.trim());
+
+    // Strip .md and .markdown extensions from the file ident.
+    // TODO: I am unsure if this is required might need refactoring in (#13)
     let name = parts[0].replace(/.(md|markdown)\s?$/i, "");
+
+    // Anchor link identification. This works similar to Obsidian.md except this doesn't look ahead to
+    // check if the referenced anchor exists. An anchor link can be referenced by a # character in the
+    // file ident, e.g. `[[ ident#anchor-id ]]`.
+    //
+    // This supports escaping by prefixing the # with a /, e.g `[[ Page about C/# ]]`
     let anchor = null;
 
     if (name.includes('#')) {
