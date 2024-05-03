@@ -62,15 +62,35 @@ module.exports = (eleventyConfig) => {
 
 ### Internal Links / Wikilinks
 
-This plugin will parse both Wikilinks and internal anchor links. The Wikilink format is a **page reference** wrapped in double square brackets, for example: `[[Eleventy.js Interlink Plugin]]` will appear as [Eleventy.js Interlink Plugin](https://photogabble.co.uk/projects/eleventyjs-interlink-plugin/).
+This plugin will parse both Wikilinks and internal anchor links to build each pages inbound and outbound internal links.
+
+The Wikilink format is a **page reference** wrapped in double square brackets, for example: `[[Eleventy.js Interlink Plugin]]` will appear as [Eleventy.js Interlink Plugin](https://photogabble.co.uk/projects/eleventyjs-interlink-plugin/).
+
+> **NOTE**: By default this plugin will use the `title` front-matter attribute of your pages or one of the aliases (as detailed below) as the **page reference**.
 
 Using the vertical bar (`|`) you can change the text used to display a link. This can be useful when you want to work a link into a sentence without using the title of the file, for example: `[[Eleventy.js Interlink Plugin|custom display text]]` appears as [custom display text](https://www.photogabble.co.uk/projects/eleventyjs-interlink-plugin/).
 
-> **NOTE**: By default this plugin will use the `title` front-matter attribute of your pages or one of the aliases (as detailed below) as the **page reference**.
+### Linking to fragment identifiers
+
+If you're using a plugin such as [markdown-it-anchor](https://www.npmjs.com/package/markdown-it-anchor) to add _anchor links_ to your headings, or have otherwise added them yourself. You can link to these in your pages by adding a `#` symbol to your page reference.
+
+For example, `[[Three laws of motion#Second law]]`.
+
+In cases where you have the `#` in the title of a page you're linking to you can escape using `/` foe example, `[[Programming in /#C, an introduction]]`.
 
 ### Aliases
 
 Aliases provide you a way of referencing a file using different names, use the `aliases` property in your font matter to list one or more aliases that can be used to reference the file from a Wiki Link. For example, you might add _AI_ as an alias of a file titled _Artificial Intelligence_ which would then be linkable via `[[AI]]`.
+
+```yaml
+---
+title: Artificial Intelligence
+aliases:
+  - AI
+---
+```
+
+Aliases should be unique identifiers, this plugin will halt the build with an error if it finds two pages sharing the same alias.
 
 ### Linking to Pagination generated pages
 
