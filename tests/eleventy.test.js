@@ -8,14 +8,14 @@ const sinon = require("sinon");
 // avoid the "Attempted to wrap warn which is already wrapped" error.
 // @see https://stackoverflow.com/a/37900956/1225977
 
-test("Sample page (wikilinks and regular links)", async t => {
+test("Sample small Website (wikilinks and regular links)", async t => {
   let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
     configPath: fixturePath('sample-small-website/eleventy.config.js'),
   });
 
   let results = await elev.toJSON();
 
-  t.is(results.length, 2);
+  t.is(results.length, 4);
 
   t.is(
     normalize(findResultByUrl(results, '/about/').content),
@@ -25,6 +25,19 @@ test("Sample page (wikilinks and regular links)", async t => {
   t.is(
     normalize(findResultByUrl(results, '/hello/').content),
     '<div>This is to show that we can link back via <a href="/about">regular <em>internal</em> links</a>.</div><div><a href="/about/">About</a></div>',
+  );
+});
+
+test("Sample small Website (htmlenteties)", async t => {
+  let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
+    configPath: fixturePath('sample-small-website/eleventy.config.js'),
+  });
+
+  let results = await elev.toJSON();
+
+  t.is(
+    normalize(findResultByUrl(results, '/linking-to-lonelyjuly/').content),
+    `<div><p><a href="/lonelyjuly/">&gt;&gt;LONELYJULY&lt;&lt;</a></p></div><div></div>`
   );
 });
 

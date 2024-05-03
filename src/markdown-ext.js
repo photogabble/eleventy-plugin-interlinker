@@ -1,4 +1,4 @@
-const chalk = require('chalk');
+const entities = require("entities");
 
 /**
  * This rule will be looped through an inline token by markdown-it.
@@ -70,7 +70,7 @@ const wikilinkRenderRule = (wikilinkParser, compiledEmbeds, opts) => (tokens, id
 
   const anchor = {
     href: link.href,
-    text: link.title ?? link.name,
+    text: entities.encodeHTML(link.title ?? link.name),
   };
 
   if (link.anchor) {
