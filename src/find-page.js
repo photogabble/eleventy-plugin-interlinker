@@ -11,14 +11,21 @@ const pageLookup = (allPages = [], slugifyFn) => {
     findByLink: (link) => {
       let foundByAlias = false;
       const page = allPages.find((page) => {
+
+        // Order of lookup:
+        // 1. if is path link, return filePathStem match state
+        // 2. match file url to link href
+        // 3. match file slug to link slug
+        // 4. match file title to link identifier (name)
+        // 5. match fle based upon alias
+
+        if (link.isPath) {
+          return page.filePathStem === link.name;
+        }
+
         if (link.href && (page.url === link.href || page.url === `${link.href}/`)) {
           return true;
         }
-
-        // Order of lookup:
-        // 1. match file slug to link slug
-        // 2. match file title to link identifier (name)
-        // 3. match fle based upon alias
 
         if (page.fileSlug === link.slug || (page.data.title && page.data.title === link.name)) {
           return true;

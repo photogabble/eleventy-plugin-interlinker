@@ -78,6 +78,10 @@ For example, `[[Three laws of motion#Second law]]`.
 
 In cases where you have the `#` in the title of a page you're linking to you can escape using `/` foe example, `[[Programming in /#C, an introduction]]`.
 
+### Linking to files by path
+
+You can link to pages by their project path, or a path relative to the linking page, for example: `[[/blog/post-1234.md]]` would link to the page found at `/blog/post-1234` relative to the project root path, While `[[../../something.md]]` would link to a page two directories up.
+
 ### Aliases
 
 Aliases provide you a way of referencing a file using different names, use the `aliases` property in your font matter to list one or more aliases that can be used to reference the file from a Wiki Link. For example, you might add _AI_ as an alias of a file titled _Artificial Intelligence_ which would then be linkable via `[[AI]]`.

@@ -45,6 +45,7 @@ type WikilinkMeta = {
   link: string
   slug: string
   isEmbed: boolean
+  isPath: boolean,
   exists: boolean
 
   // href and path are loaded from the linked page

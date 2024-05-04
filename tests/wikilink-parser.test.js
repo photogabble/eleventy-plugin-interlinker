@@ -5,9 +5,19 @@ const slugify = require("slugify");
 
 const pageDirectory = pageLookup([
   {
+    inputPath: '/home/user/website/hello-world.md',
+    filePathStem: '/hello-world',
     fileSlug: 'hello-world',
     data: {
       title: 'Hello World, Title',
+    },
+  },
+  {
+    inputPath: '/home/user/website/blog/a-blog-post.md',
+    filePathStem: '/blog/a-blog-post',
+    fileSlug: 'a-blog-post',
+    data: {
+      title: 'Blog Post',
     },
   }
 ], slugify);
@@ -116,3 +126,34 @@ test('populates dead links set', t => {
   t.is(deadLinks.size, 1);
   t.is(invalid.href, '/stubs');
 })
+
+test('parses path lookup', t => {
+  const deadLinks = new Set();
+  const parser = new WikilinkParser({slugifyFn: slugify}, deadLinks);
+
+  const parsed = parser.parseSingle('[[/blog/a-blog-post.md]]', pageDirectory);
+  t.is(parsed.isPath, true);
+  t.is(parsed.exists, true);
+  t.is(parsed.title, 'Blog Post');
+})
+
+test('parses relative path lookup (single back step)', t => {
+  const deadLinks = new Set();
+  const parser = new WikilinkParser({slugifyFn: slugify}, deadLinks);
+
+  const parsed = parser.parseSingle('[[../a-blog-post.md]]', pageDirectory, '/blog/sub-dir/some-page');
+  t.is(parsed.isPath, true);
+  t.is(parsed.exists, true);
+  t.is(parsed.title, 'Blog Post');
+})
+
+test('parses relative path lookup (multiple back step)', t => {
+  const deadLinks = new Set();
+  const parser = new WikilinkParser({slugifyFn: slugify}, deadLinks);
+
+  const parsed = parser.parseSingle('[[../../a-blog-post.md]]', pageDirectory, '/blog/sub-dir/sub-dir/some-page');
+  t.is(parsed.isPath, true);
+  t.is(parsed.exists, true);
+  t.is(parsed.title, 'Blog Post');
+})
+

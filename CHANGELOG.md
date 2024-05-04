@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add support for referencing files by path (#44)
 - Bugfix use alias as link text if it's the lookup source (#42)
 - Bugfix HTML encode link titles (#40)
 - Bugfix broken dead-links lookup due to typo (#38)

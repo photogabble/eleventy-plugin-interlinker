@@ -15,9 +15,6 @@ module.exports = class Interlinker {
     // Set of WikiLinks pointing to non-existent pages
     this.deadLinks = new DeadLinks();
 
-    // Map of what WikiLinks to what
-    this.linkMapCache = new Map();
-
     // Map of WikiLinks that have triggered an embed compile
     this.compiledEmbeds = new Map();
 
@@ -95,44 +92,17 @@ module.exports = class Interlinker {
       slugifyFn
     );
 
-    // TODO: 1.1.0 remove currentSlug as part of (#13)
-
-    const currentSlug = slugifyFn(data.title);
-    let currentSlugs = new Set([currentSlug, data.page.fileSlug]);
     const currentPage = pageDirectory.findByFile(data);
     if (!currentPage) return [];
 
-    // Populate our link map for use later in replacing WikiLinks with page permalinks.
-    // Pages can list aliases in their front matter, if those exist we should map them
-    // as well.
-
-    // TODO: 1.1.0 key files by pathname (#13)
-    // TODO: 1.1.0 key files by title (#5)
-    this.linkMapCache.set(currentSlug, {
-      page: data.collections.all.find(page => page.url === data.page.url),
-      title: data.title
-    });
-
-    // If a page has defined aliases, then add those to the link map. These must be unique.
     // TODO: 1.1.0 keep track of defined aliases and throw exception if duplicates are found
-
-    if (data.aliases && Array.isArray(data.aliases)) {
-      for (const alias of data.aliases) {
-        const aliasSlug = slugifyFn(alias);
-        this.linkMapCache.set(aliasSlug, {
-          page: currentPage,
-          title: alias
-        });
-        currentSlugs.add(aliasSlug)
-      }
-    }
 
     // Identify this pages outbound internal links both as wikilink _and_ regular html anchor tags. For each outlink
     // lookup the other page and add this to its backlinks data value.
     if (currentPage.template.frontMatter?.content) {
       const pageContent = currentPage.template.frontMatter.content;
       const outboundLinks  = [
-        ...this.wikiLinkParser.find(pageContent, pageDirectory),
+        ...this.wikiLinkParser.find(pageContent, pageDirectory, currentPage.filePathStem),
         ...this.HTMLLinkParser.find(pageContent, pageDirectory),
       ].map((link) => {
         // Lookup the page this link, links to and add this page to its backlinks
@@ -143,10 +113,12 @@ module.exports = class Interlinker {
           page.data.backlinks = [];
         }
 
-        page.data.backlinks.push({
-          url: currentPage.url,
-          title: currentPage.data.title,
-        });
+        if (page.data.backlinks.findIndex((backlink => backlink.url === currentPage.url)) === -1) {
+          page.data.backlinks.push({
+            url: currentPage.url,
+            title: currentPage.data.title,
+          });
+        }
 
         // If this is an embed and the embed template hasn't been compiled, add this to the queue
         // @TODO compiledEmbeds should be keyed by the wikilink text as i'll be allowing setting embed values via namespace, or other method e.g ![[ident||template]]
