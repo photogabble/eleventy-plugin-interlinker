@@ -15,9 +15,12 @@ const pageLookup = (allPages = [], slugifyFn) => {
           return true;
         }
 
-        // TODO: is there a need to slug the page title for comparison? We can match on link.name === page.data.title!
+        // Order of lookup:
+        // 1. match file slug to link slug
+        // 2. match file title to link identifier (name)
+        // 3. match fle based upon alias
 
-        if (page.fileSlug === link.slug || (page.data.title && slugifyFn(page.data.title) === link.slug)) {
+        if (page.fileSlug === link.slug || (page.data.title && page.data.title === link.name)) {
           return true;
         }
 
