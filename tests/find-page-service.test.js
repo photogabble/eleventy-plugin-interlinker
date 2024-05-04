@@ -30,29 +30,33 @@ const pageDirectory = pageLookup([
 ], slugify);
 
 test('pageLookup (find by href)', t => {
-  t.is(pageDirectory.findByLink({href: '/something/else', isEmbed: false}).fileSlug, 'something-else');
+  const {page} = pageDirectory.findByLink({href: '/something/else', isEmbed: false});
+  t.is(page.fileSlug, 'something-else');
 });
 
 test('pageLookup (find by wikilink)', t => {
-  t.is(pageDirectory.findByLink({
+  const {page} = pageDirectory.findByLink({
     title: 'Hello World, Title',
     name: 'Hello World, Title',
     anchor: null,
     link: '[[Hello World, Title]]',
     slug: 'hello-world',
     isEmbed: false,
-  }).fileSlug, 'hello-world');
+  });
+
+  t.is(page.fileSlug, 'hello-world');
 });
 
 test('pageLookup (find by alias)', t => {
-  t.is(pageDirectory.findByLink({
+  const {page} = pageDirectory.findByLink({
     title: 'This is another page',
     name: 'test-alias',
     anchor: null,
     link: '[[test-alias]]',
     slug: 'test-alias',
     isEmbed: false,
-  }).fileSlug, 'something-else');
+  });
+  t.is(page.fileSlug, 'something-else');
 });
 
 // TODO: add testing when two pages share the same alias, what _should_ happen ?
