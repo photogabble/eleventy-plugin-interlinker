@@ -21,8 +21,6 @@ const pageLookup = (allPages = [], slugifyFn) => {
           return true;
         }
 
-        // TODO: need a way to identify that wikilink is pointing to an alias, because the alias then becomes the link title
-
         const aliases = ((page.data.aliases && Array.isArray(page.data.aliases)) ? page.data.aliases : []).reduce(function (set, alias) {
           set.add(alias);
           return set;
