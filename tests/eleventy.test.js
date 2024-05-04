@@ -50,7 +50,7 @@ test("Sample small Website (alias text used for link)", async t => {
 
   t.is(
     normalize(findResultByUrl(results, '/aliased-link-to-lonelyjuly/').content),
-    `<div><p>This should link with the alias as text <a href="/lonelyjuly/">LonelyJuly</a>.</p></div><div></div>`
+    `<div><p>This should link with the alias as text <a href="/lonelyjuly/">Aliased WikiLink</a>.</p></div><div></div>`
   );
 });
 
