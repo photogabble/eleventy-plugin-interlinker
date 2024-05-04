@@ -32,7 +32,7 @@ module.exports = class HTMLLinkParser {
       isEmbed: false,
     };
 
-    if (!pageDirectory.findByLink(meta)) {
+    if (!pageDirectory.findByLink(meta).found) {
       this.deadLinks.add(link);
     }
 

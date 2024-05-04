@@ -136,8 +136,8 @@ module.exports = class Interlinker {
         ...this.HTMLLinkParser.find(pageContent, pageDirectory),
       ].map((link) => {
         // Lookup the page this link, links to and add this page to its backlinks
-        const page = pageDirectory.findByLink(link);
-        if (!page) return link;
+        const {page, found} = pageDirectory.findByLink(link);
+        if (!found) return link;
 
         if (!page.data.backlinks) {
           page.data.backlinks = [];
