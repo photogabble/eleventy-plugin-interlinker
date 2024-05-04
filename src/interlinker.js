@@ -143,10 +143,12 @@ module.exports = class Interlinker {
           page.data.backlinks = [];
         }
 
-        page.data.backlinks.push({
-          url: currentPage.url,
-          title: currentPage.data.title,
-        });
+        if (page.data.backlinks.findIndex((backlink => backlink.url === currentPage.url)) === -1) {
+          page.data.backlinks.push({
+            url: currentPage.url,
+            title: currentPage.data.title,
+          });
+        }
 
         // If this is an embed and the embed template hasn't been compiled, add this to the queue
         // @TODO compiledEmbeds should be keyed by the wikilink text as i'll be allowing setting embed values via namespace, or other method e.g ![[ident||template]]
