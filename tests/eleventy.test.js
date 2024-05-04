@@ -189,3 +189,26 @@ test("Sample with simple embed (broken embed)", async t => {
     `<div><p>[UNABLE TO LOCATE EMBED]</p></div><div></div>`
   );
 });
+
+/**
+ * Test that permalink frontmatter is used for the Wikilinks href as raised in issue #43.
+ * @see https://github.com/photogabble/eleventy-plugin-interlinker/issues/43
+ */
+test("Permalink should be used for link href", async t => {
+  let elev = new Eleventy(fixturePath('website-with-permalink'), fixturePath('website-with-permalink/_site'), {
+    configPath: fixturePath('website-with-permalink/eleventy.config.js'),
+  });
+
+  let results = await elev.toJSON();
+
+  t.is(
+    normalize(findResultByUrl(results, '/').content),
+    `<div><p>Link to <a href="/wlink-tst/">Wikilink test</a> should be to <code>/wlink-tst/</code>.</p></div><div></div>`
+  );
+
+  t.is(
+    normalize(findResultByUrl(results, '/wlink-tst/').content),
+    `<div><p>Hello World!</p></div><div><a href="/">Homepage</a></div>`
+  );
+});
+
