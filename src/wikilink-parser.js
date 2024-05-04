@@ -79,9 +79,13 @@ module.exports = class WikilinkParser {
     }
 
     // Lookup page data from 11ty's collection to obtain url and title if currently null
-    const page = pageDirectory.findByLink(meta);
+    const {page, foundByAlias} = pageDirectory.findByLink(meta);
     if (page) {
-      if (meta.title === null && page.data.title) meta.title = page.data.title;
+      if (foundByAlias) {
+        meta.title = meta.name;
+      } else if (meta.title === null && page.data.title) {
+        meta.title = page.data.title;
+      }
       meta.href = page.url;
       meta.path = page.inputPath;
       meta.exists = true;

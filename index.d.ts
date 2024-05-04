@@ -53,7 +53,7 @@ type WikilinkMeta = {
 }
 
 interface PageDirectoryService {
-  findByLink(link : WikilinkMeta|LinkMeta): any;
+  findByLink(link : WikilinkMeta|LinkMeta): {page: any, found: boolean, foundByAlias: boolean};
   findByFile(file : any): any;
 }
 

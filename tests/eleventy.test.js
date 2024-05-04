@@ -15,7 +15,7 @@ test("Sample small Website (wikilinks and regular links)", async t => {
 
   let results = await elev.toJSON();
 
-  t.is(results.length, 4);
+  t.is(results.length, 5);
 
   t.is(
     normalize(findResultByUrl(results, '/about/').content),
@@ -38,6 +38,19 @@ test("Sample small Website (htmlenteties)", async t => {
   t.is(
     normalize(findResultByUrl(results, '/linking-to-lonelyjuly/').content),
     `<div><p><a href="/lonelyjuly/">&gt;&gt;LONELYJULY&lt;&lt;</a></p></div><div></div>`
+  );
+});
+
+test("Sample small Website (alias text used for link)", async t => {
+  let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
+    configPath: fixturePath('sample-small-website/eleventy.config.js'),
+  });
+
+  let results = await elev.toJSON();
+
+  t.is(
+    normalize(findResultByUrl(results, '/aliased-link-to-lonelyjuly/').content),
+    `<div><p>This should link with the alias as text <a href="/lonelyjuly/">Aliased WikiLink</a>.</p></div><div></div>`
   );
 });
 
