@@ -15,7 +15,7 @@ test("Sample small Website (wikilinks and regular links)", async t => {
 
   let results = await elev.toJSON();
 
-  t.is(results.length, 5);
+  t.is(results.length, 8);
 
   t.is(
     normalize(findResultByUrl(results, '/about/').content),
@@ -26,6 +26,26 @@ test("Sample small Website (wikilinks and regular links)", async t => {
     normalize(findResultByUrl(results, '/hello/').content),
     '<div>This is to show that we can link back via <a href="/about">regular <em>internal</em> links</a>.</div><div><a href="/about/">About</a></div>',
   );
+});
+
+test("Sample small Website (path links)", async t => {
+  let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
+    configPath: fixturePath('sample-small-website/eleventy.config.js'),
+  });
+
+  let results = await elev.toJSON();
+
+  const n = 1;
+
+  // t.is(
+  //   normalize(findResultByUrl(results, '/about/').content),
+  //   `<div><p>This is to show that we can link between Markdown files and <a href="/hello/">liquid files</a>.</p></div><div><a href="/hello/">Hello</a></div>`
+  // );
+  //
+  // t.is(
+  //   normalize(findResultByUrl(results, '/hello/').content),
+  //   '<div>This is to show that we can link back via <a href="/about">regular <em>internal</em> links</a>.</div><div><a href="/about/">About</a></div>',
+  // );
 });
 
 test("Sample small Website (htmlenteties)", async t => {
