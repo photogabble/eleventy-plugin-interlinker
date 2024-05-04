@@ -106,7 +106,6 @@ module.exports = class Interlinker {
     // Pages can list aliases in their front matter, if those exist we should map them
     // as well.
 
-    // TODO: 1.1.0 key files by pathname (#13)
     // TODO: 1.1.0 key files by title (#5)
     this.linkMapCache.set(currentSlug, {
       page: data.collections.all.find(page => page.url === data.page.url),
@@ -132,7 +131,7 @@ module.exports = class Interlinker {
     if (currentPage.template.frontMatter?.content) {
       const pageContent = currentPage.template.frontMatter.content;
       const outboundLinks  = [
-        ...this.wikiLinkParser.find(pageContent, pageDirectory),
+        ...this.wikiLinkParser.find(pageContent, pageDirectory, currentPage.filePathStem),
         ...this.HTMLLinkParser.find(pageContent, pageDirectory),
       ].map((link) => {
         // Lookup the page this link, links to and add this page to its backlinks

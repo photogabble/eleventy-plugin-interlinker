@@ -35,17 +35,23 @@ test("Sample small Website (path links)", async t => {
 
   let results = await elev.toJSON();
 
-  const n = 1;
+  // page-b is linked to from page-a
+  // path-link-outer is linked to from page-a
 
-  // t.is(
-  //   normalize(findResultByUrl(results, '/about/').content),
-  //   `<div><p>This is to show that we can link between Markdown files and <a href="/hello/">liquid files</a>.</p></div><div><a href="/hello/">Hello</a></div>`
-  // );
-  //
-  // t.is(
-  //   normalize(findResultByUrl(results, '/hello/').content),
-  //   '<div>This is to show that we can link back via <a href="/about">regular <em>internal</em> links</a>.</div><div><a href="/about/">About</a></div>',
-  // );
+  t.is(
+    normalize(findResultByUrl(results, '/path-links/page-a/').content),
+    `<div><p>We can Wikilink reference <a href="/path-links/hello/world/page-b/">by full project path</a>, and <a href="/path-links/hello/world/page-b/">by relative path</a> from current file path <a href="/path-link-outer/">Relative page up directory</a>.</p></div><div></div>`
+  );
+
+  t.is(
+    normalize(findResultByUrl(results, '/path-links/hello/world/page-b/').content),
+    `<div><p>This is Page B.</p></div><div><a href="/path-links/page-a/">Path Link Page A</a></div>`
+  );
+
+  t.is(
+    normalize(findResultByUrl(results, '/path-link-outer/').content),
+    `<div><p>Path Link test page</p></div><div><a href="/path-links/page-a/">Path Link Page A</a></div>`,
+  );
 });
 
 test("Sample small Website (htmlenteties)", async t => {

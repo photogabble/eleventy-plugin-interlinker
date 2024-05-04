@@ -23,13 +23,13 @@ module.exports = class WikilinkParser {
    * Parses a single WikiLink into the link object understood by the Interlinker.
    *
    * @todo add parsing of namespace (#14)
-   * @todo add support for referencing file by path (#13)
    *
    * @param {string} link
    * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
+   * @param {string|undefined} filePathStem
    * @return {import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta}
    */
-  parseSingle(link, pageDirectory) {
+  parseSingle(link, pageDirectory, filePathStem = undefined) {
     if (this.linkCache.has(link)) {
       return this.linkCache.get(link);
     }
@@ -41,8 +41,8 @@ module.exports = class WikilinkParser {
     // defining the link text prefixed by a | character, e.g. `[[ ident | custom link text ]]`
     const parts = link.slice((isEmbed ? 3 : 2), -2).split("|").map(part => part.trim());
 
-    // Strip .md and .markdown extensions from the file ident.
-    // TODO: I am unsure if this is required might need refactoring in (#13)
+    // Strip .md and .markdown extensions from the file ident; this is so it can be used for filePathStem match
+    // if path lookup.
     let name = parts[0].replace(/.(md|markdown)\s?$/i, "");
 
     // Anchor link identification. This works similar to Obsidian.md except this doesn't look ahead to
@@ -61,11 +61,30 @@ module.exports = class WikilinkParser {
       }
     }
 
-    const slug = this.slugifyFn(name);
+    // Path link identification. This supports both relative links from the linking files path and
+    // lookup from the project root path.
+    const isPath = (name.startsWith('/') || name.startsWith('../') || name.startsWith('./'));
 
-    if (name.startsWith('/')) {
-      // TODO: if name begins with / then this is lookup by pathname (#13)
+    // This is a relative path lookup, need to mutate name so that its absolute path from project
+    // root so that we can match it on a pages filePathStem.
+    if (isPath && name.startsWith('.')) {
+      if (!filePathStem) throw new Error('Unable to do relative path lookup of wikilink.');
+
+      const cwd = filePathStem.split('/');
+      const relative = name.split('/');
+      const stepsBack = relative.filter(file => file === '..').length;
+
+      name = [
+        ...cwd.slice(0, -(stepsBack + 1)),
+        ...relative.filter(file => file !== '..' && file !== '.')
+      ].join('/');
     }
+
+    // TODO: is slugifying the name needed any more? We support wikilink ident being a page title, path or alias.
+    //       there should be no reason why the ident can't be a slug and we can lookup based upon that as well
+    //       without needing to slug it here... slug originally was used as a kind of id for lookup. That has
+    //       mostly been refactored out.
+    const slug = this.slugifyFn(name);
 
     /** @var {import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta} */
     const meta = {
@@ -75,6 +94,7 @@ module.exports = class WikilinkParser {
       link,
       slug,
       isEmbed,
+      isPath,
       exists: false,
     }
 
@@ -107,10 +127,11 @@ module.exports = class WikilinkParser {
   /**
    * @param {Array<string>} links
    * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
+   * @param {string|undefined} filePathStem
    * @return {Array<import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta>}
    */
-  parseMultiple(links, pageDirectory) {
-    return links.map(link => this.parseSingle(link, pageDirectory));
+  parseMultiple(links, pageDirectory, filePathStem) {
+    return links.map(link => this.parseSingle(link, pageDirectory, filePathStem));
   }
 
   /**
@@ -119,12 +140,14 @@ module.exports = class WikilinkParser {
    *
    * @param {string} document
    * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
+   * @param {string|undefined} filePathStem
    * @return {Array<import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta>}
    */
-  find(document, pageDirectory) {
+  find(document, pageDirectory, filePathStem) {
     return this.parseMultiple(
       (document.match(this.wikiLinkRegExp) || []),
-      pageDirectory
+      pageDirectory,
+      filePathStem
     )
   }
 }
