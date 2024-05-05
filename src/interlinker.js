@@ -95,7 +95,7 @@ module.exports = class Interlinker {
     const currentPage = pageDirectory.findByFile(data);
     if (!currentPage) return [];
 
-    // TODO: 1.1.0 keep track of defined aliases and throw exception if duplicates are found
+    // TODO: 1.1.0 keep track of defined aliases and throw exception if duplicates are found (#46)
 
     // Identify this pages outbound internal links both as wikilink _and_ regular html anchor tags. For each outlink
     // lookup the other page and add this to its backlinks data value.

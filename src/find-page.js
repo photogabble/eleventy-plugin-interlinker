@@ -2,6 +2,7 @@
  * Page Lookup Service:
  * This wraps the 11ty all pages collection providing two methods for finding pages.
  *
+ * @todo slugifyFn is no longer removed, remove
  * @param {Array<any>} allPages
  * @param {import('@photogabble/eleventy-plugin-interlinker').SlugifyFn} slugifyFn
  * @return {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService}
