@@ -17,12 +17,6 @@ module.exports = function (eleventyConfig, options = {}) {
     defaultLayoutLang: null,
     layoutKey: 'embedLayout',
     layoutTemplateLangKey: 'embedLayoutLanguage',
-    slugifyFn: (input) => {
-      const slugify = eleventyConfig.getFilter('slugify');
-      if (typeof slugify !== 'function') throw new Error('Unable to load slugify filter.');
-
-      return slugify(input);
-    },
     resolvingFns: new Map(),
   }, options);
 

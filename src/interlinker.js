@@ -63,13 +63,8 @@ module.exports = class Interlinker {
 
     this.deadLinks.setFileSrc(data.page.inputPath);
 
-    const {slugifyFn} = this.opts;
-
     const compilePromises = [];
-    const pageDirectory = pageLookup(
-      data.collections.all,
-      slugifyFn
-    );
+    const pageDirectory = pageLookup(data.collections.all);
 
     const currentPage = pageDirectory.findByFile(data);
     if (!currentPage) return [];

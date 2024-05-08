@@ -1,11 +1,9 @@
 const WikilinkParser = require('../src/wikilink-parser');
 const {wikilinkInlineRule} = require('../src/markdown-ext');
 const {defaultResolvingFn} = require("../src/resolvers");
-const slugify = require('slugify');
 const test = require('ava');
 
 const opts = {
-  slugifyFn: (text) => slugify(text),
   resolvingFns: new Map([
     ['default', defaultResolvingFn]
   ]),

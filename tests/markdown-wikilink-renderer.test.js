@@ -1,13 +1,10 @@
 const {wikilinkInlineRule, wikilinkRenderRule} = require('../src/markdown-ext');
 const WikilinkParser = require('../src/wikilink-parser');
 const {normalize} = require('./helpers');
-const slugify = require('slugify');
 const test = require('ava');
 const fs = require('fs');
 
-const opts = {
-  slugifyFn: (text) => slugify(text),
-};
+const opts = {};
 
 test('inline rule correctly parses single wikilink', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set);
