@@ -1,9 +1,7 @@
 const WikilinkParser = require('../src/wikilink-parser');
 const {defaultResolvingFn, defaultEmbedFn} = require("../src/resolvers");
 const {pageLookup} = require("../src/find-page");
-const slugify = require("slugify");
 const test = require('ava');
-
 
 const pageDirectory = pageLookup([
   {
@@ -22,10 +20,9 @@ const pageDirectory = pageLookup([
       title: 'Blog Post',
     },
   }
-], slugify);
+]);
 
 const opts = {
-  slugifyFn: (text) => slugify(text),
   resolvingFns: new Map([
     ['default', defaultResolvingFn],
     ['default-embed', defaultEmbedFn],
@@ -34,40 +31,40 @@ const opts = {
 
 test('parses wikilink', t => {
   const parser = new WikilinkParser(opts, new Set());
-  t.like(parser.parseSingle('[[hello world]]', pageDirectory), {
+  t.like(parser.parseSingle('[[hello-world]]', pageDirectory), {
     title: 'Hello World, Title',
     anchor: null,
-    name: 'hello world',
+    name: 'hello-world',
     isEmbed: false
   });
 });
 
 test('parses wikilink with title', t => {
   const parser = new WikilinkParser(opts, new Set());
-  t.like(parser.parseSingle('[[hello world|Howdy]]', pageDirectory), {
+  t.like(parser.parseSingle('[[hello-world|Howdy]]', pageDirectory), {
     title: 'Howdy',
     anchor: null,
-    name: 'hello world',
+    name: 'hello-world',
     isEmbed: false
   });
 });
 
 test('parses wikilink with anchor', t => {
   const parser = new WikilinkParser(opts, new Set());
-  t.like(parser.parseSingle('[[hello world#heading one]]', pageDirectory), {
+  t.like(parser.parseSingle('[[hello-world#heading one]]', pageDirectory), {
     title: 'Hello World, Title',
     anchor: 'heading one',
-    name: 'hello world',
+    name: 'hello-world',
     isEmbed: false
   });
 });
 
 test('parses wikilink embed', t => {
   const parser = new WikilinkParser(opts, new Set());
-  t.like(parser.parseSingle('![[hello world]]', pageDirectory), {
+  t.like(parser.parseSingle('![[hello-world]]', pageDirectory), {
     title: 'Hello World, Title',
     anchor: null,
-    name: 'hello world',
+    name: 'hello-world',
     isEmbed: true
   });
 });
@@ -77,42 +74,42 @@ test('parses wikilinks with weird formatting', t => {
 
   const checks = [
     {
-      str: '[[hello world]]',
+      str: '[[hello-world]]',
       result: {
         title: 'Hello World, Title',
-        name: 'hello world',
+        name: 'hello-world',
         isEmbed: false
       }
     },
     {
-      str: '[[hello world|custom title]]',
+      str: '[[hello-world|custom title]]',
       result: {
         title: 'custom title',
-        name: 'hello world',
+        name: 'hello-world',
         isEmbed: false
       }
     },
     {
-      str: '[[ hello world | custom title ]]',
+      str: '[[ hello-world | custom title ]]',
       result: {
         title: 'custom title',
-        name: 'hello world',
+        name: 'hello-world',
         isEmbed: false
       }
     },
     {
-      str: '[[ hello world   |  custom title ]]',
+      str: '[[ hello-world   |  custom title ]]',
       result: {
         title: 'custom title',
-        name: 'hello world',
+        name: 'hello-world',
         isEmbed: false
       }
     },
     {
-      str: '![[hello world]]',
+      str: '![[hello-world]]',
       result: {
         title: 'Hello World, Title',
-        name: 'hello world',
+        name: 'hello-world',
         isEmbed: true
       }
     },
@@ -129,7 +126,7 @@ test('populates dead links set', t => {
   const parser = new WikilinkParser(opts, deadLinks);
   t.is(deadLinks.size, 0);
 
-  parser.parseSingle('[[hello world]]', pageDirectory);
+  parser.parseSingle('[[hello-world]]', pageDirectory);
   t.is(deadLinks.size, 0);
 
   const invalid = parser.parseSingle('[[invalid]]', pageDirectory);
@@ -182,7 +179,6 @@ test('throws error on failure to find resolvingFn', t => {
 
 test('sets resolvingFnName on finding resolvingFn', t => {
   const parser = new WikilinkParser({
-    slugifyFn: slugify,
     resolvingFns: new Map([
       ['test', () => 'Hello World']
     ]),

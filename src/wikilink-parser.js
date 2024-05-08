@@ -12,7 +12,6 @@ module.exports = class WikilinkParser {
    */
   constructor(opts, deadLinks) {
     this.opts = opts;
-    this.slugifyFn = opts.slugifyFn;
     this.deadLinks = deadLinks;
 
     // TODO: when 11ty is in serve mode, this cache should clear at the beginning of each build (#24)
@@ -107,19 +106,12 @@ module.exports = class WikilinkParser {
       throw new Error(`Unable to find resolving fn [${fnName}] for wikilink ${link} on page [${filePathStem}]`);
     }
 
-    // TODO: is slugifying the name needed any more? We support wikilink ident being a page title, path or alias.
-    //       there should be no reason why the ident can't be a slug and we can lookup based upon that as well
-    //       without needing to slug it here... slug originally was used as a kind of id for lookup. That has
-    //       mostly been refactored out.
-    const slug = this.slugifyFn(name);
-
     /** @var {import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta} */
     const meta = {
       title: parts.length === 2 ? parts[1] : null,
       name,
       anchor,
       link,
-      slug,
       isEmbed,
       isPath,
       exists: false,

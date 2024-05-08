@@ -49,9 +49,6 @@ type EleventyPluginInterlinkOptions = {
   // slug that you are using. This defaults to a function that returns [UNABLE TO LOCATE EMBED].
   unableToLocateEmbedFn?: ErrorRenderFn,
 
-  // slugifyFn is used to slugify strings. If a function isn't set then the default 11ty slugify filter is used.
-  slugifyFn?: SlugifyFn
-
   // resolvingFns is a list of resolving functions. These are invoked by a wikilink containing a `:` character
   // prefixed by the fn name. The page in this case is the linking page.
   resolvingFns?: Map<string, (link: WikilinkMeta, currentPage: any, interlinker: Interlinker) => Promise<string>>,
@@ -59,10 +56,6 @@ type EleventyPluginInterlinkOptions = {
 
 interface ErrorRenderFn {
   (slug: string): string;
-}
-
-interface SlugifyFn {
-  (input: string): string;
 }
 
 // Data structure for internal links identified by HTMLLinkParser.
@@ -78,7 +71,6 @@ type WikilinkMeta = {
   name: string
   anchor: string | null
   link: string
-  slug: string
   isEmbed: boolean
   isPath: boolean
 
@@ -103,4 +95,4 @@ interface PageDirectoryService {
   findByFile(file: any): any;
 }
 
-export {EleventyPluginInterlinkOptions, SlugifyFn, WikilinkMeta, LinkMeta, PageDirectoryService};
+export {EleventyPluginInterlinkOptions, WikilinkMeta, LinkMeta, PageDirectoryService};
