@@ -131,7 +131,7 @@ module.exports = class WikilinkParser {
       meta.path = page.inputPath;
       meta.exists = true;
       meta.page = page;
-    } else {
+    } else if (['default', 'default-embed'].includes(fnName)) {
       // If this wikilink goes to a page that doesn't exist, add to deadLinks list and
       // update href for stub post.
       this.deadLinks.add(link);
