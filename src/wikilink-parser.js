@@ -59,6 +59,8 @@ module.exports = class WikilinkParser {
       if (nameParts[0].at(-1) !== '/') {
         name = nameParts[0];
         anchor = nameParts[1];
+      } else {
+        name = name.replace('/#', '#');
       }
     }
 
@@ -96,6 +98,8 @@ module.exports = class WikilinkParser {
       if (parts[0].at(-1) !== '/') {
         fnName = parts[0];
         name = parts[1];
+      } else {
+        name = name.replace('/:', ':');
       }
     }
 
