@@ -1,5 +1,3 @@
-const entities = require("entities");
-
 /**
  * This rule will be looped through an inline token by markdown-it.
  *

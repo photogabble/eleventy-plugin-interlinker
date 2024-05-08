@@ -3,18 +3,6 @@ const WikilinkParser = require("./wikilink-parser");
 const {EleventyRenderPlugin} = require("@11ty/eleventy");
 const DeadLinks = require("./dead-links");
 const {pageLookup} = require("./find-page");
-const entities = require("entities");
-
-const defaultResolvingFn = async (currentPage, link) => {
-  const text = entities.encodeHTML(link.title ?? link.name);
-  let href = link.href;
-
-  if (link.anchor) {
-    href = `${href}#${link.anchor}`;
-  }
-
-  return `<a href="${href}">${text}</a>`;
-}
 
 /**
  * Interlinker:
@@ -66,7 +54,7 @@ module.exports = class Interlinker {
 
     // TODO: 1.1.0 keep track of defined aliases and throw exception if duplicates are found (#46)
 
-    // Identify this pages outbound internal links both as wikilink _and_ regular html anchor tags. For each outlink
+    // Identify this pages outbound internal links both as wikilink _and_ regular html anchor tags. For each out-link
     // lookup the other page and add this to its backlinks data value.
     if (currentPage.template.frontMatter?.content) {
       const pageContent = currentPage.template.frontMatter.content;

@@ -1,6 +1,5 @@
-const test = require("ava");
 const {pageLookup} = require("../src/find-page");
-const slugify = require("slugify");
+const test = require("ava");
 
 const pageDirectory = pageLookup([
   {
@@ -27,7 +26,7 @@ const pageDirectory = pageLookup([
     },
     url: '/something/else/'
   }
-], slugify);
+]);
 
 test('pageLookup (find by href)', t => {
   const {page} = pageDirectory.findByLink({href: '/something/else', isEmbed: false});
