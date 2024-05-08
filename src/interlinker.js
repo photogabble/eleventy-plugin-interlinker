@@ -47,59 +47,6 @@ module.exports = class Interlinker {
   }
 
   /**
-   * Invokes the resolving function, passing it the linking page and the parsed link meta.
-   * @param {*} page
-   * @param {import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta} link
-   * @return {Promise<string|undefined>}
-   */
-  async invokeResolvingFn(page, link) {
-    if (this.compiledEmbeds.has(link.link)) return;
-    if (!link.resolvingFnName) return;
-
-    const fn = this.opts.resolvingFns.get(link.resolvingFnName);
-    // TODO: result can be string or object
-    const result = await fn(link, page);
-
-    this.compiledEmbeds.set(link.link, result);
-    return result;
-  }
-
-  /**
-   * Compiles the template associated with a WikiLink when invoked via the ![[embed syntax]]
-   * @param {*} data
-   * @param {import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta} link
-   * @return {Promise<string|undefined>}
-   */
-  async compileTemplate(data, link) {
-    if (this.compiledEmbeds.has(link.link)) return;
-
-    const frontMatter = data.template.frontMatter;
-
-    const layout = (data.data.hasOwnProperty(this.opts.layoutKey))
-      ? data.data[this.opts.layoutKey]
-      : this.opts.defaultLayout;
-
-    const language = (data.data.hasOwnProperty(this.opts.layoutTemplateLangKey))
-      ? data.data[this.opts.layoutTemplateLangKey]
-      : this.opts.defaultLayoutLang === null
-        ? data.page.templateSyntax
-        : this.opts.defaultLayoutLang;
-
-    const tpl = layout === null
-      ? frontMatter.content
-      : `{% layout "${layout}" %} {% block content %} ${frontMatter.content} {% endblock %}`;
-
-    const fn = await this.rm.compile(tpl, language, {
-      templateConfig: this.templateConfig,
-      extensionMap: this.extensionMap
-    });
-
-    const result = await fn({content: frontMatter.content, ...data.data});
-    this.compiledEmbeds.set(link.link, result);
-    return result;
-  }
-
-  /**
    * This is a computed function that gets added to the global data of 11ty prompting its
    * invocation for every page.
    *
