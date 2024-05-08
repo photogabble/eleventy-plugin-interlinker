@@ -30,9 +30,6 @@ module.exports = class Interlinker {
     // Set of WikiLinks pointing to non-existent pages
     this.deadLinks = new DeadLinks();
 
-    // Map of WikiLinks that have triggered an embed compile
-    this.compiledEmbeds = new Map();
-
     // TODO: document
     this.templateConfig = undefined;
     this.extensionMap = undefined;
