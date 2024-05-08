@@ -54,7 +54,7 @@ type EleventyPluginInterlinkOptions = {
 
   // resolvingFns is a list of resolving functions. These are invoked by a wikilink containing a `:` character
   // prefixed by the fn name. The page in this case is the linking page.
-  resolvingFns?: Map<string, (link: WikilinkMeta, page: any, interlinker: any) => Promise<string>>,
+  resolvingFns?: Map<string, (link: WikilinkMeta, currentPage: any, interlinker: Interlinker) => Promise<string>>,
 }
 
 interface ErrorRenderFn {
