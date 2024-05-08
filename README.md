@@ -40,10 +40,6 @@ type EleventyPluginInterlinkOptions = {
   // that returns [UNABLE TO LOCATE EMBED].
   unableToLocateEmbedFn?: ErrorRenderFn,
 
-  // slugifyFn is used to slugify strings. If a function
-  // isn't set then the default 11ty slugify filter is used.
-  slugifyFn?: SlugifyFn,
-
   // resolvingFns contains functions used for resolving a wikilinks output.
   // see the Custom Resolving Functions section below
   resolvingFns?: Map<string, (link: WikilinkMeta, currentPage: any, interlinker: Interlinker) => Promise<string>>
