@@ -18,7 +18,7 @@ const pageLookup = (allPages = [], slugifyFn) => {
         // 2. match file url to link href
         // 3. match file slug to link slug
         // 4. match file title to link identifier (name)
-        // 5. match fle based upon alias
+        // 5. match file based upon alias
 
         if (link.isPath) {
           return page.filePathStem === link.name;
