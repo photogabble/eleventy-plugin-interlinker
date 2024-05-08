@@ -1,3 +1,34 @@
+interface DeadLinks {
+  gravestones: Map<string, Array<string>>
+  fileSrc: string
+
+  setFileSrc(fileSrc: string): void
+
+  add(link: string): void
+
+  report(): void
+}
+
+interface Parser {
+  parseSingle(link: string, pageDirectory: PageDirectoryService, filePathStem: undefined | string): WikilinkMeta
+
+  parseMultiple(link: string, pageDirectory: PageDirectoryService, filePathStem: undefined | string): Array<WikilinkMeta>
+
+  find(document: string, pageDirectory: PageDirectoryService, filePathStem: undefined | string): Array<WikilinkMeta>
+}
+
+interface Interlinker {
+  opts: EleventyPluginInterlinkOptions
+  deadLinks: DeadLinks
+  templateConfig: any
+  extensionMap: any
+  rm: any,
+  wikilinkParser: Parser & { wikiLinkRegExp: string }
+  HTMLLinkParser: Parser & { internalLinkRegex: string }
+
+  compute(data: any): Promise<Array<any>>
+}
+
 type EleventyPluginInterlinkOptions = {
   // defaultLayout is the optional default layout you would like to use for wrapping your embeds.
   defaultLayout?: string,
@@ -23,7 +54,7 @@ type EleventyPluginInterlinkOptions = {
 
   // resolvingFns is a list of resolving functions. These are invoked by a wikilink containing a `:` character
   // prefixed by the fn name. The page in this case is the linking page.
-  resolvingFns?: Map<string, (link: WikilinkMeta, page: any) => Promise<string>>,
+  resolvingFns?: Map<string, (link: WikilinkMeta, page: any, interlinker: any) => Promise<string>>,
 }
 
 interface ErrorRenderFn {
@@ -43,9 +74,9 @@ type LinkMeta = {
 
 // Data structure for wikilinks identified by WikiLinkParser.
 type WikilinkMeta = {
-  title: string|null
+  title: string | null
   name: string
-  anchor: string|null
+  anchor: string | null
   link: string
   slug: string
   isEmbed: boolean
@@ -67,8 +98,9 @@ type WikilinkMeta = {
 }
 
 interface PageDirectoryService {
-  findByLink(link : WikilinkMeta|LinkMeta): {page: any, found: boolean, foundByAlias: boolean};
-  findByFile(file : any): any;
+  findByLink(link: WikilinkMeta | LinkMeta): { page: any, found: boolean, foundByAlias: boolean };
+
+  findByFile(file: any): any;
 }
 
 export {EleventyPluginInterlinkOptions, SlugifyFn, WikilinkMeta, LinkMeta, PageDirectoryService};
