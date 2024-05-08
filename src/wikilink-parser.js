@@ -45,9 +45,10 @@ module.exports = class WikilinkParser {
     // if path lookup.
     let name = parts[0].replace(/.(md|markdown)\s?$/i, "");
 
-    // Anchor link identification. This works similar to Obsidian.md except this doesn't look ahead to
-    // check if the referenced anchor exists. An anchor link can be referenced by a # character in the
-    // file ident, e.g. `[[ ident#anchor-id ]]`.
+    ////
+    // Anchor link identification:
+    // This works similar to Obsidian.md except this doesn't look ahead to check if the referenced anchor exists.
+    // An anchor link can be referenced by a # character in the file ident, e.g. `[[ ident#anchor-id ]]`.
     //
     // This supports escaping by prefixing the # with a /, e.g `[[ Page about C/# ]]`
     let anchor = null;
@@ -61,8 +62,9 @@ module.exports = class WikilinkParser {
       }
     }
 
-    // Path link identification. This supports both relative links from the linking files path and
-    // lookup from the project root path.
+    ////
+    // Path link identification:
+    // This supports both relative links from the linking files path and lookup from the project root path.
     const isPath = (name.startsWith('/') || name.startsWith('../') || name.startsWith('./'));
 
     // This is a relative path lookup, need to mutate name so that its absolute path from project
@@ -78,6 +80,27 @@ module.exports = class WikilinkParser {
         ...cwd.slice(0, -(stepsBack + 1)),
         ...relative.filter(file => file !== '..' && file !== '.')
       ].join('/');
+    }
+
+    ////
+    // Custom Resolving Fn:
+    // If the author has referenced a custom resolving function via inclusion of the `:` character
+    // then we use that one. Otherwise, use the default resolving functions.
+    // As with anchor links, this supports escaping the `:` character by prefixing with `/`
+    let fnName = isEmbed
+      ? 'default-embed'
+      : 'default'
+
+    if (name.includes(':')) {
+      const parts = name.split(':').map(part => part.trim());
+      if (parts[0].at(-1) !== '/') {
+        fnName = parts[0];
+        name = parts[1];
+      }
+    }
+
+    if (!this.opts.resolvingFns || this.opts.resolvingFns.has(fnName) === false) {
+      throw new Error(`Unable to find resolving fn [${fnName}] for wikilink ${link} on page [${filePathStem}]`);
     }
 
     // TODO: is slugifying the name needed any more? We support wikilink ident being a page title, path or alias.
@@ -98,6 +121,8 @@ module.exports = class WikilinkParser {
       exists: false,
     }
 
+    if (fnName) meta.resolvingFnName = fnName;
+
     // Lookup page data from 11ty's collection to obtain url and title if currently null
     const {page, foundByAlias} = pageDirectory.findByLink(meta);
     if (page) {
@@ -109,12 +134,15 @@ module.exports = class WikilinkParser {
       meta.href = page.url;
       meta.path = page.inputPath;
       meta.exists = true;
+      meta.page = page;
     } else {
       // If this wikilink goes to a page that doesn't exist, add to deadLinks list and
       // update href for stub post.
       this.deadLinks.add(link);
       // @todo make the stub post url configurable, or even able to be disabled. (#25)
       meta.href = '/stubs';
+
+      if (isEmbed) meta.resolvingFnName = '404-embed';
     }
 
     // Cache discovered meta to link, this cache can then be used by the Markdown render rule

@@ -53,31 +53,8 @@ const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
  * @returns {(function(*, *): (string))|*}
  */
 const wikilinkRenderRule = (wikilinkParser, compiledEmbeds, opts) => (tokens, idx) => {
-  const token = tokens[idx];
-  const link = token.meta;
-
-  if (link.isEmbed) {
-    // TODO: compiledEmbeds should be keyed by wikilink text because with namespacing (#14) and custom resolving functions (#19) we can have different rendered output based upon either
-    const templateContent = compiledEmbeds.get(link.href);
-    if (!templateContent) {
-      return (typeof opts.unableToLocateEmbedFn === 'function')
-        ? opts.unableToLocateEmbedFn(token.content)
-        : '';
-    }
-
-    return templateContent;
-  }
-
-  const anchor = {
-    href: link.href,
-    text: entities.encodeHTML(link.title ?? link.name),
-  };
-
-  if (link.anchor) {
-    anchor.href = `${anchor.href}#${link.anchor}`;
-  }
-
-  return `<a href="${anchor.href}">${anchor.text}</a>`;
+  const {meta} = tokens[idx];
+  return meta.content;
 };
 
 module.exports = {

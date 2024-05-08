@@ -212,3 +212,15 @@ test("Permalink should be used for link href", async t => {
   );
 });
 
+test("Custom resolving functions are invoked", async t => {
+  let elev = new Eleventy(fixturePath('website-with-custom-resolving-fn'), fixturePath('website-with-custom-resolving-fn/_site'), {
+    configPath: fixturePath('website-with-custom-resolving-fn/eleventy.config.js'),
+  });
+
+  let results = await elev.toJSON();
+
+  t.is(
+    normalize(findResultByUrl(results, '/').content),
+    `<div><p>These wikilinks use custom resolving functions:</p><ul><li>Hello RWC!</li><li><a href="https://github.com/photogabble/eleventy-plugin-interlinker/issues/19">#19</a></li></ul></div><div></div>`
+  );
+});

@@ -1,5 +1,6 @@
 const {wikilinkInlineRule, wikilinkRenderRule} = require('./src/markdown-ext');
 const Interlinker = require("./src/interlinker");
+const {defaultResolvingFn, defaultEmbedFn} = require("./src/resolvers");
 
 /**
  * Some code borrowed from:
@@ -12,19 +13,28 @@ const Interlinker = require("./src/interlinker");
 module.exports = function (eleventyConfig, options = {}) {
   /** @var { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts */
   const opts = Object.assign({
-    // TODO: 1.1.0 add custom resolving functions (#19)
     defaultLayout: null,
     defaultLayoutLang: null,
     layoutKey: 'embedLayout',
     layoutTemplateLangKey: 'embedLayoutLanguage',
-    unableToLocateEmbedFn: () => '[UNABLE TO LOCATE EMBED]',
     slugifyFn: (input) => {
       const slugify = eleventyConfig.getFilter('slugify');
       if (typeof slugify !== 'function') throw new Error('Unable to load slugify filter.');
 
       return slugify(input);
     },
+    resolvingFns: new Map(),
   }, options);
+
+  // TODO: deprecate usage of unableToLocateEmbedFn in preference of using resolving fn
+  if (typeof opts.unableToLocateEmbedFn === 'function' && !opts.resolvingFns.has('404-embed')) {
+    opts.resolvingFns.set('404-embed', async (link) => opts.unableToLocateEmbedFn(link.page.fileSlug));
+  }
+
+  // Default resolving functions for converting a Wikilink into HTML.
+  if (!opts.resolvingFns.has('default')) opts.resolvingFns.set('default', defaultResolvingFn);
+  if (!opts.resolvingFns.has('default-embed')) opts.resolvingFns.set('default-embed', defaultEmbedFn);
+  if (!opts.resolvingFns.has('404-embed')) opts.resolvingFns.set('404-embed', async () => '[UNABLE TO LOCATE EMBED]');
 
   const interlinker = new Interlinker(opts);
 

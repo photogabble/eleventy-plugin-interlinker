@@ -1,7 +1,9 @@
 const WikilinkParser = require('../src/wikilink-parser');
-const test = require('ava');
+const {defaultResolvingFn, defaultEmbedFn} = require("../src/resolvers");
 const {pageLookup} = require("../src/find-page");
 const slugify = require("slugify");
+const test = require('ava');
+
 
 const pageDirectory = pageLookup([
   {
@@ -22,8 +24,16 @@ const pageDirectory = pageLookup([
   }
 ], slugify);
 
+const opts = {
+  slugifyFn: (text) => slugify(text),
+  resolvingFns: new Map([
+    ['default', defaultResolvingFn],
+    ['default-embed', defaultEmbedFn],
+  ]),
+};
+
 test('parses wikilink', t => {
-  const parser = new WikilinkParser({slugifyFn: slugify}, new Set());
+  const parser = new WikilinkParser(opts, new Set());
   t.like(parser.parseSingle('[[hello world]]', pageDirectory), {
     title: 'Hello World, Title',
     anchor: null,
@@ -33,7 +43,7 @@ test('parses wikilink', t => {
 });
 
 test('parses wikilink with title', t => {
-  const parser = new WikilinkParser({slugifyFn: slugify}, new Set());
+  const parser = new WikilinkParser(opts, new Set());
   t.like(parser.parseSingle('[[hello world|Howdy]]', pageDirectory), {
     title: 'Howdy',
     anchor: null,
@@ -43,7 +53,7 @@ test('parses wikilink with title', t => {
 });
 
 test('parses wikilink with anchor', t => {
-  const parser = new WikilinkParser({slugifyFn: slugify}, new Set());
+  const parser = new WikilinkParser(opts, new Set());
   t.like(parser.parseSingle('[[hello world#heading one]]', pageDirectory), {
     title: 'Hello World, Title',
     anchor: 'heading one',
@@ -53,7 +63,7 @@ test('parses wikilink with anchor', t => {
 });
 
 test('parses wikilink embed', t => {
-  const parser = new WikilinkParser({slugifyFn: slugify}, new Set());
+  const parser = new WikilinkParser(opts, new Set());
   t.like(parser.parseSingle('![[hello world]]', pageDirectory), {
     title: 'Hello World, Title',
     anchor: null,
@@ -63,7 +73,7 @@ test('parses wikilink embed', t => {
 });
 
 test('parses wikilinks with weird formatting', t => {
-  const parser = new WikilinkParser({slugifyFn: slugify}, new Set());
+  const parser = new WikilinkParser(opts, new Set());
 
   const checks = [
     {
@@ -116,7 +126,7 @@ test('parses wikilinks with weird formatting', t => {
 
 test('populates dead links set', t => {
   const deadLinks = new Set();
-  const parser = new WikilinkParser({slugifyFn: slugify}, deadLinks);
+  const parser = new WikilinkParser(opts, deadLinks);
   t.is(deadLinks.size, 0);
 
   parser.parseSingle('[[hello world]]', pageDirectory);
@@ -129,7 +139,7 @@ test('populates dead links set', t => {
 
 test('parses path lookup', t => {
   const deadLinks = new Set();
-  const parser = new WikilinkParser({slugifyFn: slugify}, deadLinks);
+  const parser = new WikilinkParser(opts, deadLinks);
 
   const parsed = parser.parseSingle('[[/blog/a-blog-post.md]]', pageDirectory);
   t.is(parsed.isPath, true);
@@ -139,7 +149,7 @@ test('parses path lookup', t => {
 
 test('parses relative path lookup (single back step)', t => {
   const deadLinks = new Set();
-  const parser = new WikilinkParser({slugifyFn: slugify}, deadLinks);
+  const parser = new WikilinkParser(opts, deadLinks);
 
   const parsed = parser.parseSingle('[[../a-blog-post.md]]', pageDirectory, '/blog/sub-dir/some-page');
   t.is(parsed.isPath, true);
@@ -149,7 +159,7 @@ test('parses relative path lookup (single back step)', t => {
 
 test('parses relative path lookup (multiple back step)', t => {
   const deadLinks = new Set();
-  const parser = new WikilinkParser({slugifyFn: slugify}, deadLinks);
+  const parser = new WikilinkParser(opts, deadLinks);
 
   const parsed = parser.parseSingle('[[../../a-blog-post.md]]', pageDirectory, '/blog/sub-dir/sub-dir/some-page');
   t.is(parsed.isPath, true);
@@ -157,3 +167,29 @@ test('parses relative path lookup (multiple back step)', t => {
   t.is(parsed.title, 'Blog Post');
 })
 
+test('throws error on failure to find resolvingFn', t => {
+  const parser = new WikilinkParser(opts, new Set());
+  let errorMsg;
+
+  try {
+    parser.parseSingle('[[fail:1234]]', pageDirectory, '/directory/filename');
+  } catch (e) {
+    errorMsg = e.message;
+  }
+
+  t.is(errorMsg, 'Unable to find resolving fn [fail] for wikilink [[fail:1234]] on page [/directory/filename]');
+})
+
+test('sets resolvingFnName on finding resolvingFn', t => {
+  const parser = new WikilinkParser({
+    slugifyFn: slugify,
+    resolvingFns: new Map([
+      ['test', () => 'Hello World']
+    ]),
+  }, new Set());
+
+  const link = parser.parseSingle('[[test:1234]]', pageDirectory, '/directory/filename');
+
+  t.is(link.resolvingFnName, 'test');
+  t.is(link.name, '1234');
+})

@@ -20,6 +20,10 @@ type EleventyPluginInterlinkOptions = {
 
   // slugifyFn is used to slugify strings. If a function isn't set then the default 11ty slugify filter is used.
   slugifyFn?: SlugifyFn
+
+  // resolvingFns is a list of resolving functions. These are invoked by a wikilink containing a `:` character
+  // prefixed by the fn name. The page in this case is the linking page.
+  resolvingFns?: Map<string, (link: WikilinkMeta, page: any) => Promise<string>>,
 }
 
 interface ErrorRenderFn {
@@ -45,8 +49,17 @@ type WikilinkMeta = {
   link: string
   slug: string
   isEmbed: boolean
-  isPath: boolean,
+  isPath: boolean
+
+  // If linked page has been found in the all collection exists will be
+  // true and page will be the 11ty page object.
   exists: boolean
+  page?: any
+
+  // name of the resolving fn, if set it must exist
+  resolvingFnName?: string
+  // the resulting HTML of the resolving function
+  content?: string
 
   // href and path are loaded from the linked page
   href?: string

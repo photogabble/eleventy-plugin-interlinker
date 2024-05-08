@@ -3,12 +3,27 @@ const WikilinkParser = require("./wikilink-parser");
 const {EleventyRenderPlugin} = require("@11ty/eleventy");
 const DeadLinks = require("./dead-links");
 const {pageLookup} = require("./find-page");
+const entities = require("entities");
+
+const defaultResolvingFn = async (currentPage, link) => {
+  const text = entities.encodeHTML(link.title ?? link.name);
+  let href = link.href;
+
+  if (link.anchor) {
+    href = `${href}#${link.anchor}`;
+  }
+
+  return `<a href="${href}">${text}</a>`;
+}
 
 /**
  * Interlinker:
  *
  */
 module.exports = class Interlinker {
+  /**
+   * @param {import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions} opts
+   */
   constructor(opts) {
     this.opts = opts
 
@@ -32,12 +47,31 @@ module.exports = class Interlinker {
   }
 
   /**
-   * Compiles the template associated with a WikiLink when invoked via the ![[embed syntax]]
-   * @param data
+   * Invokes the resolving function, passing it the linking page and the parsed link meta.
+   * @param {*} page
+   * @param {import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta} link
    * @return {Promise<string|undefined>}
    */
-  async compileTemplate(data) {
-    if (this.compiledEmbeds.has(data.url)) return;
+  async invokeResolvingFn(page, link) {
+    if (this.compiledEmbeds.has(link.link)) return;
+    if (!link.resolvingFnName) return;
+
+    const fn = this.opts.resolvingFns.get(link.resolvingFnName);
+    // TODO: result can be string or object
+    const result = await fn(link, page);
+
+    this.compiledEmbeds.set(link.link, result);
+    return result;
+  }
+
+  /**
+   * Compiles the template associated with a WikiLink when invoked via the ![[embed syntax]]
+   * @param {*} data
+   * @param {import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta} link
+   * @return {Promise<string|undefined>}
+   */
+  async compileTemplate(data, link) {
+    if (this.compiledEmbeds.has(link.link)) return;
 
     const frontMatter = data.template.frontMatter;
 
@@ -61,9 +95,7 @@ module.exports = class Interlinker {
     });
 
     const result = await fn({content: frontMatter.content, ...data.data});
-
-    this.compiledEmbeds.set(data.url, result);
-
+    this.compiledEmbeds.set(link.link, result);
     return result;
   }
 
@@ -101,33 +133,32 @@ module.exports = class Interlinker {
     // lookup the other page and add this to its backlinks data value.
     if (currentPage.template.frontMatter?.content) {
       const pageContent = currentPage.template.frontMatter.content;
-      const outboundLinks  = [
+      const outboundLinks = [
         ...this.wikiLinkParser.find(pageContent, pageDirectory, currentPage.filePathStem),
         ...this.HTMLLinkParser.find(pageContent, pageDirectory),
-      ].map((link) => {
-        // Lookup the page this link, links to and add this page to its backlinks
-        const {page, found} = pageDirectory.findByLink(link);
-        if (!found) return link;
+      ];
 
-        if (!page.data.backlinks) {
-          page.data.backlinks = [];
+      // Foreach link on this page, if it has its own resolving function we invoke that
+      // otherwise the default behaviour is to look up the page and add this page to
+      // its backlinks list.
+
+      for (const link of outboundLinks) {
+        // If the linked page exists we can add the linking page to its backlinks array
+        if (link.exists) {
+          if (!link.page.data.backlinks) link.page.data.backlinks = [];
+          if (link.page.data.backlinks.findIndex((backlink => backlink.url === currentPage.url)) === -1) {
+            link.page.data.backlinks.push({
+              url: currentPage.url,
+              title: currentPage.data.title,
+            });
+          }
         }
 
-        if (page.data.backlinks.findIndex((backlink => backlink.url === currentPage.url)) === -1) {
-          page.data.backlinks.push({
-            url: currentPage.url,
-            title: currentPage.data.title,
-          });
+        if (link.resolvingFnName) {
+          const fn = this.opts.resolvingFns.get(link.resolvingFnName);
+          link.content = await fn(link, currentPage, this);
         }
-
-        // If this is an embed and the embed template hasn't been compiled, add this to the queue
-        // @TODO compiledEmbeds should be keyed by the wikilink text as i'll be allowing setting embed values via namespace, or other method e.g ![[ident||template]]
-        if (link.isEmbed && link.exists && this.compiledEmbeds.has(link.slug) === false) {
-          compilePromises.push(this.compileTemplate(page));
-        }
-
-        return link;
-      });
+      }
 
       // Block iteration until compilation complete.
       if (compilePromises.length > 0) await Promise.all(compilePromises);
