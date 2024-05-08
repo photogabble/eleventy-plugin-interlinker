@@ -25,17 +25,26 @@ module.exports = class DeadLinks {
     this.gravestones.set(link, names);
   }
 
-  report() {
-    for (const [link, files] of this.gravestones.entries()) {
-      console.warn(
-        chalk.blue('[@photogabble/wikilinks]'),
-        chalk.yellow('WARNING'),
-        `${(link.includes('href') ? 'Link' : 'Wikilink')} (${link}) found pointing to to non-existent page in:`
-      );
+  /**
+   * @param {'console'|'json'} format
+   */
+  report(format) {
+    if (format === 'console') {
+      for (const [link, files] of this.gravestones.entries()) {
+        console.warn(
+          chalk.blue('[@photogabble/wikilinks]'),
+          chalk.yellow('WARNING'),
+          `${(link.includes('href') ? 'Link' : 'Wikilink')} (${link}) found pointing to to non-existent page in:`
+        );
 
-      for (const file of files) {
-        console.warn(`\t- ${file}`);
+        for (const file of files) {
+          console.warn(`\t- ${file}`);
+        }
       }
+      return;
     }
+
+    const json = JSON.stringify(this.gravestones);
+    const n =1;
   }
 }
