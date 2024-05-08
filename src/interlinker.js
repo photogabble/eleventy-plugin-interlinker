@@ -38,8 +38,6 @@ module.exports = class Interlinker {
     this.rm = new EleventyRenderPlugin.RenderManager();
 
     this.wikiLinkParser = new WikilinkParser(opts, this.deadLinks);
-
-    // TODO: pass through deadWikiLinks and have HTMLLinkParser look up pages
     this.HTMLLinkParser = new HTMLLinkParser(this.deadLinks);
   }
 

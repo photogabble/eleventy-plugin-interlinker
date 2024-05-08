@@ -21,8 +21,6 @@ module.exports = class WikilinkParser {
   /**
    * Parses a single WikiLink into the link object understood by the Interlinker.
    *
-   * @todo add parsing of namespace (#14)
-   *
    * @param {string} link
    * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
    * @param {string|undefined} filePathStem
