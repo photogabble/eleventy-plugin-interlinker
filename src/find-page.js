@@ -28,7 +28,7 @@ const pageLookup = (allPages = [], slugifyFn) => {
           return true;
         }
 
-        if (page.fileSlug === link.slug || (page.data.title && page.data.title === link.name)) {
+        if ((page.data.title && page.data.title === link.name) || page.fileSlug === link.name ) {
           return true;
         }
 

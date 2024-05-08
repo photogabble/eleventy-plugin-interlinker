@@ -201,8 +201,8 @@ This plugin will attempt to identify the page being linked using the following s
 
 1. if is path link, return `filePathStem` match state
 2. match file url to link href
-3. match file slug to link slug
-4. match file title to link identifier (name)
+3. match file title to link identifier (name)
+4. match file slug to link identifier (name)
 5. match file based upon alias
 
 ### Pages Excluded from Collections
