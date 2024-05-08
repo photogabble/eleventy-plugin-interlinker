@@ -90,6 +90,11 @@ module.exports = class Interlinker {
       // its backlinks list.
 
       for (const link of outboundLinks) {
+        if (link.resolvingFnName) {
+          const fn = this.opts.resolvingFns.get(link.resolvingFnName);
+          link.content = await fn(link, currentPage, this);
+        }
+
         // If the linked page exists we can add the linking page to its backlinks array
         if (link.exists) {
           if (!link.page.data.backlinks) link.page.data.backlinks = [];
@@ -99,11 +104,6 @@ module.exports = class Interlinker {
               title: currentPage.data.title,
             });
           }
-        }
-
-        if (link.resolvingFnName) {
-          const fn = this.opts.resolvingFns.get(link.resolvingFnName);
-          link.content = await fn(link, currentPage, this);
         }
       }
 
