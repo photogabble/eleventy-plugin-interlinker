@@ -42,7 +42,11 @@ type EleventyPluginInterlinkOptions = {
 
   // slugifyFn is used to slugify strings. If a function
   // isn't set then the default 11ty slugify filter is used.
-  slugifyFn?: SlugifyFn
+  slugifyFn?: SlugifyFn,
+
+  // resolvingFns contains functions used for resolving a wikilinks output.
+  // see the Custom Resolving Functions section below
+  resolvingFns?: Map<string, (link: WikilinkMeta, currentPage: any, interlinker: Interlinker) => Promise<string>>
 }
 ```
 
@@ -116,6 +120,29 @@ eleventyComputed:
 ---
 ```
 
+### Custom Resolving Functions
+
+Custom resolving functions can be considered pluggable extensions to the wikilink lookup and rendering logic and can be invoked by usage of a `:` character in a wikilink prefixed by the functions name, for example: `[[issue:19]]`.
+
+These functions are added to the interlinker via its `resolvingFns` configuration options, for example:
+
+```javascript
+const config = {
+  resolvingFns: new Map([
+    ['howdy', (link, currentPage) => `Hello ${link.name}!`],
+    ['issue', (link, currentPage) => `<a href="${currentPage.data.github}/issues/${link.name}">#${link.name}</a>`],
+  ]),
+};
+```
+
+When invoked the resolving function will be passed three arguments, the parsed Wikilink object (see _Wikilink Data Structure_ section below.) The linking page object from 11ty and the interlinker class instance.
+
+The plugin has three internal resolving functions which are defined only if not already via the plugin config:
+
+- `default`, this is the default resolving function and converts the Wikilink Data Structure directly into an HTML link
+- `default-embed`, this is the default embed resolving function
+- `404-embed`, this is invoked when the embed template is not found. This currently invokes the `unableToLocateEmbedFn` however, in a future version it will replace that config option entirely
+
 ### Embedding
 
 Embedding files allows you to reuse content across your website while tracking what pages have used it.
@@ -168,14 +195,51 @@ You can then display this information in any way you would like, I use the below
 {% endif %}
 ```
 
+### Page lookup logic
+
+This plugin will attempt to identify the page being linked using the following steps in order:
+
+1. if is path link, return `filePathStem` match state
+2. match file url to link href
+3. match file slug to link slug
+4. match file title to link identifier (name)
+5. match file based upon alias
+
 ### Pages Excluded from Collections
 
 Due to how this plugin obtains a pages template content, all pages with `eleventyExcludeFromCollections:true` set will **NOT** be parsed by the interlinker.
 
+## Wikilink Data Structure
+
+```typescript
+type WikilinkMeta = {
+  title: string | null
+  name: string
+  anchor: string | null
+  link: string
+  slug: string
+  isEmbed: boolean
+  isPath: boolean
+
+  // If linked page has been found in the all collection exists will be
+  // true and page will be the 11ty page object.
+  exists: boolean
+  page?: any
+
+  // name of the resolving fn, if set it must exist
+  resolvingFnName?: string
+  // the resulting HTML of the resolving function
+  content?: string
+
+  // href and path are loaded from the linked page
+  href?: string
+  path?: string
+}
+```
+
 ## Known Caveats
 
 - This plugin doesn't implement all [Obsidians wikilink support](https://help.obsidian.md/Linking+notes+and+files/Internal+links) for example linking to a block in a note and linking to a heading in a note is not currently supported by this plugin
-- Doesn't identify regular internal links e.g `[Link](/some/file.md)`
 - Only supports embedding one note inside another, no other Obsidian file embedding functionality is currently supported by this plugin
 
 ## Roadmap

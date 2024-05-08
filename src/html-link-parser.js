@@ -32,9 +32,15 @@ module.exports = class HTMLLinkParser {
       isEmbed: false,
     };
 
-    if (!pageDirectory.findByLink(meta).found) {
+    const {found, page} = pageDirectory.findByLink(meta);
+
+    if (!found) {
       this.deadLinks.add(link);
+      return meta;
     }
+
+    meta.exists = true;
+    meta.page = page;
 
     return meta;
   }

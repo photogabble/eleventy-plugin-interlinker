@@ -2,6 +2,7 @@
  * Page Lookup Service:
  * This wraps the 11ty all pages collection providing two methods for finding pages.
  *
+ * @todo slugifyFn is no longer removed, remove
  * @param {Array<any>} allPages
  * @param {import('@photogabble/eleventy-plugin-interlinker').SlugifyFn} slugifyFn
  * @return {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService}
@@ -17,7 +18,7 @@ const pageLookup = (allPages = [], slugifyFn) => {
         // 2. match file url to link href
         // 3. match file slug to link slug
         // 4. match file title to link identifier (name)
-        // 5. match fle based upon alias
+        // 5. match file based upon alias
 
         if (link.isPath) {
           return page.filePathStem === link.name;
