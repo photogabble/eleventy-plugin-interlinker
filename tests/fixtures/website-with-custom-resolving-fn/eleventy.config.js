@@ -6,6 +6,7 @@ module.exports = function (eleventyConfig) {
         ['howdy', (link, page) => `Hello ${link.name}!`],
         ['issue', (link, page) => `<a href="${page.data.github}/issues/${link.name}">#${link.name}</a>`],
       ]),
+      deadLinkReport: 'json',
     }
   );
 

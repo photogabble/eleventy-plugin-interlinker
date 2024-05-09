@@ -1,6 +1,8 @@
+const path = require('node:path');
 const chalk = require("chalk");
-module.exports = class DeadLinks {
+const fs = require('node:fs');
 
+module.exports = class DeadLinks {
   constructor() {
     this.gravestones = new Map;
     this.fileSrc = 'unknown';
@@ -44,7 +46,14 @@ module.exports = class DeadLinks {
       return;
     }
 
-    const json = JSON.stringify(this.gravestones);
-    const n =1;
+    let obj = {};
+    for (const [link, files] of this.gravestones.entries()) {
+      obj[link] = files;
+    }
+
+    fs.writeFileSync(
+      path.join(process.env.ELEVENTY_ROOT, '.dead-links.json'),
+      JSON.stringify(obj)
+    );
   }
 }
