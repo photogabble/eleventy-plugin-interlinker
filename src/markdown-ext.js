@@ -1,5 +1,3 @@
-const entities = require("entities");
-
 /**
  * This rule will be looped through an inline token by markdown-it.
  *
@@ -47,12 +45,9 @@ const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
 };
 
 /**
- * @param {WikilinkParser} wikilinkParser
- * @param { Map } compiledEmbeds
- * @param { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts
  * @returns {(function(*, *): (string))|*}
  */
-const wikilinkRenderRule = (wikilinkParser, compiledEmbeds, opts) => (tokens, idx) => {
+const wikilinkRenderRule = () => (tokens, idx) => {
   const {meta} = tokens[idx];
   return meta.content;
 };

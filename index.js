@@ -47,7 +47,6 @@ module.exports = function (eleventyConfig, options = {}) {
 
   // After 11ty has finished generating the site output a list of wikilinks that do not link to
   // anything.
-  // TODO: 1.1.0 have this contain more details such as which file(s) are linking (#23)
   // TODO: 1.1.0 have this clear the interlinker cache so that next time 11ty builds its starting from fresh data! (#24)
   eleventyConfig.on('eleventy.after', () => {
     if (opts.deadLinkReport !== 'none') interlinker.deadLinks.report(opts.deadLinkReport)
@@ -55,16 +54,11 @@ module.exports = function (eleventyConfig, options = {}) {
 
   // Teach Markdown-It how to display MediaWiki Links.
   eleventyConfig.amendLibrary('md', (md) => {
-    // WikiLink Embed
     md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
       interlinker.wikiLinkParser,
     ));
 
-    md.renderer.rules.inline_wikilink = wikilinkRenderRule(
-      interlinker.wikiLinkParser,
-      interlinker.compiledEmbeds,
-      opts
-    );
+    md.renderer.rules.inline_wikilink = wikilinkRenderRule();
   });
 
   // Add outboundLinks computed global data, this is executed before the templates are compiled and

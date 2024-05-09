@@ -1,7 +1,7 @@
 module.exports = class HTMLLinkParser {
 
   /**
-   * This regex finds all html tags with an href that begins with / denoting they are internal links.
+   * This regex finds all html tags with a href that begins with / denoting they are internal links.
    *
    * @type {RegExp}
    */

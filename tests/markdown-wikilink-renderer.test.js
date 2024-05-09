@@ -8,7 +8,6 @@ const opts = {};
 
 test('inline rule correctly parses single wikilink', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set);
-  const compiledEmbeds = new Map;
 
   wikilinkParser.linkCache.set('[[wiki link]]', {
     title: 'Wiki Link',
@@ -23,11 +22,7 @@ test('inline rule correctly parses single wikilink', t => {
     wikilinkParser
   ));
 
-  md.renderer.rules.inline_wikilink = wikilinkRenderRule(
-    wikilinkParser,
-    compiledEmbeds,
-    opts
-  );
+  md.renderer.rules.inline_wikilink = wikilinkRenderRule();
 
   t.is(
     "<p>Hello world, this is some text with a <a href=\"/wiki-link/\">Wiki Link</a> inside!</p>\n",
@@ -37,7 +32,6 @@ test('inline rule correctly parses single wikilink', t => {
 
 test('inline rule correctly parses multiple wikilinks', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set);
-  const compiledEmbeds = new Map;
 
   wikilinkParser.linkCache.set('[[wiki link]]', {
     title: 'Wiki Link',
@@ -60,11 +54,7 @@ test('inline rule correctly parses multiple wikilinks', t => {
     wikilinkParser
   ));
 
-  md.renderer.rules.inline_wikilink = wikilinkRenderRule(
-    wikilinkParser,
-    compiledEmbeds,
-    opts
-  );
+  md.renderer.rules.inline_wikilink = wikilinkRenderRule();
 
   t.is(
     "<p>Hello world, this is some text with a <a href=\"/wiki-link/\">Wiki Link</a> inside! There is also <a href=\"/another-wiki-link/\">Another Wiki Link</a> in the same string.</p>\n",
@@ -74,7 +64,6 @@ test('inline rule correctly parses multiple wikilinks', t => {
 
 test('inline rule correctly parses single embed', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set);
-  const compiledEmbeds = new Map;
 
   wikilinkParser.linkCache.set('![[wiki-embed]]', {
     title: 'Wiki Embed',
@@ -89,11 +78,7 @@ test('inline rule correctly parses single embed', t => {
     wikilinkParser
   ));
 
-  md.renderer.rules.inline_wikilink = wikilinkRenderRule(
-    wikilinkParser,
-    compiledEmbeds,
-    opts
-  );
+  md.renderer.rules.inline_wikilink = wikilinkRenderRule();
 
   t.is(
     md.render('Hello world this is a ![[wiki-embed]]'),
@@ -103,7 +88,6 @@ test('inline rule correctly parses single embed', t => {
 
 test('inline rule correctly parses mixed wikilink and embed in multiline input', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set);
-  const compiledEmbeds = new Map;
 
   wikilinkParser.linkCache.set('![[inline embed]]', {
     title: 'Inline Embed',
@@ -142,11 +126,7 @@ test('inline rule correctly parses mixed wikilink and embed in multiline input',
     wikilinkParser
   ));
 
-  md.renderer.rules.inline_wikilink = wikilinkRenderRule(
-    wikilinkParser,
-    compiledEmbeds,
-    opts
-  );
+  md.renderer.rules.inline_wikilink = wikilinkRenderRule();
 
   const markdown = fs.readFileSync(__dirname + '/fixtures/multiline.md', {encoding:'utf8', flag:'r'});
   const html = fs.readFileSync(__dirname + '/fixtures/multiline.html', {encoding:'utf8', flag:'r'});

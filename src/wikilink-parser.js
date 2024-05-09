@@ -21,8 +21,6 @@ module.exports = class WikilinkParser {
   /**
    * Parses a single WikiLink into the link object understood by the Interlinker.
    *
-   * @todo add parsing of namespace (#14)
-   *
    * @param {string} link
    * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
    * @param {string|undefined} filePathStem
@@ -131,7 +129,7 @@ module.exports = class WikilinkParser {
       meta.path = page.inputPath;
       meta.exists = true;
       meta.page = page;
-    } else {
+    } else if (['default', 'default-embed'].includes(fnName)) {
       // If this wikilink goes to a page that doesn't exist, add to deadLinks list and
       // update href for stub post.
       this.deadLinks.add(link);

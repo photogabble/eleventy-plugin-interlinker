@@ -1,10 +1,9 @@
 const HTMLLinkParser = require('../src/html-link-parser');
-const test = require('ava');
 const DeadLinks = require("../src/dead-links");
 const {pageLookup} = require("../src/find-page");
-const slugify = require("slugify");
+const test = require('ava');
 
-const pageDirectory = pageLookup([], slugify);
+const pageDirectory = pageLookup([]);
 
 test('html link parser grabs multiple href, ignoring external links', t => {
     const parser = new HTMLLinkParser(new DeadLinks());

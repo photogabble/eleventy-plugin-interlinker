@@ -40,10 +40,6 @@ type EleventyPluginInterlinkOptions = {
   // that returns [UNABLE TO LOCATE EMBED].
   unableToLocateEmbedFn?: ErrorRenderFn,
 
-  // slugifyFn is used to slugify strings. If a function
-  // isn't set then the default 11ty slugify filter is used.
-  slugifyFn?: SlugifyFn,
-
   // deadLinkReport is the desired output format of the dead link report, by default its set to 'console'
   deadLinkReport?: 'console' | 'json' | 'none',
 
