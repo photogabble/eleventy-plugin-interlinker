@@ -1,12 +1,20 @@
 const Eleventy = require("@11ty/eleventy");
 const {normalize, consoleMockMessages, findResultByUrl, fixturePath} = require('./helpers');
-const test = require("ava");
+const fs = require('node:fs');
 const sinon = require("sinon");
+const test = require("ava");
 
 // NOTE: Tests using sinon to mock console.warn need to be run with
 // `test.serial` so that they don't run at the same time as one another to
 // avoid the "Attempted to wrap warn which is already wrapped" error.
 // @see https://stackoverflow.com/a/37900956/1225977
+
+test.afterEach(() => {
+  const deadLinksPathname = fixturePath('website-with-custom-resolving-fn/.dead-links.json');
+  if (fs.existsSync(deadLinksPathname)) {
+    fs.rmSync(deadLinksPathname);
+  }
+})
 
 test("Sample small Website (wikilinks and regular links)", async t => {
   let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
@@ -217,10 +225,14 @@ test("Custom resolving functions are invoked", async t => {
     configPath: fixturePath('website-with-custom-resolving-fn/eleventy.config.js'),
   });
 
+  t.false(fs.existsSync(fixturePath('website-with-custom-resolving-fn/.dead-links.json')));
+
   let results = await elev.toJSON();
 
   t.is(
     normalize(findResultByUrl(results, '/').content),
     `<div><p>These wikilinks use custom resolving functions:</p><ul><li>Hello RWC!</li><li><a href="https://github.com/photogabble/eleventy-plugin-interlinker/issues/19">#19</a></li></ul></div><div></div>`
   );
+
+  t.true(fs.existsSync(fixturePath('website-with-custom-resolving-fn/.dead-links.json')));
 });

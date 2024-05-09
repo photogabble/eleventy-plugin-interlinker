@@ -1,6 +1,8 @@
+const path = require('node:path');
 const chalk = require("chalk");
-module.exports = class DeadLinks {
+const fs = require('node:fs');
 
+module.exports = class DeadLinks {
   constructor() {
     this.gravestones = new Map;
     this.fileSrc = 'unknown';
@@ -25,17 +27,33 @@ module.exports = class DeadLinks {
     this.gravestones.set(link, names);
   }
 
-  report() {
-    for (const [link, files] of this.gravestones.entries()) {
-      console.warn(
-        chalk.blue('[@photogabble/wikilinks]'),
-        chalk.yellow('WARNING'),
-        `${(link.includes('href') ? 'Link' : 'Wikilink')} (${link}) found pointing to to non-existent page in:`
-      );
+  /**
+   * @param {'console'|'json'} format
+   */
+  report(format) {
+    if (format === 'console') {
+      for (const [link, files] of this.gravestones.entries()) {
+        console.warn(
+          chalk.blue('[@photogabble/wikilinks]'),
+          chalk.yellow('WARNING'),
+          `${(link.includes('href') ? 'Link' : 'Wikilink')} (${link}) found pointing to to non-existent page in:`
+        );
 
-      for (const file of files) {
-        console.warn(`\t- ${file}`);
+        for (const file of files) {
+          console.warn(`\t- ${file}`);
+        }
       }
+      return;
     }
+
+    let obj = {};
+    for (const [link, files] of this.gravestones.entries()) {
+      obj[link] = files;
+    }
+
+    fs.writeFileSync(
+      path.join(process.env.ELEVENTY_ROOT, '.dead-links.json'),
+      JSON.stringify(obj)
+    );
   }
 }

@@ -49,6 +49,9 @@ type EleventyPluginInterlinkOptions = {
   // slug that you are using. This defaults to a function that returns [UNABLE TO LOCATE EMBED].
   unableToLocateEmbedFn?: ErrorRenderFn,
 
+  // deadLinkReport is the desired output format of the dead link report, by default its set to 'console'
+  deadLinkReport?: 'console' | 'json' | 'none',
+
   // resolvingFns is a list of resolving functions. These are invoked by a wikilink containing a `:` character
   // prefixed by the fn name. The page in this case is the linking page.
   resolvingFns?: Map<string, (link: WikilinkMeta, currentPage: any, interlinker: Interlinker) => Promise<string>>,

@@ -18,6 +18,7 @@ module.exports = function (eleventyConfig, options = {}) {
     layoutKey: 'embedLayout',
     layoutTemplateLangKey: 'embedLayoutLanguage',
     resolvingFns: new Map(),
+    deadLinkReport: 'console',
   }, options);
 
   // TODO: deprecate usage of unableToLocateEmbedFn in preference of using resolving fn
@@ -47,7 +48,9 @@ module.exports = function (eleventyConfig, options = {}) {
   // After 11ty has finished generating the site output a list of wikilinks that do not link to
   // anything.
   // TODO: 1.1.0 have this clear the interlinker cache so that next time 11ty builds its starting from fresh data! (#24)
-  eleventyConfig.on('eleventy.after', () => interlinker.deadLinks.report());
+  eleventyConfig.on('eleventy.after', () => {
+    if (opts.deadLinkReport !== 'none') interlinker.deadLinks.report(opts.deadLinkReport)
+  });
 
   // Teach Markdown-It how to display MediaWiki Links.
   eleventyConfig.amendLibrary('md', (md) => {

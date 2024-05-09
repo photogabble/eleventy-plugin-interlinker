@@ -40,6 +40,9 @@ type EleventyPluginInterlinkOptions = {
   // that returns [UNABLE TO LOCATE EMBED].
   unableToLocateEmbedFn?: ErrorRenderFn,
 
+  // deadLinkReport is the desired output format of the dead link report, by default its set to 'console'
+  deadLinkReport?: 'console' | 'json' | 'none',
+
   // resolvingFns contains functions used for resolving a wikilinks output.
   // see the Custom Resolving Functions section below
   resolvingFns?: Map<string, (link: WikilinkMeta, currentPage: any, interlinker: Interlinker) => Promise<string>>
@@ -190,6 +193,12 @@ You can then display this information in any way you would like, I use the below
     </nav>
 {% endif %}
 ```
+
+### Dead link Report
+
+The default behaviour of this plugin is to report to the console every broken Wikilink and internal link. This behaviour is configurable via the `deadLinkReport` config option. This option accepts three values: `none`, `console` and `json` with `console` being the default.
+
+Setting the value to `none` will disable the dead link report while setting it to `json` will silence console output instead writing to `.dead-links.json` within the project root folder.
 
 ### Page lookup logic
 

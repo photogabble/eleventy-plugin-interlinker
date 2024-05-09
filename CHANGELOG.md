@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Make dead link report configurable (#49)
 - Remove internal dependency upon slugify (#48)
 - Add support for custom rendering functions (#47)
 - Add support for referencing files by path (#44)
