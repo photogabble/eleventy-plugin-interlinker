@@ -37,9 +37,19 @@ module.exports = class WikilinkParser {
     // defining the link text prefixed by a | character, e.g. `[[ ident | custom link text ]]`
     const parts = link.slice((isEmbed ? 3 : 2), -2).split("|").map(part => part.trim());
 
-    // Strip .md and .markdown extensions from the file ident; this is so it can be used for filePathStem match
-    // if path lookup.
-    let name = parts[0].replace(/.(md|markdown)\s?$/i, "");
+    /** @var {import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta} */
+    const meta = {
+      title: parts.length === 2 ? parts[1] : null,
+      // Strip .md and .markdown extensions from the file ident; this is so it can be used for
+      // filePathStem match if path lookup.
+      name: parts[0].replace(/.(md|markdown)\s?$/i, ""),
+      anchor: null,
+      link,
+      isEmbed,
+      isPath: false,
+      exists: false,
+      resolvingFnName: isEmbed ? 'default-embed' : 'default',
+    };
 
     ////
     // Anchor link identification:
@@ -47,34 +57,33 @@ module.exports = class WikilinkParser {
     // An anchor link can be referenced by a # character in the file ident, e.g. `[[ ident#anchor-id ]]`.
     //
     // This supports escaping by prefixing the # with a /, e.g `[[ Page about C/# ]]`
-    let anchor = null;
 
-    if (name.includes('#')) {
+    if (meta.name.includes('#')) {
       const nameParts = parts[0].split('#').map(part => part.trim());
       // Allow for escaping a # when prefixed with a /
       if (nameParts[0].at(-1) !== '/') {
-        name = nameParts[0];
-        anchor = nameParts[1];
+        meta.name = nameParts[0];
+        meta.anchor = nameParts[1];
       } else {
-        name = name.replace('/#', '#');
+        meta.name = meta.name.replace('/#', '#');
       }
     }
 
     ////
     // Path link identification:
     // This supports both relative links from the linking files path and lookup from the project root path.
-    const isPath = (name.startsWith('/') || name.startsWith('../') || name.startsWith('./'));
+    meta.isPath = (meta.name.startsWith('/') || meta.name.startsWith('../') || meta.name.startsWith('./'));
 
     // This is a relative path lookup, need to mutate name so that its absolute path from project
     // root so that we can match it on a pages filePathStem.
-    if (isPath && name.startsWith('.')) {
+    if (meta.isPath && meta.name.startsWith('.')) {
       if (!filePathStem) throw new Error('Unable to do relative path lookup of wikilink.');
 
       const cwd = filePathStem.split('/');
-      const relative = name.split('/');
+      const relative = meta.name.split('/');
       const stepsBack = relative.filter(file => file === '..').length;
 
-      name = [
+      meta.name = [
         ...cwd.slice(0, -(stepsBack + 1)),
         ...relative.filter(file => file !== '..' && file !== '.')
       ].join('/');
@@ -85,36 +94,21 @@ module.exports = class WikilinkParser {
     // If the author has referenced a custom resolving function via inclusion of the `:` character
     // then we use that one. Otherwise, use the default resolving functions.
     // As with anchor links, this supports escaping the `:` character by prefixing with `/`
-    let fnName = isEmbed
-      ? 'default-embed'
-      : 'default'
 
-    if (name.includes(':')) {
-      const parts = name.split(':').map(part => part.trim());
+    if (meta.name.includes(':')) {
+      const parts = meta.name.split(':').map(part => part.trim());
       if (parts[0].at(-1) !== '/') {
-        fnName = parts[0];
-        name = parts[1];
+        if (!this.opts.resolvingFns || this.opts.resolvingFns.has(parts[0]) === false) {
+          const {found} = pageDirectory.findByLink(meta);
+          if (!found) throw new Error(`Unable to find resolving fn [${parts[0]}] for wikilink ${link} on page [${filePathStem}]`);
+        } else {
+          meta.resolvingFnName = parts[0];
+          meta.name = parts[1];
+        }
       } else {
-        name = name.replace('/:', ':');
+        meta.name = meta.name.replace('/:', ':');
       }
     }
-
-    if (!this.opts.resolvingFns || this.opts.resolvingFns.has(fnName) === false) {
-      throw new Error(`Unable to find resolving fn [${fnName}] for wikilink ${link} on page [${filePathStem}]`);
-    }
-
-    /** @var {import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta} */
-    const meta = {
-      title: parts.length === 2 ? parts[1] : null,
-      name,
-      anchor,
-      link,
-      isEmbed,
-      isPath,
-      exists: false,
-    }
-
-    if (fnName) meta.resolvingFnName = fnName;
 
     // Lookup page data from 11ty's collection to obtain url and title if currently null
     const {page, foundByAlias} = pageDirectory.findByLink(meta);
@@ -128,7 +122,7 @@ module.exports = class WikilinkParser {
       meta.path = page.inputPath;
       meta.exists = true;
       meta.page = page;
-    } else if (['default', 'default-embed'].includes(fnName)) {
+    } else if (['default', 'default-embed'].includes(meta.resolvingFnName)) {
       // If this wikilink goes to a page that doesn't exist, add to deadLinks list and
       // update href for stub post.
       this.deadLinks.add(link);

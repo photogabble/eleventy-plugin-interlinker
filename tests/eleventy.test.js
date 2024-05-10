@@ -220,19 +220,42 @@ test("Permalink should be used for link href", async t => {
   );
 });
 
-test("Custom resolving functions are invoked", async t => {
+/**
+ * This test checks that custom resolving functions are invoked if they exist, and if not
+ * an exception isn't thrown if the page can be looked up (see issue #50).
+ */
+test("Custom resolving functions (are invoked)", async t => {
   let elev = new Eleventy(fixturePath('website-with-custom-resolving-fn'), fixturePath('website-with-custom-resolving-fn/_site'), {
     configPath: fixturePath('website-with-custom-resolving-fn/eleventy.config.js'),
   });
 
+  // TODO: move this to another test
   t.false(fs.existsSync(fixturePath('website-with-custom-resolving-fn/.dead-links.json')));
 
   let results = await elev.toJSON();
 
   t.is(
     normalize(findResultByUrl(results, '/').content),
-    `<div><p>These wikilinks use custom resolving functions:</p><ul><li>Hello RWC!</li><li><a href="https://github.com/photogabble/eleventy-plugin-interlinker/issues/19">#19</a></li></ul></div><div></div>`
+    `<div><p>These wikilinks use custom resolving functions:</p><ul><li>Hello RWC!</li><li><a href="https://github.com/photogabble/eleventy-plugin-interlinker/issues/19">#19</a></li><li><a href="/php-space-mines-introduction/">Moon Miner</a></li></ul></div><div></div>`
   );
 
   t.true(fs.existsSync(fixturePath('website-with-custom-resolving-fn/.dead-links.json')));
+});
+
+/**
+ * This test must be run serially as the exception being thrown appears to interfere
+ * with other tests.
+ */
+test.serial("Custom resolving functions (throw exception on not found)", async t => {
+  let elev = new Eleventy(fixturePath('website-with-broken-resolving-fn'), fixturePath('website-with-broken-resolving-fn/_site'), {
+    configPath: fixturePath('website-with-broken-resolving-fn/eleventy.config.js'),
+  });
+
+  // Disable the console log output of 11tys error handler
+  const errorHandler = elev.errorHandler;
+  let fatalCalled = false;
+  errorHandler.log = () => {};
+
+  const error = await t.throwsAsync(elev.toJSON());
+  t.is(error.message, 'Unable to find resolving fn [PHP Space Mines] for wikilink [[PHP Space Mines: Introduction|Moon Miner]] on page [/index]');
 });
