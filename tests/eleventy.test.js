@@ -253,7 +253,6 @@ test.serial("Custom resolving functions (throw exception on not found)", async t
 
   // Disable the console log output of 11tys error handler
   const errorHandler = elev.errorHandler;
-  let fatalCalled = false;
   errorHandler.log = () => {};
 
   const error = await t.throwsAsync(elev.toJSON());
