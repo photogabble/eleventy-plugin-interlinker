@@ -8,3 +8,4 @@ These wikilinks use custom resolving functions:
 
 - [[howdy:RWC]]
 - [[issue:19]]
+- [[PHP Space Mines: Introduction|Moon Miner]]
