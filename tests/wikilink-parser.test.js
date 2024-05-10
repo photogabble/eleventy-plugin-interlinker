@@ -189,3 +189,11 @@ test('sets resolvingFnName on finding resolvingFn', t => {
   t.is(link.resolvingFnName, 'test');
   t.is(link.name, '1234');
 })
+
+test('regex does not match on whitespace', t => {
+  const deadLinks = new Set();
+  const parser = new WikilinkParser(opts, deadLinks, new Map());
+  t.is(parser.find("[[ broken \nwikilink ]]", pageDirectory, '/').length, 0);
+  t.is(parser.find("[[ broken |wikilink \n]]", pageDirectory, '/').length, 0);
+  t.is(parser.find("[[\n broken wikilink]]", pageDirectory, '/').length, 0);
+})
