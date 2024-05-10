@@ -7,7 +7,7 @@ const fs = require('fs');
 const opts = {};
 
 test('inline rule correctly parses single wikilink', t => {
-  const wikilinkParser = new WikilinkParser(opts, new Set);
+  const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
 
   wikilinkParser.linkCache.set('[[wiki link]]', {
     title: 'Wiki Link',
@@ -31,7 +31,7 @@ test('inline rule correctly parses single wikilink', t => {
 });
 
 test('inline rule correctly parses multiple wikilinks', t => {
-  const wikilinkParser = new WikilinkParser(opts, new Set);
+  const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
 
   wikilinkParser.linkCache.set('[[wiki link]]', {
     title: 'Wiki Link',
@@ -63,7 +63,7 @@ test('inline rule correctly parses multiple wikilinks', t => {
 });
 
 test('inline rule correctly parses single embed', t => {
-  const wikilinkParser = new WikilinkParser(opts, new Set);
+  const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
 
   wikilinkParser.linkCache.set('![[wiki-embed]]', {
     title: 'Wiki Embed',
@@ -87,7 +87,7 @@ test('inline rule correctly parses single embed', t => {
 });
 
 test('inline rule correctly parses mixed wikilink and embed in multiline input', t => {
-  const wikilinkParser = new WikilinkParser(opts, new Set);
+  const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
 
   wikilinkParser.linkCache.set('![[inline embed]]', {
     title: 'Inline Embed',

@@ -47,9 +47,14 @@ module.exports = function (eleventyConfig, options = {}) {
 
   // After 11ty has finished generating the site output a list of wikilinks that do not link to
   // anything.
-  // TODO: 1.1.0 have this clear the interlinker cache so that next time 11ty builds its starting from fresh data! (#24)
   eleventyConfig.on('eleventy.after', () => {
-    if (opts.deadLinkReport !== 'none') interlinker.deadLinks.report(opts.deadLinkReport)
+    if (opts.deadLinkReport !== 'none') interlinker.deadLinks.report(opts.deadLinkReport);
+  });
+
+  // Reset the internal state of the interlinker if running in watch mode, this stops
+  // the interlinker from working against out of date data.
+  eleventyConfig.on('eleventy.beforeWatch', () => {
+    interlinker.reset();
   });
 
   // Teach Markdown-It how to display MediaWiki Links.

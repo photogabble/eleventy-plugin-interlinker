@@ -15,8 +15,11 @@ module.exports = class Interlinker {
   constructor(opts) {
     this.opts = opts
 
-    // Set of WikiLinks pointing to non-existent pages
+    // Map of WikiLinks pointing to non-existent pages
     this.deadLinks = new DeadLinks();
+
+    // Map of Wikilink Meta that have been resolved by the WikilinkParser
+    this.linkCache = new Map();
 
     // TODO: document
     this.templateConfig = undefined;
@@ -25,8 +28,13 @@ module.exports = class Interlinker {
     // TODO: document
     this.rm = new EleventyRenderPlugin.RenderManager();
 
-    this.wikiLinkParser = new WikilinkParser(opts, this.deadLinks);
+    this.wikiLinkParser = new WikilinkParser(opts, this.deadLinks, this.linkCache);
     this.HTMLLinkParser = new HTMLLinkParser(this.deadLinks);
+  }
+
+  reset() {
+    this.deadLinks.clear();
+    this.linkCache.clear();
   }
 
   /**

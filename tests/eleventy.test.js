@@ -62,7 +62,7 @@ test("Sample small Website (path links)", async t => {
   );
 });
 
-test("Sample small Website (htmlenteties)", async t => {
+test("Sample small Website (html entities)", async t => {
   let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
     configPath: fixturePath('sample-small-website/eleventy.config.js'),
   });

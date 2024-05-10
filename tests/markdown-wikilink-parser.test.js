@@ -10,7 +10,7 @@ const opts = {
 };
 
 test('inline rule correctly parses single wikilink', t => {
-  const wikilinkParser = new WikilinkParser(opts, new Set);
+  const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
   wikilinkParser.linkCache.set('[[wiki link]]', {
     title: 'Wiki link',
     href: '/test/',
@@ -31,7 +31,7 @@ test('inline rule correctly parses single wikilink', t => {
 });
 
 test('inline rule correctly parses multiple wikilink', t => {
-  const wikilinkParser = new WikilinkParser(opts, new Set);
+  const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
   wikilinkParser.linkCache.set('[[wiki links]]', {
     title: 'Wiki link',
     slug: 'wiki-links',
@@ -61,7 +61,7 @@ test('inline rule correctly parses multiple wikilink', t => {
 });
 
 test('inline rule correctly parses single wikilink embed', t => {
-  const wikilinkParser = new WikilinkParser(opts, new Set);
+  const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
   wikilinkParser.linkCache.set('![[wiki link embed]]', {
     title: 'wiki link embed',
     slug: 'wiki-link-embed',
@@ -83,7 +83,7 @@ test('inline rule correctly parses single wikilink embed', t => {
 });
 
 test('inline rule correctly parses multiple wikilink embeds', t => {
-  const wikilinkParser = new WikilinkParser(opts, new Set);
+  const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
   wikilinkParser.linkCache.set('![[wiki link embeds]]', {
     title: 'wiki link embed',
     slug: 'wiki-link-embed',
@@ -111,7 +111,7 @@ test('inline rule correctly parses multiple wikilink embeds', t => {
 });
 
 test('inline rule correctly parses mixed wikilink and wikilink embeds', t => {
-  const wikilinkParser = new WikilinkParser(opts, new Set);
+  const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
   wikilinkParser.linkCache.set('![[wiki link embeds]]', {
     title: 'wiki link embeds',
     slug: 'wiki-link-embeds',

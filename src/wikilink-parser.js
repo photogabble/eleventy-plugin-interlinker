@@ -9,13 +9,12 @@ module.exports = class WikilinkParser {
   /**
    * @param { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts
    * @param { DeadLinks } deadLinks
+   * @param { Map } linkCache
    */
-  constructor(opts, deadLinks) {
+  constructor(opts, deadLinks, linkCache) {
     this.opts = opts;
     this.deadLinks = deadLinks;
-
-    // TODO: when 11ty is in serve mode, this cache should clear at the beginning of each build (#24)
-    this.linkCache = new Map();
+    this.linkCache = linkCache;
   }
 
   /**

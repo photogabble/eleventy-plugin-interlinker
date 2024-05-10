@@ -3,7 +3,7 @@
 
 I use [Obsidian.md](https://obsidian.md/) to draft my posts before they are published on PhotoGabble. One feature of #Obsidian that I love is interlinking between notes and being able to see the connectivity graph of each note.
 
-In January 2023 I wrote about how I [added Wiki Links support to Eleventy.js](https://www.photogabble.co.uk/noteworthy/adding-wiki-links-to-11ty/) and in doing so this plugin was borne. It has since been updated to include support for Obsidians [embedding files](https://help.obsidian.md/Linking+notes+and+files/Embedding+files).
+In January 2023 I wrote about how I [added Wiki Links support to Eleventy.js](https://www.photogabble.co.uk/noteworthy/adding-wiki-links-to-11ty/) and in doing so this plugin was borne. It has since been updated to include support for Obsidian's [embedding files](https://help.obsidian.md/Linking+notes+and+files/Embedding+files).
 
 ## Install
 
@@ -244,7 +244,7 @@ type WikilinkMeta = {
 
 ## Known Caveats
 
-- This plugin doesn't implement all [Obsidians wikilink support](https://help.obsidian.md/Linking+notes+and+files/Internal+links) for example linking to a block in a note and linking to a heading in a note is not currently supported by this plugin
+- This plugin doesn't implement all [Obsidian's wikilink support](https://help.obsidian.md/Linking+notes+and+files/Internal+links) for example linking to a block in a note and linking to a heading in a note is not currently supported by this plugin
 - Only supports embedding one note inside another, no other Obsidian file embedding functionality is currently supported by this plugin
 
 ## Roadmap
