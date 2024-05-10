@@ -56,4 +56,12 @@ module.exports = class DeadLinks {
       JSON.stringify(obj)
     );
   }
+
+  /**
+   * Reset to initial state
+   */
+  clear() {
+    this.fileSrc = 'unknown';
+    this.gravestones.clear();
+  }
 }

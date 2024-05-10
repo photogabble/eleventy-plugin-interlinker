@@ -40,7 +40,7 @@ test('hooks into eleventy.config', t => {
   plugin(eleventyMock);
   t.true(eleventyMock.wasCalled());
 
-  t.is(eleventyMock.calls.get('on'), 3); // eleventy.config, eleventy.extensionmap, eleventy.after
+  t.is(eleventyMock.calls.get('on'), 4); // eleventy.config, eleventy.extensionmap, eleventy.after, eleventy.beforeWatch
   t.is(eleventyMock.calls.get('amendLibrary'), 1); // Adding Markdown-it ext
   t.is(eleventyMock.calls.get('addGlobalData'), 1); // Adding global eleventyComputed data
 });
