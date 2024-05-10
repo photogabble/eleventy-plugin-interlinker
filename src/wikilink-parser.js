@@ -4,7 +4,7 @@ module.exports = class WikilinkParser {
    *
    * @type {RegExp}
    */
-  wikiLinkRegExp = /(?<!!)(!?)\[\[([^|]+?)(\|([\s\S]+?))?]]/g;
+  wikiLinkRegExp = /(?<!!)(!?)\[\[([^|\n]+?)(\|([^\n]+?))?]]/g;
 
   /**
    * @param { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts
