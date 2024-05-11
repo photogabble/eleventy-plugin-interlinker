@@ -1,3 +1,4 @@
+const {EleventyRenderPlugin} = require("@11ty/eleventy");
 const entities = require("entities");
 /**
  * Default Resolving function for converting Wikilinks into html links.
@@ -48,7 +49,9 @@ const defaultEmbedFn = async (link, currentPage, interlinker) => {
     ? frontMatter.content
     : `{% layout "${layout}" %} {% block content %} ${frontMatter.content} {% endblock %}`;
 
-  const fn = await interlinker.rm.compile(tpl, language, {
+  const compiler = EleventyRenderPlugin.String;
+
+  const fn = await compiler(tpl, language, {
     templateConfig: interlinker.templateConfig,
     extensionMap: interlinker.extensionMap
   });

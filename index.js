@@ -33,7 +33,9 @@ module.exports = function (eleventyConfig, options = {}) {
 
   const interlinker = new Interlinker(opts);
 
-  // TODO: document
+  // This populates templateConfig with an instance of TemplateConfig once 11ty has initiated it, it's
+  // used by the template compiler function that's exported by the EleventyRenderPlugin and used
+  // by the defaultEmbedFn resolving function for compiling embed templates.
   eleventyConfig.on("eleventy.config", (cfg) => {
     interlinker.templateConfig = cfg;
   });

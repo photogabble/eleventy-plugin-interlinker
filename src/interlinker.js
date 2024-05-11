@@ -1,6 +1,5 @@
 const HTMLLinkParser = require("./html-link-parser");
 const WikilinkParser = require("./wikilink-parser");
-const {EleventyRenderPlugin} = require("@11ty/eleventy");
 const DeadLinks = require("./dead-links");
 const {pageLookup} = require("./find-page");
 
@@ -21,12 +20,11 @@ module.exports = class Interlinker {
     // Map of Wikilink Meta that have been resolved by the WikilinkParser
     this.linkCache = new Map();
 
-    // TODO: document
+    // Instance of TemplateConfig loaded by the `eleventy.config` event
     this.templateConfig = undefined;
-    this.extensionMap = undefined;
 
-    // TODO: document
-    this.rm = new EleventyRenderPlugin.RenderManager();
+    // Instance of EleventyExtensionMap loaded by the `eleventy.extensionmap` event
+    this.extensionMap = undefined;
 
     this.wikiLinkParser = new WikilinkParser(opts, this.deadLinks, this.linkCache);
     this.HTMLLinkParser = new HTMLLinkParser(this.deadLinks);
