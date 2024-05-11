@@ -101,7 +101,7 @@ test.serial("Broken page (wikilinks and regular links)", async t => {
   // Markdown will have the link href set to /stubs
   t.is(
     normalize(findResultByUrl(results, '/something/').content),
-    `<div><p>This page has a <a href="/stubs">broken link</a>.</p></div>`
+    `<div><p>This page has a <a href="/stubs/">broken link</a>.</p></div>`
   );
 
   // HTML
@@ -148,7 +148,7 @@ test.serial("Sample page (eleventyExcludeFromCollections set true)", async t => 
   // Embedded page is aware of its embedding
   t.is(
     normalize(findResultByUrl(results, '/about/').content),
-    `<div><p>This wikilink to <a href="/stubs">something</a> will not parse because the destination has eleventyExcludeFromCollections set true.</p></div><div></div>`
+    `<div><p>This wikilink to <a href="/stubs/">something</a> will not parse because the destination has eleventyExcludeFromCollections set true.</p></div><div></div>`
   );
 
   // Embed shows
