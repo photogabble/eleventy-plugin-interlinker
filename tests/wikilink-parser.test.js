@@ -19,6 +19,14 @@ const pageDirectory = pageLookup([
     data: {
       title: 'Blog Post',
     },
+  },
+  {
+    inputPath: '/home/user/website/bookmark/2024-01-04-♡-cinnis-dream-home-♡.md',
+    filePathStem: '/bookmark/2024-01-04-♡-cinnis-dream-home-♡',
+    fileSlug: 'cinnis-dream-home',
+    data: {
+      title: "♡ cinni''s dream home ♡"
+    }
   }
 ]);
 
@@ -196,4 +204,12 @@ test('regex does not match on whitespace', t => {
   t.is(parser.find("[[ broken \nwikilink ]]", pageDirectory, '/').length, 0);
   t.is(parser.find("[[ broken |wikilink \n]]", pageDirectory, '/').length, 0);
   t.is(parser.find("[[\n broken wikilink]]", pageDirectory, '/').length, 0);
+})
+
+test('regex does match special ASCII', t => {
+  const deadLinks = new Set();
+  const parser = new WikilinkParser(opts, deadLinks, new Map());
+  t.is(parser.find("[[♡ cinni''s dream home ♡]]", pageDirectory, '/').length, 1);
+  t.is(parser.find("[[♡ cinni''s dream home ♡|Cinni]]", pageDirectory, '/').length, 1);
+  t.is(deadLinks.size, 0);
 })
