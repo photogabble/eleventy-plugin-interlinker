@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Fix crashing bug when embedded file changed while in `--watch` mode (#56)
 - Wikilinks should not contain new lines (#54)
 - On resolving fn lookup failure, only throw error if page not found (#52)
 - Clear internal state before each 11ty build (#51)
