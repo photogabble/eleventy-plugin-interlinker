@@ -258,3 +258,29 @@ test.serial("Custom resolving functions (throw exception on not found)", async t
   const error = await t.throwsAsync(elev.toJSON());
   t.is(error.message, 'Unable to find resolving fn [PHP Space Mines] for wikilink [[PHP Space Mines: Introduction|Moon Miner]] on page [/index]');
 });
+
+test("Stub URL Config (can be customised)", async t => {
+  let elev = new Eleventy(fixturePath('website-with-custom-stub-url'), fixturePath('website-with-custom-stub-url/_site'), {
+    configPath: fixturePath('website-with-custom-stub-url/eleventy.config.js'),
+  });
+
+  const results = await elev.toJSON();
+
+  t.is(
+    normalize(findResultByUrl(results, '/').content),
+    `<div><p>Broken link with custom stub url <a href="/custom-stub-url/">broken link</a>.</p></div>`
+  );
+})
+
+test("Stub URL Config (can be disabled)", async t => {
+  let elev = new Eleventy(fixturePath('website-with-disabled-stub-url'), fixturePath('website-with-disabled-stub-url/_site'), {
+    configPath: fixturePath('website-with-disabled-stub-url/eleventy.config.js'),
+  });
+
+  const results = await elev.toJSON();
+
+  t.is(
+    normalize(findResultByUrl(results, '/').content),
+    `<div><p>Broken link with custom stub url [[ broken link ]].</p></div>`
+  );
+})
