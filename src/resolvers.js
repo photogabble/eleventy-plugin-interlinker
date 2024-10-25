@@ -45,7 +45,7 @@ export const defaultEmbedFn = async (link, currentPage, interlinker) => {
       ? page.page.templateSyntax
       : interlinker.opts.defaultLayoutLang;
 
-  // TODO: the layout below is liquid, will break if content contains invalid template tags such as passing njk file src
+  // TODO: (#36) the layout below is liquid, will break if content contains invalid template tags such as passing njk file src
   const tpl = layout === null
     ? template.content
     : `{% layout "${layout}" %} {% block content %} ${template.content} {% endblock %}`;
