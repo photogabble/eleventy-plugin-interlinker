@@ -26,6 +26,9 @@ module.exports = function (eleventyConfig, options = {}) {
     opts.resolvingFns.set('404-embed', async (link) => opts.unableToLocateEmbedFn(link.page.fileSlug));
   }
 
+  // Set default stub url if not set by author.
+  if (typeof opts.stubUrl === 'undefined') opts.stubUrl = '/stubs/';
+
   // Default resolving functions for converting a Wikilink into HTML.
   if (!opts.resolvingFns.has('default')) opts.resolvingFns.set('default', defaultResolvingFn);
   if (!opts.resolvingFns.has('default-embed')) opts.resolvingFns.set('default-embed', defaultEmbedFn);

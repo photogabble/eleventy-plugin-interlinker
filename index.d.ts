@@ -41,6 +41,11 @@ type EleventyPluginInterlinkOptions = {
   // that embed. This will always default to `embedLayout`.
   layoutKey?: string,
 
+  // stubUrl is the href you want wikilinks to link to if their linking page is not found. By default this is set
+  // to /stubs. Passing false will disable stub url output resulting in the wikilink being displayed directly
+  // in the html without transformation into a html link.
+  stubUrl?: string|false,
+
   // layoutTemplateLangKey informs the template renderer which engines to use for rendering an embed's layout. This
   // defaults to your 11ty projects default, typically: liquid,md
   layoutTemplateLangKey?: string,
@@ -87,8 +92,9 @@ type WikilinkMeta = {
   // the resulting HTML of the resolving function
   content?: string
 
-  // href and path are loaded from the linked page
-  href?: string
+  // href and path are loaded from the linked page, if the href is
+  // false then it disables the transformation of wikilink into html link.
+  href?: string|false
   path?: string
 }
 

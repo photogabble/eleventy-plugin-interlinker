@@ -101,7 +101,7 @@ test.serial("Broken page (wikilinks and regular links)", async t => {
   // Markdown will have the link href set to /stubs
   t.is(
     normalize(findResultByUrl(results, '/something/').content),
-    `<div><p>This page has a <a href="/stubs">broken link</a>.</p></div>`
+    `<div><p>This page has a <a href="/stubs/">broken link</a>.</p></div>`
   );
 
   // HTML
@@ -148,7 +148,7 @@ test.serial("Sample page (eleventyExcludeFromCollections set true)", async t => 
   // Embedded page is aware of its embedding
   t.is(
     normalize(findResultByUrl(results, '/about/').content),
-    `<div><p>This wikilink to <a href="/stubs">something</a> will not parse because the destination has eleventyExcludeFromCollections set true.</p></div><div></div>`
+    `<div><p>This wikilink to <a href="/stubs/">something</a> will not parse because the destination has eleventyExcludeFromCollections set true.</p></div><div></div>`
   );
 
   // Embed shows
@@ -223,8 +223,11 @@ test("Permalink should be used for link href", async t => {
 /**
  * This test checks that custom resolving functions are invoked if they exist, and if not
  * an exception isn't thrown if the page can be looked up (see issue #50).
+ *
+ * Must be serial test due to usage of fs.existsSync, which will pass when running as a
+ * single test, but fail when run as part of a parallel set.
  */
-test("Custom resolving functions (are invoked)", async t => {
+test.serial("Custom resolving functions (are invoked)", async t => {
   let elev = new Eleventy(fixturePath('website-with-custom-resolving-fn'), fixturePath('website-with-custom-resolving-fn/_site'), {
     configPath: fixturePath('website-with-custom-resolving-fn/eleventy.config.js'),
   });
@@ -258,3 +261,29 @@ test.serial("Custom resolving functions (throw exception on not found)", async t
   const error = await t.throwsAsync(elev.toJSON());
   t.is(error.message, 'Unable to find resolving fn [PHP Space Mines] for wikilink [[PHP Space Mines: Introduction|Moon Miner]] on page [/index]');
 });
+
+test("Stub URL Config (can be customised)", async t => {
+  let elev = new Eleventy(fixturePath('website-with-custom-stub-url'), fixturePath('website-with-custom-stub-url/_site'), {
+    configPath: fixturePath('website-with-custom-stub-url/eleventy.config.js'),
+  });
+
+  const results = await elev.toJSON();
+
+  t.is(
+    normalize(findResultByUrl(results, '/').content),
+    `<div><p>Broken link with custom stub url <a href="/custom-stub-url/">broken link</a>.</p></div>`
+  );
+})
+
+test("Stub URL Config (can be disabled)", async t => {
+  let elev = new Eleventy(fixturePath('website-with-disabled-stub-url'), fixturePath('website-with-disabled-stub-url/_site'), {
+    configPath: fixturePath('website-with-disabled-stub-url/eleventy.config.js'),
+  });
+
+  const results = await elev.toJSON();
+
+  t.is(
+    normalize(findResultByUrl(results, '/').content),
+    `<div><p>Broken link with custom stub url [[ broken link ]].</p></div>`
+  );
+})
