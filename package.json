@@ -1,6 +1,6 @@
 {
   "name": "@photogabble/eleventy-plugin-interlinker",
-  "version": "1.1.0-rc4",
+  "version": "1.1.0-rc5",
   "description": "Obsidian WikiLinks, BackLinks and Embed support for 11ty",
   "keywords": [
     "11ty",

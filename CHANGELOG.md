@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Make the stub post destination configurable (#59)
+- Fix compatibility with Eleventy v3 (#60)
+- Check that Wikilinks do not contain new lines (#55)
 - Fix crashing bug when embedded file changed while in `--watch` mode (#56)
 - Wikilinks should not contain new lines (#54)
 - On resolving fn lookup failure, only throw error if page not found (#52)
