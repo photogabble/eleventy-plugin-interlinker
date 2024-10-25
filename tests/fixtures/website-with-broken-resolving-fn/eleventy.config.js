@@ -1,7 +1,7 @@
-module.exports = function (eleventyConfig) {
-  eleventyConfig.addPlugin(
-    require('../../../index.js')
-  );
+import WikiLinksPlugin from '../../../index.js';
+
+export default function (eleventyConfig) {
+  eleventyConfig.addPlugin(WikiLinksPlugin);
 
   return {
     dir: {

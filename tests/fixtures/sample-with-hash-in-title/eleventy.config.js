@@ -1,10 +1,9 @@
-module.exports = function (eleventyConfig) {
-  eleventyConfig.addPlugin(
-    require('../../../index.js'),
-    {
-      deadLinkReport: 'none'
-    }
-  );
+import WikiLinksPlugin from '../../../index.js';
+
+export default function (eleventyConfig) {
+  eleventyConfig.addPlugin(WikiLinksPlugin, {
+    deadLinkReport: 'none'
+  });
 
   return {
     dir: {
