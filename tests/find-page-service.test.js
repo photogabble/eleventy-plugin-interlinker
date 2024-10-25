@@ -1,5 +1,5 @@
-const {pageLookup} = require("../src/find-page");
-const test = require("ava");
+import {pageLookup} from '../src/find-page.js';
+import test from 'ava';
 
 const pageDirectory = pageLookup([
   {

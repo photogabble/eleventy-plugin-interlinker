@@ -5,7 +5,7 @@
  * @param {Array<any>} allPages
  * @return {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService}
  */
-const pageLookup = (allPages = []) => {
+export const pageLookup = (allPages = []) => {
   return {
     findByLink: (link) => {
       let foundByAlias = false;
@@ -48,8 +48,4 @@ const pageLookup = (allPages = []) => {
 
     findByFile: (file) => allPages.find((page) => page.url === file.page.url),
   }
-}
-
-module.exports = {
-  pageLookup
 }

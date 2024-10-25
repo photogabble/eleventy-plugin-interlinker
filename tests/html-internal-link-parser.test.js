@@ -1,7 +1,7 @@
-const HTMLLinkParser = require('../src/html-link-parser');
-const DeadLinks = require("../src/dead-links");
-const {pageLookup} = require("../src/find-page");
-const test = require('ava');
+import HTMLLinkParser from '../src/html-link-parser.js'
+import DeadLinks from '../src/dead-links.js';
+import {pageLookup} from '../src/find-page.js';
+import test from 'ava';
 
 const pageDirectory = pageLookup([]);
 

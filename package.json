@@ -13,6 +13,8 @@
   ],
   "main": "index.js",
   "scripts": {
+    "buildcjs": "rollup index.js --file index.cjs --format cjs",
+    "prepublishOnly": "npm run buildcjs",
     "test": "ava",
     "test-coverage": "c8 ava"
   },
@@ -39,11 +41,12 @@
       ".cache"
     ]
   },
-  "files": [
-    "index.js",
-    "index.d.ts",
-    "src"
-  ],
+  "type": "module",
+  "exports": {
+    "import": "./index.js",
+    "require": "./index.cjs"
+  },
+  "types": "index.d.ts",
   "engines": {
     "node": ">=18"
   },
@@ -53,9 +56,10 @@
     "markdown-it": "^14.1.0"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^2.0.0",
+    "@11ty/eleventy": "^3.0.0",
     "ava": "^5.2.0",
     "c8": "^7.12.0",
+    "rollup": "^4.24.0",
     "sinon": "^17.0.1"
   },
   "directories": {

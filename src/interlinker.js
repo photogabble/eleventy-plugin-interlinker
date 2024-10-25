@@ -1,13 +1,13 @@
-const HTMLLinkParser = require("./html-link-parser");
-const WikilinkParser = require("./wikilink-parser");
-const DeadLinks = require("./dead-links");
-const {pageLookup} = require("./find-page");
+import HTMLLinkParser from './html-link-parser.js';
+import WikilinkParser from './wikilink-parser.js';
+import DeadLinks from './dead-links.js';
+import {pageLookup} from './find-page.js';
 
 /**
  * Interlinker:
  *
  */
-module.exports = class Interlinker {
+export default class Interlinker {
   /**
    * @param {import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions} opts
    */

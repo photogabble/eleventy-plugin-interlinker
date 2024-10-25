@@ -1,6 +1,6 @@
-const {wikilinkInlineRule, wikilinkRenderRule} = require('./src/markdown-ext');
-const Interlinker = require("./src/interlinker");
-const {defaultResolvingFn, defaultEmbedFn} = require("./src/resolvers");
+import {wikilinkInlineRule, wikilinkRenderRule} from './src/markdown-ext.js';
+import Interlinker from './src/interlinker.js';
+import {defaultResolvingFn, defaultEmbedFn} from './src/resolvers.js';
 
 /**
  * Some code borrowed from:
@@ -10,7 +10,7 @@ const {defaultResolvingFn, defaultEmbedFn} = require("./src/resolvers");
  * @param { import('@11ty/eleventy/src/UserConfig') } eleventyConfig
  * @param { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } options
  */
-module.exports = function (eleventyConfig, options = {}) {
+export default function (eleventyConfig, options = {}) {
   /** @var { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts */
   const opts = Object.assign({
     defaultLayout: null,

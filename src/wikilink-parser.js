@@ -1,4 +1,4 @@
-module.exports = class WikilinkParser {
+export default class WikilinkParser {
   /**
    * This regex finds all WikiLink style links: [[id|optional text]] as well as WikiLink style embeds: ![[id]]
    *

@@ -1,5 +1,6 @@
-const {EleventyRenderPlugin} = require("@11ty/eleventy");
-const entities = require("entities");
+import {EleventyRenderPlugin} from "@11ty/eleventy";
+import {encodeHTML} from 'entities';
+
 /**
  * Default Resolving function for converting Wikilinks into html links.
  *
@@ -8,8 +9,8 @@ const entities = require("entities");
  * @param {import('./interlinker')} interlinker
  * @return {Promise<string|undefined>}
  */
-const defaultResolvingFn = async (link, currentPage, interlinker) => {
-  const text = entities.encodeHTML(link.title ?? link.name);
+export const defaultResolvingFn = async (link, currentPage, interlinker) => {
+  const text = encodeHTML(link.title ?? link.name);
   let href = link.href;
 
   if (link.anchor) {
@@ -27,7 +28,7 @@ const defaultResolvingFn = async (link, currentPage, interlinker) => {
  * @param {import('./interlinker')} interlinker
  * @return {Promise<string|undefined>}
  */
-const defaultEmbedFn = async (link, currentPage, interlinker) => {
+export const defaultEmbedFn = async (link, currentPage, interlinker) => {
   if (!link.exists || !interlinker.templateConfig || !interlinker.extensionMap) return;
 
   const page = link.page;
@@ -57,9 +58,4 @@ const defaultEmbedFn = async (link, currentPage, interlinker) => {
   });
 
   return fn({content: frontMatter.content, ...page.data});
-}
-
-module.exports = {
-  defaultEmbedFn,
-  defaultResolvingFn,
 }

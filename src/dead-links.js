@@ -1,8 +1,8 @@
-const path = require('node:path');
-const chalk = require("chalk");
-const fs = require('node:fs');
+import path from 'node:path';
+import chalk from 'chalk';
+import fs from 'node:fs';
 
-module.exports = class DeadLinks {
+export default class DeadLinks {
   constructor() {
     this.gravestones = new Map;
     this.fileSrc = 'unknown';

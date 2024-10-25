@@ -1,7 +1,8 @@
-const WikilinkParser = require('../src/wikilink-parser');
-const {wikilinkInlineRule} = require('../src/markdown-ext');
-const {defaultResolvingFn} = require("../src/resolvers");
-const test = require('ava');
+import WikilinkParser from '../src/wikilink-parser.js';
+import {wikilinkInlineRule} from '../src/markdown-ext.js';
+import {defaultResolvingFn} from '../src/resolvers.js';
+import MarkdownIt from 'markdown-it';
+import test from 'ava';
 
 const opts = {
   resolvingFns: new Map([
@@ -17,7 +18,7 @@ test('inline rule correctly parses single wikilink', t => {
     isEmbed: false,
   });
 
-  const md = require('markdown-it')({html: true});
+  const md = MarkdownIt({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
     wikilinkParser
   ));
@@ -45,7 +46,7 @@ test('inline rule correctly parses multiple wikilink', t => {
     isEmbed: false,
   });
 
-  const md = require('markdown-it')({html: true});
+  const md = MarkdownIt({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
     wikilinkParser
   ));
@@ -69,7 +70,7 @@ test('inline rule correctly parses single wikilink embed', t => {
     isEmbed: true,
   });
 
-  const md = require('markdown-it')({html: true});
+  const md = MarkdownIt({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
     wikilinkParser
   ));
@@ -97,7 +98,7 @@ test('inline rule correctly parses multiple wikilink embeds', t => {
     isEmbed: true,
   });
 
-  const md = require('markdown-it')({html: true});
+  const md = MarkdownIt({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
     wikilinkParser
   ));
@@ -125,7 +126,7 @@ test('inline rule correctly parses mixed wikilink and wikilink embeds', t => {
     isEmbed: false,
   });
 
-  const md = require('markdown-it')({html: true});
+  const md = MarkdownIt({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
     wikilinkParser
   ));

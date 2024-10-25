@@ -4,7 +4,7 @@
  * @param {WikilinkParser} wikilinkParser
  * @returns {(function(*, *): (boolean|undefined))|*}
  */
-const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
+export const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
   // Have we found the start of a WikiLink Embed `![[`
   if (['!', '['].includes(state.src.charAt(state.pos)) === false || silent) return false;
 
@@ -47,12 +47,7 @@ const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
 /**
  * @returns {(function(*, *): (string))|*}
  */
-const wikilinkRenderRule = () => (tokens, idx) => {
+export const wikilinkRenderRule = () => (tokens, idx) => {
   const {meta} = tokens[idx];
   return meta.content;
 };
-
-module.exports = {
-  wikilinkRenderRule,
-  wikilinkInlineRule
-}
