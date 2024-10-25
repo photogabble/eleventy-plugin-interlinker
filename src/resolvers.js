@@ -32,7 +32,7 @@ export const defaultEmbedFn = async (link, currentPage, interlinker) => {
   if (!link.exists || !interlinker.templateConfig || !interlinker.extensionMap) return;
 
   const page = link.page;
-  const frontMatter = page.template.frontMatter;
+  const template = await page.template.read();
 
   const layout = (page.data.hasOwnProperty(interlinker.opts.layoutKey))
     ? page.data[interlinker.opts.layoutKey]
@@ -47,8 +47,8 @@ export const defaultEmbedFn = async (link, currentPage, interlinker) => {
 
   // TODO: the layout below is liquid, will break if content contains invalid template tags such as passing njk file src
   const tpl = layout === null
-    ? frontMatter.content
-    : `{% layout "${layout}" %} {% block content %} ${frontMatter.content} {% endblock %}`;
+    ? template.content
+    : `{% layout "${layout}" %} {% block content %} ${template.content} {% endblock %}`;
 
   const compiler = EleventyRenderPlugin.String;
 
@@ -57,5 +57,5 @@ export const defaultEmbedFn = async (link, currentPage, interlinker) => {
     extensionMap: interlinker.extensionMap
   });
 
-  return fn({content: frontMatter.content, ...page.data});
+  return fn({content: template.content, ...page.data});
 }

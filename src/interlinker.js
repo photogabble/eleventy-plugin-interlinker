@@ -62,8 +62,10 @@ export default class Interlinker {
 
     // Identify this pages outbound internal links both as wikilink _and_ regular html anchor tags. For each out-link
     // lookup the other page and add this to its backlinks data value.
-    if (currentPage.template.frontMatter?.content) {
-      const pageContent = currentPage.template.frontMatter.content;
+    const template = await currentPage.template.read();
+
+    if (template?.content) {
+      const pageContent = template.content;
       const outboundLinks = [
         ...this.wikiLinkParser.find(pageContent, pageDirectory, currentPage.filePathStem),
         ...this.HTMLLinkParser.find(pageContent, pageDirectory),
