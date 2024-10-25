@@ -45,7 +45,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "dependencies": {
     "chalk": "^4.1.1",
