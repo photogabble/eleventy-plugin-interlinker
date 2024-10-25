@@ -35,6 +35,7 @@ const opts = {
     ['default', defaultResolvingFn],
     ['default-embed', defaultEmbedFn],
   ]),
+  stubUrl: '/stubs/',
 };
 
 test('parses wikilink', t => {
@@ -139,7 +140,7 @@ test('populates dead links set', t => {
 
   const invalid = parser.parseSingle('[[invalid]]', pageDirectory);
   t.is(deadLinks.size, 1);
-  t.is(invalid.href, '/stubs');
+  t.is(invalid.href, '/stubs/');
 })
 
 test('parses path lookup', t => {

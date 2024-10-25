@@ -223,8 +223,11 @@ test("Permalink should be used for link href", async t => {
 /**
  * This test checks that custom resolving functions are invoked if they exist, and if not
  * an exception isn't thrown if the page can be looked up (see issue #50).
+ *
+ * Must be serial test due to usage of fs.existsSync, which will pass when running as a
+ * single test, but fail when run as part of a parallel set.
  */
-test("Custom resolving functions (are invoked)", async t => {
+test.serial("Custom resolving functions (are invoked)", async t => {
   let elev = new Eleventy(fixturePath('website-with-custom-resolving-fn'), fixturePath('website-with-custom-resolving-fn/_site'), {
     configPath: fixturePath('website-with-custom-resolving-fn/eleventy.config.js'),
   });

@@ -126,8 +126,7 @@ module.exports = class WikilinkParser {
       // If this wikilink goes to a page that doesn't exist, add to deadLinks list and
       // update href for stub post.
       this.deadLinks.add(link);
-      // @todo make the stub post url configurable, or even able to be disabled. (#25)
-      meta.href = '/stubs';
+      meta.href = this.opts.stubUrl;
 
       if (isEmbed) meta.resolvingFnName = '404-embed';
     }

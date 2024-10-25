@@ -16,7 +16,7 @@ const defaultResolvingFn = async (link, currentPage, interlinker) => {
     href = `${href}#${link.anchor}`;
   }
 
-  return `<a href="${href}">${text}</a>`;
+  return href === false ? link.link : `<a href="${href}">${text}</a>`;
 }
 
 /**

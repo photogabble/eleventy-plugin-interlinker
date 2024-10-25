@@ -92,8 +92,9 @@ type WikilinkMeta = {
   // the resulting HTML of the resolving function
   content?: string
 
-  // href and path are loaded from the linked page
-  href?: string
+  // href and path are loaded from the linked page, if the href is
+  // false then it disables the transformation of wikilink into html link.
+  href?: string|false
   path?: string
 }
 
