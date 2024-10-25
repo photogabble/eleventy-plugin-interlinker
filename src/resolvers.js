@@ -1,5 +1,6 @@
-const {EleventyRenderPlugin} = require("@11ty/eleventy");
-const entities = require("entities");
+import {EleventyRenderPlugin} from "@11ty/eleventy";
+import {encodeHTML} from 'entities';
+
 /**
  * Default Resolving function for converting Wikilinks into html links.
  *
@@ -8,8 +9,8 @@ const entities = require("entities");
  * @param {import('./interlinker')} interlinker
  * @return {Promise<string|undefined>}
  */
-const defaultResolvingFn = async (link, currentPage, interlinker) => {
-  const text = entities.encodeHTML(link.title ?? link.name);
+export const defaultResolvingFn = async (link, currentPage, interlinker) => {
+  const text = encodeHTML(link.title ?? link.name);
   let href = link.href;
 
   if (link.anchor) {
@@ -27,11 +28,11 @@ const defaultResolvingFn = async (link, currentPage, interlinker) => {
  * @param {import('./interlinker')} interlinker
  * @return {Promise<string|undefined>}
  */
-const defaultEmbedFn = async (link, currentPage, interlinker) => {
+export const defaultEmbedFn = async (link, currentPage, interlinker) => {
   if (!link.exists || !interlinker.templateConfig || !interlinker.extensionMap) return;
 
   const page = link.page;
-  const frontMatter = page.template.frontMatter;
+  const template = await page.template.read();
 
   const layout = (page.data.hasOwnProperty(interlinker.opts.layoutKey))
     ? page.data[interlinker.opts.layoutKey]
@@ -44,10 +45,10 @@ const defaultEmbedFn = async (link, currentPage, interlinker) => {
       ? page.page.templateSyntax
       : interlinker.opts.defaultLayoutLang;
 
-  // TODO: the layout below is liquid, will break if content contains invalid template tags such as passing njk file src
+  // TODO: (#36) the layout below is liquid, will break if content contains invalid template tags such as passing njk file src
   const tpl = layout === null
-    ? frontMatter.content
-    : `{% layout "${layout}" %} {% block content %} ${frontMatter.content} {% endblock %}`;
+    ? template.content
+    : `{% layout "${layout}" %} {% block content %} ${template.content} {% endblock %}`;
 
   const compiler = EleventyRenderPlugin.String;
 
@@ -56,10 +57,5 @@ const defaultEmbedFn = async (link, currentPage, interlinker) => {
     extensionMap: interlinker.extensionMap
   });
 
-  return fn({content: frontMatter.content, ...page.data});
-}
-
-module.exports = {
-  defaultEmbedFn,
-  defaultResolvingFn,
+  return fn({content: template.content, ...page.data});
 }

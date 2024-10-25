@@ -1,8 +1,8 @@
-const Eleventy = require("@11ty/eleventy");
-const {normalize, consoleMockMessages, findResultByUrl, fixturePath} = require('./helpers');
-const fs = require('node:fs');
-const sinon = require("sinon");
-const test = require("ava");
+import Eleventy from '@11ty/eleventy';
+import {normalize, consoleMockMessages, findResultByUrl, fixturePath} from './helpers.js';
+import fs from 'node:fs';
+import sinon from 'sinon';
+import test from 'ava';
 
 // NOTE: Tests using sinon to mock console.warn need to be run with
 // `test.serial` so that they don't run at the same time as one another to

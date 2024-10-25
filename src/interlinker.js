@@ -1,13 +1,13 @@
-const HTMLLinkParser = require("./html-link-parser");
-const WikilinkParser = require("./wikilink-parser");
-const DeadLinks = require("./dead-links");
-const {pageLookup} = require("./find-page");
+import HTMLLinkParser from './html-link-parser.js';
+import WikilinkParser from './wikilink-parser.js';
+import DeadLinks from './dead-links.js';
+import {pageLookup} from './find-page.js';
 
 /**
  * Interlinker:
  *
  */
-module.exports = class Interlinker {
+export default class Interlinker {
   /**
    * @param {import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions} opts
    */
@@ -62,8 +62,10 @@ module.exports = class Interlinker {
 
     // Identify this pages outbound internal links both as wikilink _and_ regular html anchor tags. For each out-link
     // lookup the other page and add this to its backlinks data value.
-    if (currentPage.template.frontMatter?.content) {
-      const pageContent = currentPage.template.frontMatter.content;
+    const template = await currentPage.template.read();
+
+    if (template?.content) {
+      const pageContent = template.content;
       const outboundLinks = [
         ...this.wikiLinkParser.find(pageContent, pageDirectory, currentPage.filePathStem),
         ...this.HTMLLinkParser.find(pageContent, pageDirectory),

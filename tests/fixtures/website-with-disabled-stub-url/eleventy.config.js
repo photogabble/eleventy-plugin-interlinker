@@ -1,9 +1,9 @@
-module.exports = function (eleventyConfig) {
-  eleventyConfig.addPlugin(
-    require('../../../index.js'), {
-      stubUrl: false,
-    }
-  );
+import WikiLinksPlugin from '../../../index.js';
+
+export default function (eleventyConfig) {
+  eleventyConfig.addPlugin(WikiLinksPlugin, {
+    stubUrl: false,
+  });
 
   return {
     dir: {

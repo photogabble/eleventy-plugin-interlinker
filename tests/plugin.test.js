@@ -1,3 +1,6 @@
+import plugin from '../index.js';
+import test from 'ava';
+
 const mockFactory = (src = {}) => {
   return new Proxy({
     ...src,
@@ -28,9 +31,6 @@ const mockFactory = (src = {}) => {
     }
   });
 };
-
-const plugin = require('../index');
-const test = require('ava');
 
 test('hooks into eleventy.config', t => {
   const eleventyMock = mockFactory();

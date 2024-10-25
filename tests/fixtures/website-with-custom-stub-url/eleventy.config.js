@@ -1,9 +1,9 @@
-module.exports = function (eleventyConfig) {
-  eleventyConfig.addPlugin(
-    require('../../../index.js'), {
-      stubUrl: '/custom-stub-url/',
-    }
-  );
+import WikiLinksPlugin from '../../../index.js';
+
+export default function (eleventyConfig) {
+  eleventyConfig.addPlugin(WikiLinksPlugin, {
+    stubUrl: '/custom-stub-url/',
+  });
 
   return {
     dir: {

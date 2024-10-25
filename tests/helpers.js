@@ -1,10 +1,13 @@
-const path = require("node:path");
+import { fileURLToPath } from 'url';
+import path from 'node:path';
 
-function normalize(str) {
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export function normalize(str) {
   return str.trim().replace(/\r?\n|\r/g, '');
 }
 
-function consoleMockMessages(mock) {
+export function consoleMockMessages(mock) {
   let logLines = [];
   for (let i = 0; i < mock.callCount; i++) {
     const line = normalize(mock.getCall(i).args.join(' '))
@@ -15,16 +18,9 @@ function consoleMockMessages(mock) {
   return logLines;
 }
 
-function findResultByUrl(results, url) {
+export function findResultByUrl(results, url) {
   const [result] = results.filter(result => result.url === url);
   return result;
 }
 
-const fixturePath = (p) => path.normalize(path.join(__dirname, 'fixtures', p));
-
-module.exports = {
-  normalize,
-  consoleMockMessages,
-  findResultByUrl,
-  fixturePath,
-}
+export const fixturePath = (p) => path.normalize(path.join(__dirname, 'fixtures', p));

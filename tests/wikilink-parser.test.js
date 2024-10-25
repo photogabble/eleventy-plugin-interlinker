@@ -1,7 +1,7 @@
-const WikilinkParser = require('../src/wikilink-parser');
-const {defaultResolvingFn, defaultEmbedFn} = require("../src/resolvers");
-const {pageLookup} = require("../src/find-page");
-const test = require('ava');
+import WikilinkParser from '../src/wikilink-parser.js';
+import {defaultResolvingFn, defaultEmbedFn} from '../src/resolvers.js';
+import {pageLookup} from '../src/find-page.js';
+import test from 'ava';
 
 const pageDirectory = pageLookup([
   {

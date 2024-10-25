@@ -1,10 +1,15 @@
-const {wikilinkInlineRule, wikilinkRenderRule} = require('../src/markdown-ext');
-const WikilinkParser = require('../src/wikilink-parser');
-const {normalize} = require('./helpers');
-const test = require('ava');
-const fs = require('fs');
+import {wikilinkInlineRule, wikilinkRenderRule} from '../src/markdown-ext.js';
+import WikilinkParser from '../src/wikilink-parser.js';
+import {fileURLToPath} from "node:url";
+import {normalize} from './helpers.js';
+import MarkdownIt from 'markdown-it';
+import path from "node:path";
+import fs from 'node:fs';
+import test from 'ava';
 
 const opts = {};
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 test('inline rule correctly parses single wikilink', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
@@ -17,7 +22,7 @@ test('inline rule correctly parses single wikilink', t => {
     isEmbed: false,
   });
 
-  const md = require('markdown-it')({html: true});
+  const md = MarkdownIt({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
     wikilinkParser
   ));
@@ -49,7 +54,7 @@ test('inline rule correctly parses multiple wikilinks', t => {
     isEmbed: false,
   });
 
-  const md = require('markdown-it')({html: true});
+  const md = MarkdownIt({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
     wikilinkParser
   ));
@@ -73,7 +78,7 @@ test('inline rule correctly parses single embed', t => {
     isEmbed: true,
   });
 
-  const md = require('markdown-it')({html: true});
+  const md = MarkdownIt({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
     wikilinkParser
   ));
@@ -121,7 +126,7 @@ test('inline rule correctly parses mixed wikilink and embed in multiline input',
     isEmbed: false,
   });
 
-  const md = require('markdown-it')({html: true});
+  const md = MarkdownIt({html: true});
   md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
     wikilinkParser
   ));
