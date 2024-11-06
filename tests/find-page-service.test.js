@@ -25,6 +25,14 @@ const pageDirectory = pageLookup([
       aliases: ['test-alias']
     },
     url: '/something/else/'
+  },
+  {
+    fileSlug: 'string-lookup-test',
+    data: {
+      title: 'This is another page',
+      aliases: 'test-alias-string'
+    },
+    url: '/something/else/'
   }
 ]);
 
@@ -56,6 +64,19 @@ test('pageLookup (find by alias)', t => {
     isEmbed: false,
   });
   t.is(page.fileSlug, 'something-else');
+});
+
+test('pageLookup (find by alias as string)', t => {
+  const {page} = pageDirectory.findByLink({
+    title: 'This is another page',
+    name: 'test-alias-string',
+    anchor: null,
+    link: '[[test-alias-string]]',
+    slug: 'test-alias-string',
+    isEmbed: false,
+  });
+  t.is(typeof page, 'object');
+  t.is(page.fileSlug, 'string-lookup-test');
 });
 
 // TODO: add testing when two pages share the same alias, what _should_ happen ?

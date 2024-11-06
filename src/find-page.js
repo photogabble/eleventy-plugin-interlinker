@@ -30,7 +30,10 @@ export const pageLookup = (allPages = []) => {
           return true;
         }
 
-        const aliases = ((page.data.aliases && Array.isArray(page.data.aliases)) ? page.data.aliases : []).reduce(function (set, alias) {
+        const aliases = ((page.data.aliases && Array.isArray(page.data.aliases))
+            ? page.data.aliases
+            : (typeof page.data.aliases === 'string' ? [page.data.aliases] : [])
+        ).reduce(function (set, alias) {
           set.add(alias);
           return set;
         }, new Set());

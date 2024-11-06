@@ -89,6 +89,8 @@ You can link to pages by their project path, or a path relative to the linking p
 
 Aliases provide you a way of referencing a file using different names, use the `aliases` property in your font matter to list one or more aliases that can be used to reference the file from a Wiki Link. For example, you might add _AI_ as an alias of a file titled _Artificial Intelligence_ which would then be linkable via `[[AI]]`.
 
+These can be defined as either an array as shown below or a single alias via `aliaes: AI`.
+
 ```yaml
 ---
 title: Artificial Intelligence
