@@ -9,7 +9,7 @@ test('html link parser grabs multiple href, ignoring external links', t => {
     const parser = new HTMLLinkParser(new DeadLinks());
     const links = parser.find('<p>Hello world <a href="/home">this is a link home</a> and <a href="/somewhere">this is a link somewhere</a></p><p>The following link should be ignored <a href="https://www.example.com/">example.com</a>.</p>', pageDirectory);
 
-    t.is(2, links.length);
+    t.is(links.length, 2);
 
     const expectedLinks = ['/home', '/somewhere'];
     for (const link of links) {
@@ -21,7 +21,7 @@ test('html link parser grabs multiple href, ignoring external links', t => {
       expectedLinks.splice(idx, 1);
     }
 
-    t.is(0, expectedLinks.length);
+    t.is(expectedLinks.length, 0);
 });
 
 test('html link parser ignores href within code blocks', t => {
