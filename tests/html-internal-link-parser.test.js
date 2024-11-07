@@ -2,8 +2,12 @@ import HTMLLinkParser from '../src/html-link-parser.js'
 import DeadLinks from '../src/dead-links.js';
 import {pageLookup} from '../src/find-page.js';
 import test from 'ava';
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 
 const pageDirectory = pageLookup([]);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 test('html link parser grabs multiple href, ignoring external links', t => {
     const parser = new HTMLLinkParser(new DeadLinks());
@@ -25,8 +29,8 @@ test('html link parser grabs multiple href, ignoring external links', t => {
 });
 
 test('html link parser ignores href within code blocks', t => {
-  const parser = new HTMLLinkParser(new DeadLinks());
-  const links = parser.find('<code><a href="/home">this is a link home</a></code>', pageDirectory);
+  t.is(0, ((new HTMLLinkParser(new DeadLinks())).find('<code><a href="/home">this is a link home</a></code>', pageDirectory)).length);
 
-  t.is(0, links.length);
+  const html = fs.readFileSync(__dirname + '/fixtures/within-code.html', {encoding:'utf8', flag:'r'});
+  t.is(1, ((new HTMLLinkParser(new DeadLinks())).find(html, pageDirectory)).length);
 });
