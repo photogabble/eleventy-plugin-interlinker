@@ -91,6 +91,33 @@ test('inline rule correctly parses single embed', t => {
   );
 });
 
+test('inline rule ignores wikilink within code and pre tags', t => {
+  const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
+
+  wikilinkParser.linkCache.set('[[wiki link]]', {
+    title: 'Wiki Link',
+    link: '[[wiki link]]',
+    href: '/wiki-link/',
+    content: '<a href="/wiki-link/">Wiki Link</a>',
+    isEmbed: false,
+  });
+
+  const md = MarkdownIt({html: true});
+  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
+    wikilinkParser
+  ));
+
+  md.renderer.rules.inline_wikilink = wikilinkRenderRule();
+
+  const markdown = fs.readFileSync(__dirname + '/fixtures/within-code.md', {encoding:'utf8', flag:'r'});
+  const html = fs.readFileSync(__dirname + '/fixtures/within-code.html', {encoding:'utf8', flag:'r'});
+
+  t.is(
+    normalize(md.render(markdown)),
+    normalize(html)
+  );
+});
+
 test('inline rule correctly parses mixed wikilink and embed in multiline input', t => {
   const wikilinkParser = new WikilinkParser(opts, new Set(), new Map());
 
