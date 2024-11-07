@@ -53,6 +53,7 @@
   "dependencies": {
     "chalk": "^4.1.1",
     "entities": "^4.5.0",
+    "jsdom": "^25.0.1",
     "markdown-it": "^14.1.0"
   },
   "devDependencies": {

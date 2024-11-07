@@ -1,3 +1,4 @@
+import {JSDOM} from 'jsdom';
 export default class HTMLLinkParser {
 
   /**
@@ -24,7 +25,7 @@ export default class HTMLLinkParser {
    */
   parseSingle(link, pageDirectory) {
     const meta = {
-      href: link.slice(6, -1)
+      href: link
         .replace(/.(md|markdown)\s?$/i, "")
         .replace("\\", "")
         .trim()
@@ -61,8 +62,19 @@ export default class HTMLLinkParser {
    * @return {Array<import('@photogabble/eleventy-plugin-interlinker').LinkMeta>}
    */
   find(document, pageDirectory) {
+    const dom = new JSDOM(document);
+    const anchors = dom.window.document.getElementsByTagName('a');
+    const toParse = [];
+
+    for (const anchor of anchors) {
+      // Ignore any anchor tags within either code or pre tags
+      if (anchor.closest('code,pre')) continue;
+      // Ignore any links that don't begin with / denoting internal links
+      if (anchor.href.startsWith('/')) toParse.push(anchor.href);
+    }
+
     return this.parseMultiple(
-      (document.match(this.internalLinkRegex) || []),
+      toParse,
       pageDirectory
     )
   }
