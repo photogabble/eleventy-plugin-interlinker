@@ -36,6 +36,9 @@ export const wikilinkInlineRule = (wikilinkParser) => (state, silent) => {
   // wikilinks. In the unlikely case that it doesn't we ignore the wikilink.
   if (!wikiLink) return false;
 
+  // TODO convert token into 'html_block' or 'html_inline' depending if its an embed or not so as to stop markdown
+  //      wrapping in <p> tags. See: https://github.com/markdown-it/markdown-it/blob/master/docs/examples/renderer_rules.md
+
   const token = state.push('inline_wikilink', '', 0);
   token.content = wikiLink.slug;
   token.meta = wikiLink;
