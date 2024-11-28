@@ -129,7 +129,7 @@ test("Sample page (markdown with embed)", async t => {
   // Embed shows
   t.is(
     normalize(findResultByUrl(results, '/').content),
-    `<div><p><p>Hello world.</p></p></div><div></div>`
+    `<div><p>Hello world.</p></div><div></div>`
   );
 });
 
