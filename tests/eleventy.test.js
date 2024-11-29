@@ -287,3 +287,15 @@ test("Stub URL Config (can be disabled)", async t => {
     `<div><p>Broken link with custom stub url [[ broken link ]].</p></div>`
   );
 })
+
+test("Embedded file shortcodes get run", async t => {
+  let elev = new Eleventy(fixturePath('website-with-embed-shortcode'), fixturePath('website-with-embed-shortcode/_site'), {
+    configPath: fixturePath('website-with-embed-shortcode/eleventy.config.js'),
+  });
+
+  const results = await elev.toJSON();
+  t.is(
+    normalize(findResultByUrl(results, '/').content),
+    `<h1>Embed Below</h1><p><p>Hello world</p></p>` // TODO: (#65) remove wrapping <p> from embed
+  );
+});
