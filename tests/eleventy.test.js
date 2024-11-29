@@ -289,13 +289,13 @@ test("Stub URL Config (can be disabled)", async t => {
 })
 
 test("Embedded file shortcodes get run", async t => {
-  let elev = new Eleventy(fixturePath('website-with-embed-shortcode'), fixturePath('website-with-embed-shortcode/_site'), {
-    configPath: fixturePath('website-with-embed-shortcode/eleventy.config.js'),
+  let elev = new Eleventy(fixturePath('website-with-liquid-embed-shortcode'), fixturePath('website-with-liquid-embed-shortcode/_site'), {
+    configPath: fixturePath('website-with-liquid-embed-shortcode/eleventy.config.js'),
   });
 
   const results = await elev.toJSON();
   t.is(
     normalize(findResultByUrl(results, '/').content),
-    `<h1>Embed Below</h1><p><figure>Hello world</figure></p>` // TODO: (#65) remove wrapping <p> from embed
+    `<h1>Embed Below</h1><p><figure>Hello world</figure></p><h1>Embed 2 Below</h1><p><div><figure>Hello world</figure></div></p>` // TODO: (#65) remove wrapping <p> from embed
   );
 });
