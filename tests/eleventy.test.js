@@ -296,6 +296,6 @@ test("Embedded file shortcodes get run", async t => {
   const results = await elev.toJSON();
   t.is(
     normalize(findResultByUrl(results, '/').content),
-    `<h1>Embed Below</h1><p><figure>Hello world</figure></p><h1>Embed 2 Below</h1><p><div><figure>Hello world</figure></div></p>` // TODO: (#65) remove wrapping <p> from embed
+    `<h1>Embed Below</h1><figure>Hello world</figure><h1>Embed 2 Below</h1><div><figure>Hello world</figure></div>`
   );
 });
