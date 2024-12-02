@@ -71,7 +71,7 @@ test("Sample small Website (html entities)", async t => {
 
   t.is(
     normalize(findResultByUrl(results, '/linking-to-lonelyjuly/').content),
-    `<div><p><a href="/lonelyjuly/">&gt;&gt;LONELYJULY&lt;&lt;</a></p></div><div></div>`
+    `<div><a href="/lonelyjuly/">&gt;&gt;LONELYJULY&lt;&lt;</a></div><div></div>`
   );
 });
 
@@ -180,7 +180,7 @@ test("Sample page (files with hash in title)", async t => {
   // Embed shows
   t.is(
     normalize(findResultByUrl(results, '/').content),
-    `<div><p>This link should be to <a href="/page/hello/#some-heading">a fragment identifier</a>.</p><p><p>Hello world.</p></p></div><div></div>`
+    `<div><p>This link should be to <a href="/page/hello/#some-heading">a fragment identifier</a>.</p><p>Hello world.</p></div><div></div>`
   );
 });
 
@@ -194,7 +194,7 @@ test("Sample with simple embed (broken embed)", async t => {
   // Bad Wikilink Embed shows default text
   t.is(
     normalize(findResultByUrl(results, '/broken/').content),
-    `<div><p>[UNABLE TO LOCATE EMBED]</p></div><div></div>`
+    `<div>[UNABLE TO LOCATE EMBED]</div><div></div>`
   );
 });
 
