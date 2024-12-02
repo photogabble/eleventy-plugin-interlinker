@@ -71,7 +71,7 @@ test("Sample small Website (html entities)", async t => {
 
   t.is(
     normalize(findResultByUrl(results, '/linking-to-lonelyjuly/').content),
-    `<div><a href="/lonelyjuly/">&gt;&gt;LONELYJULY&lt;&lt;</a></div><div></div>`
+    `<div><p><a href="/lonelyjuly/">&gt;&gt;LONELYJULY&lt;&lt;</a> website.</p></div><div></div>`
   );
 });
 
