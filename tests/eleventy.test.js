@@ -299,3 +299,15 @@ test("Embedded file shortcodes get run", async t => {
     `<h1>Embed Below</h1><figure>Hello world</figure><h1>Embed 2 Below</h1><div><figure>Hello world</figure></div>`
   );
 });
+
+test("Wikilinks within code blocks get ignored", async t => {
+  let elev = new Eleventy(fixturePath('website-with-embeds'), fixturePath('website-with-embeds/_site'), {
+    configPath: fixturePath('website-with-embeds/eleventy.config.js'),
+  });
+
+  const results = await elev.toJSON();
+  t.is(
+    normalize(findResultByUrl(results, '/within-code/').content),
+    `<h1>Test Markdown File</h1><pre><code>[[Wiki Link]]</code></pre><p>This contains a wiki link <code>[[Wiki Link]]</code> within an inline code element. This sentence does not: <a href="/wiki-link/">Wiki Link</a>.</p>`
+  );
+});
