@@ -1,4 +1,4 @@
-import {wikilinkInlineRule, wikilinkRenderRule} from './src/markdown-ext.js';
+import {install} from './src/markdown-ext.js';
 import Interlinker from './src/interlinker.js';
 import {defaultResolvingFn, defaultEmbedFn} from './src/resolvers.js';
 
@@ -63,13 +63,7 @@ export default function (eleventyConfig, options = {}) {
   });
 
   // Teach Markdown-It how to display MediaWiki Links.
-  eleventyConfig.amendLibrary('md', (md) => {
-    md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-      interlinker.wikiLinkParser,
-    ));
-
-    md.renderer.rules.inline_wikilink = wikilinkRenderRule();
-  });
+  eleventyConfig.amendLibrary('md', (md) => install(md, interlinker.wikiLinkParser));
 
   // Add outboundLinks computed global data, this is executed before the templates are compiled and
   // thus markdown parsed.

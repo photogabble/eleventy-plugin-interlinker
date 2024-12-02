@@ -71,7 +71,7 @@ test("Sample small Website (html entities)", async t => {
 
   t.is(
     normalize(findResultByUrl(results, '/linking-to-lonelyjuly/').content),
-    `<div><p><a href="/lonelyjuly/">&gt;&gt;LONELYJULY&lt;&lt;</a></p></div><div></div>`
+    `<div><p><a href="/lonelyjuly/">&gt;&gt;LONELYJULY&lt;&lt;</a> website.</p></div><div></div>`
   );
 });
 
@@ -129,7 +129,7 @@ test("Sample page (markdown with embed)", async t => {
   // Embed shows
   t.is(
     normalize(findResultByUrl(results, '/').content),
-    `<div><p><p>Hello world.</p></p></div><div></div>`
+    `<div><p>Hello world.</p></div><div></div>`
   );
 });
 
@@ -180,7 +180,7 @@ test("Sample page (files with hash in title)", async t => {
   // Embed shows
   t.is(
     normalize(findResultByUrl(results, '/').content),
-    `<div><p>This link should be to <a href="/page/hello/#some-heading">a fragment identifier</a>.</p><p><p>Hello world.</p></p></div><div></div>`
+    `<div><p>This link should be to <a href="/page/hello/#some-heading">a fragment identifier</a>.</p><p>Hello world.</p></div><div></div>`
   );
 });
 
@@ -194,7 +194,7 @@ test("Sample with simple embed (broken embed)", async t => {
   // Bad Wikilink Embed shows default text
   t.is(
     normalize(findResultByUrl(results, '/broken/').content),
-    `<div><p>[UNABLE TO LOCATE EMBED]</p></div><div></div>`
+    `<div>[UNABLE TO LOCATE EMBED]</div><div></div>`
   );
 });
 
@@ -296,6 +296,18 @@ test("Embedded file shortcodes get run", async t => {
   const results = await elev.toJSON();
   t.is(
     normalize(findResultByUrl(results, '/').content),
-    `<h1>Embed Below</h1><p><figure>Hello world</figure></p><h1>Embed 2 Below</h1><p><div><figure>Hello world</figure></div></p>` // TODO: (#65) remove wrapping <p> from embed
+    `<h1>Embed Below</h1><figure>Hello world</figure><h1>Embed 2 Below</h1><div><figure>Hello world</figure></div>`
+  );
+});
+
+test("Wikilinks within code blocks get ignored", async t => {
+  let elev = new Eleventy(fixturePath('website-with-embeds'), fixturePath('website-with-embeds/_site'), {
+    configPath: fixturePath('website-with-embeds/eleventy.config.js'),
+  });
+
+  const results = await elev.toJSON();
+  t.is(
+    normalize(findResultByUrl(results, '/within-code/').content),
+    `<h1>Test Markdown File</h1><pre><code>[[Wiki Link]]</code></pre><p>This contains a wiki link <code>[[Wiki Link]]</code> within an inline code element. This sentence does not: <a href="/wiki-link/">Wiki Link</a>.</p>`
   );
 });

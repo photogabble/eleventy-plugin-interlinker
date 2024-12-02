@@ -56,6 +56,13 @@ test('registers parse and render rules with markdown-it', t => {
         }
       }
     },
+    block: {
+      ruler: {
+        before: function (_, name, fn) {
+          this[name] = fn;
+        }
+      }
+    },
     renderer: {
       rules: {}
     },
@@ -71,12 +78,12 @@ test('registers parse and render rules with markdown-it', t => {
     t.is(typeof fn, 'function');
 
     t.is(typeof mdMock.inline.ruler.inline_wikilink, 'undefined');
-    t.is(typeof mdMock.renderer.rules.inline_wikilink, 'undefined');
+    t.is(typeof mdMock.block.ruler.block_wikilink, 'undefined');
 
     fn(mdMock);
 
     t.is(typeof mdMock.inline.ruler.inline_wikilink, 'function');
-    t.is(typeof mdMock.renderer.rules.inline_wikilink, 'function');
+    t.is(typeof mdMock.block.ruler.block_wikilink, 'function');
   });
 
   plugin(eleventyMock);
