@@ -23,7 +23,7 @@ test("Sample small Website (wikilinks and regular links)", async t => {
 
   let results = await elev.toJSON();
 
-  t.is(results.length, 8);
+  t.is(results.length, 10);
 
   t.is(
     normalize(findResultByUrl(results, '/about/').content),
@@ -33,6 +33,18 @@ test("Sample small Website (wikilinks and regular links)", async t => {
   t.is(
     normalize(findResultByUrl(results, '/hello/').content),
     '<div>This is to show that we can link back via <a href="/about">regular <em>internal</em> links</a>.</div><div><a href="/about/">About</a></div>',
+  );
+});
+
+test("Sample small Website (hash in page title)", async t => {
+  let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
+    configPath: fixturePath('sample-small-website/eleventy.config.js'),
+  });
+
+  let results = await elev.toJSON();
+  t.is(
+    normalize(findResultByUrl(results, '/linking-to-hash-in-title/').content),
+    `<p>This should work: <a href="/hash-in-title/">Building a self-contained game in C&num; under 2 kilobytes</a>.</p>`
   );
 });
 
