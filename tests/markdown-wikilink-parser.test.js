@@ -1,5 +1,5 @@
 import WikilinkParser from '../src/wikilink-parser.js';
-import {wikilinkInlineRule} from '../src/markdown-ext.js';
+import {install} from '../src/markdown-ext.js';
 import {defaultResolvingFn} from '../src/resolvers.js';
 import MarkdownIt from 'markdown-it';
 import test from 'ava';
@@ -19,9 +19,7 @@ test('inline rule correctly parses single wikilink', t => {
   });
 
   const md = MarkdownIt({html: true});
-  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser
-  ));
+  install(md, wikilinkParser);
 
   const parsed = md.parseInline('Hello world, this is some text with a [[wiki link]] inside!', {});
 
@@ -47,9 +45,7 @@ test('inline rule correctly parses multiple wikilink', t => {
   });
 
   const md = MarkdownIt({html: true});
-  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser
-  ));
+  install(md, wikilinkParser);
 
   const parsed = md.parseInline('Hello world, this is some text with two [[wiki links]] inside! The second one is [[here]].', {});
 
@@ -71,9 +67,7 @@ test('inline rule correctly parses single wikilink embed', t => {
   });
 
   const md = MarkdownIt({html: true});
-  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser
-  ));
+  install(md, wikilinkParser);
 
   const parsed = md.parseInline('Hello world, this is some text with a ![[wiki link embed]] inside!', {});
 
@@ -98,10 +92,8 @@ test('inline rule correctly parses multiple wikilink embeds', t => {
     isEmbed: true,
   });
 
-  const md = MarkdownIt({html: true});
-  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser
-  ));
+  const md = new MarkdownIt({html: true});
+  install(md, wikilinkParser);
 
   const parsed = md.parseInline('Hello world, this is some text with two ![[wiki link embeds]] inside! The second one is ![[here]].', {});
 
@@ -127,9 +119,7 @@ test('inline rule correctly parses mixed wikilink and wikilink embeds', t => {
   });
 
   const md = MarkdownIt({html: true});
-  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser
-  ));
+  install(md, wikilinkParser);
 
   const parsed = md.parseInline('Hello world, this is some text with mixed ![[wiki link embeds]] inside! The wiki link is [[here]].', {});
 

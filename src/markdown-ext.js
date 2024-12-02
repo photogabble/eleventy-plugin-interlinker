@@ -54,3 +54,16 @@ export const wikilinkRenderRule = () => (tokens, idx) => {
   const {meta} = tokens[idx];
   return meta.content;
 };
+
+export const install = (md, wikilinkParser) => {
+  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
+    wikilinkParser,
+  ));
+
+  md.block.ruler.before('heading', 'block_wikilink', wikilinkBlockRule(
+    wikilinkParser,
+  ), {
+    // alt contains a list of rules which can be terminated by this one
+    alt: ['paragraph', 'reference', 'blockquote']
+  });
+}

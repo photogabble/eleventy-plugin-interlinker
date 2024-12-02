@@ -1,4 +1,4 @@
-import {wikilinkInlineRule, wikilinkRenderRule} from '../src/markdown-ext.js';
+import {install} from '../src/markdown-ext.js';
 import WikilinkParser from '../src/wikilink-parser.js';
 import {fileURLToPath} from "node:url";
 import {normalize} from './helpers.js';
@@ -23,11 +23,7 @@ test('inline rule correctly parses single wikilink', t => {
   });
 
   const md = MarkdownIt({html: true});
-  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser
-  ));
-
-  md.renderer.rules.inline_wikilink = wikilinkRenderRule();
+  install(md, wikilinkParser);
 
   t.is(
     "<p>Hello world, this is some text with a <a href=\"/wiki-link/\">Wiki Link</a> inside!</p>\n",
@@ -55,11 +51,7 @@ test('inline rule correctly parses multiple wikilinks', t => {
   });
 
   const md = MarkdownIt({html: true});
-  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser
-  ));
-
-  md.renderer.rules.inline_wikilink = wikilinkRenderRule();
+  install(md, wikilinkParser);
 
   t.is(
     "<p>Hello world, this is some text with a <a href=\"/wiki-link/\">Wiki Link</a> inside! There is also <a href=\"/another-wiki-link/\">Another Wiki Link</a> in the same string.</p>\n",
@@ -79,11 +71,7 @@ test('inline rule correctly parses single embed', t => {
   });
 
   const md = MarkdownIt({html: true});
-  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser
-  ));
-
-  md.renderer.rules.inline_wikilink = wikilinkRenderRule();
+  install(md, wikilinkParser);
 
   t.is(
     md.render('Hello world this is a ![[wiki-embed]]'),
@@ -103,11 +91,7 @@ test('inline rule ignores wikilink within code and pre tags', t => {
   });
 
   const md = MarkdownIt({html: true});
-  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser
-  ));
-
-  md.renderer.rules.inline_wikilink = wikilinkRenderRule();
+  install(md, wikilinkParser);
 
   const markdown = fs.readFileSync(__dirname + '/fixtures/within-code.md', {encoding:'utf8', flag:'r'});
   const html = fs.readFileSync(__dirname + '/fixtures/within-code.html', {encoding:'utf8', flag:'r'});
@@ -154,11 +138,7 @@ test('inline rule correctly parses mixed wikilink and embed in multiline input',
   });
 
   const md = MarkdownIt({html: true});
-  md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-    wikilinkParser
-  ));
-
-  md.renderer.rules.inline_wikilink = wikilinkRenderRule();
+  install(md, wikilinkParser);
 
   const markdown = fs.readFileSync(__dirname + '/fixtures/multiline.md', {encoding:'utf8', flag:'r'});
   const html = fs.readFileSync(__dirname + '/fixtures/multiline.html', {encoding:'utf8', flag:'r'});
