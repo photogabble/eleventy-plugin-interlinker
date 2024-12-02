@@ -1,175 +1,75 @@
-const {wikilinkInlineRule, wikilinkRenderRule} = require('./src/markdown-ext');
-const { EleventyRenderPlugin } = require('@11ty/eleventy');
-const WikilinkParser = require('./src/wikilink-parser');
-const chalk = require('chalk');
+import {install} from './src/markdown-ext.js';
+import Interlinker from './src/interlinker.js';
+import {defaultResolvingFn, defaultEmbedFn} from './src/resolvers.js';
 
 /**
  * Some code borrowed from:
  * @see https://git.sr.ht/~boehs/site/tree/master/item/html/pages/garden/garden.11tydata.js
+ * @see https://github.com/oleeskild/digitalgarden/blob/main/src/helpers/linkUtils.js
  *
  * @param { import('@11ty/eleventy/src/UserConfig') } eleventyConfig
  * @param { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } options
  */
-module.exports = function (eleventyConfig, options = {}) {
+export default function (eleventyConfig, options = {}) {
   /** @var { import('@photogabble/eleventy-plugin-interlinker').EleventyPluginInterlinkOptions } opts */
   const opts = Object.assign({
     defaultLayout: null,
     defaultLayoutLang: null,
     layoutKey: 'embedLayout',
     layoutTemplateLangKey: 'embedLayoutLanguage',
-    unableToLocateEmbedFn: () => '[UNABLE TO LOCATE EMBED]',
-    slugifyFn: (input) => {
-      const slugify = eleventyConfig.getFilter('slugify');
-      if(typeof slugify !== 'function') throw new Error('Unable to load slugify filter.');
-
-      return slugify(input);
-    },
+    resolvingFns: new Map(),
+    deadLinkReport: 'console',
   }, options);
 
-  const rm = new EleventyRenderPlugin.RenderManager();
-  const wikilinkParser = new WikilinkParser(opts);
-
-  const compileTemplate = async (data) => {
-    if (compiledEmbeds.has(data.url)) return;
-
-    const frontMatter = data.template.frontMatter;
-
-    const layout =  (data.data.hasOwnProperty(opts.layoutKey))
-      ? data.data[opts.layoutKey]
-      : opts.defaultLayout;
-
-    const language = (data.data.hasOwnProperty(opts.layoutTemplateLangKey))
-      ? data.data[opts.layoutTemplateLangKey]
-      : opts.defaultLayoutLang === null
-        ? data.page.templateSyntax
-        : opts.defaultLayoutLang;
-
-    const tpl = layout === null
-      ? frontMatter.content
-      : `{% layout "${layout}" %} {% block content %} ${frontMatter.content} {% endblock %}`;
-
-    const fn = await rm.compile(tpl, language, {templateConfig, extensionMap});
-    const result = await fn({content: frontMatter.content, ...data.data});
-
-    compiledEmbeds.set(data.url, result);
+  // TODO: deprecate usage of unableToLocateEmbedFn in preference of using resolving fn
+  if (typeof opts.unableToLocateEmbedFn === 'function' && !opts.resolvingFns.has('404-embed')) {
+    opts.resolvingFns.set('404-embed', async (link) => opts.unableToLocateEmbedFn(link.page.fileSlug));
   }
 
-  let templateConfig;
+  // Set default stub url if not set by author.
+  if (typeof opts.stubUrl === 'undefined') opts.stubUrl = '/stubs/';
+
+  // Default resolving functions for converting a Wikilink into HTML.
+  if (!opts.resolvingFns.has('default')) opts.resolvingFns.set('default', defaultResolvingFn);
+  if (!opts.resolvingFns.has('default-embed')) opts.resolvingFns.set('default-embed', defaultEmbedFn);
+  if (!opts.resolvingFns.has('404-embed')) opts.resolvingFns.set('404-embed', async () => '[UNABLE TO LOCATE EMBED]');
+
+  const interlinker = new Interlinker(opts);
+
+  // This populates templateConfig with an instance of TemplateConfig once 11ty has initiated it, it's
+  // used by the template compiler function that's exported by the EleventyRenderPlugin and used
+  // by the defaultEmbedFn resolving function for compiling embed templates.
   eleventyConfig.on("eleventy.config", (cfg) => {
-    templateConfig = cfg;
+    interlinker.templateConfig = cfg;
   });
 
-  let extensionMap;
+  // This triggers on an undocumented internal 11ty event that is triggered once EleventyExtensionMap
+  // has been loaded. This is used by the EleventyRenderPlugin which is made user of within the
+  // compileTemplate method of the Interlinker class.
   eleventyConfig.on("eleventy.extensionmap", (map) => {
-    extensionMap = map;
+    interlinker.extensionMap = map;
   });
 
-  // Set of WikiLinks pointing to non-existent pages
-  const deadWikiLinks = new Set();
-
-  // Map of what WikiLinks to what
-  const linkMapCache = new Map();
-
-  // Map of WikiLinks that have triggered an embed compile
-  const compiledEmbeds = new Map();
-
+  // After 11ty has finished generating the site output a list of wikilinks that do not link to
+  // anything.
   eleventyConfig.on('eleventy.after', () => {
-    deadWikiLinks.forEach(
-      slug => console.warn(chalk.blue('[@photogabble/wikilinks]'), chalk.yellow('WARNING'), `WikiLink found pointing to non-existent [${slug}], has been set to default stub.`)
-    );
+    if (opts.deadLinkReport !== 'none') interlinker.deadLinks.report(opts.deadLinkReport);
+  });
+
+  // Reset the internal state of the interlinker if running in watch mode, this stops
+  // the interlinker from working against out of date data.
+  eleventyConfig.on('eleventy.beforeWatch', () => {
+    interlinker.reset();
   });
 
   // Teach Markdown-It how to display MediaWiki Links.
-  eleventyConfig.amendLibrary('md', (md) => {
-    // WikiLink Embed
-    md.inline.ruler.push('inline_wikilink', wikilinkInlineRule(
-      wikilinkParser,
-    ));
+  eleventyConfig.amendLibrary('md', (md) => install(md, interlinker.wikiLinkParser));
 
-    md.renderer.rules.inline_wikilink = wikilinkRenderRule(
-      wikilinkParser,
-      linkMapCache,
-      compiledEmbeds,
-      deadWikiLinks,
-      opts
-    );
+  // Add outboundLinks computed global data, this is executed before the templates are compiled and
+  // thus markdown parsed.
+  eleventyConfig.addGlobalData('eleventyComputed.outboundLinks', () => {
+    return async (data) => interlinker.compute(data);
   });
 
-  // Add backlinks computed global data, this is executed before the templates are compiled and thus markdown parsed.
-  eleventyConfig.addGlobalData('eleventyComputed', {
-    backlinks: async (data) => {
-      // @see https://www.11ty.dev/docs/data-computed/#declaring-your-dependencies
-      const dependencies = [data.title, data.page, data.collections.all];
-      if (dependencies[0] === undefined || !dependencies[1].fileSlug || dependencies[2].length === 0) return [];
-
-      const compilePromises = [];
-      const allPages = data.collections.all;
-      const currentSlug = opts.slugifyFn(data.title);
-      let backlinks = [];
-      let currentSlugs = new Set([currentSlug, data.page.fileSlug]);
-      const currentPage = allPages.find(page => page.url === data.page.url);
-
-      // Populate our link map for use later in replacing WikiLinks with page permalinks.
-      // Pages can list aliases in their front matter, if those exist we should map them
-      // as well.
-
-      linkMapCache.set(currentSlug, {
-        page: data.collections.all.find(page => page.url === data.page.url),
-        title: data.title
-      });
-
-      // If a page has defined aliases, then add those to the link map. These must be unique.
-
-      if (data.aliases) {
-        for (const alias of data.aliases) {
-          const aliasSlug = opts.slugifyFn(alias);
-          linkMapCache.set(aliasSlug, {
-            page: currentPage,
-            title: alias
-          });
-          currentSlugs.add(aliasSlug)
-        }
-      }
-
-      // Loop over all pages and build their outbound links if they have not already been parsed.
-      allPages.forEach(page => {
-        if (!page.data.outboundLinks) {
-          const pageContent = page.template.frontMatter.content;
-          const outboundLinks = (pageContent.match(wikilinkParser.wikiLinkRegExp) || []);
-          page.data.outboundLinks = wikilinkParser.parseMultiple(outboundLinks);
-
-          page.data.outboundLinks
-            .filter(link => link.isEmbed && compiledEmbeds.has(link.slug) === false)
-            .map(link => allPages.find(page => {
-              const found = (page.fileSlug === link.slug || (page.data.title && opts.slugifyFn(page.data.title) === link.slug));
-              if (found) return true;
-
-              const aliases = ((page.data.aliases && Array.isArray(page.data.aliases)) ? page.data.aliases : []).reduce(function(set, alias){
-                set.add(opts.slugifyFn(alias));
-                return set;
-              }, new Set());
-
-              return aliases.has(link.slug);
-            }))
-            .filter(link => (typeof link !== 'undefined'))
-            .forEach(link => compilePromises.push(compileTemplate(link)))
-        }
-
-        // If the page links to our current page either by its title or by its aliases then
-        // add that page to our current page's backlinks.
-        if (page.data.outboundLinks.some(link => currentSlugs.has(link.slug))) {
-          backlinks.push({
-            url: page.url,
-            title: page.data.title,
-          })
-        }
-      });
-
-      // Block iteration until compilation complete.
-      if (compilePromises.length > 0) await Promise.all(compilePromises);
-
-      // The backlinks for the current page.
-      return backlinks;
-    }
-  });
+  // TODO: 1.1.0 Make Interlinker class available via global data
 };

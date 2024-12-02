@@ -1,0 +1,6 @@
+.idea
+.gitignore
+.editorconfig
+.github/workflows/
+tests/
+coverage/

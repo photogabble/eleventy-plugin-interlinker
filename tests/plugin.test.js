@@ -1,3 +1,6 @@
+import plugin from '../index.js';
+import test from 'ava';
+
 const mockFactory = (src = {}) => {
   return new Proxy({
     ...src,
@@ -29,9 +32,6 @@ const mockFactory = (src = {}) => {
   });
 };
 
-const plugin = require('../index');
-const test = require('ava');
-
 test('hooks into eleventy.config', t => {
   const eleventyMock = mockFactory();
   eleventyMock.addNullMock(['on', 'amendLibrary', 'addGlobalData']);
@@ -40,7 +40,7 @@ test('hooks into eleventy.config', t => {
   plugin(eleventyMock);
   t.true(eleventyMock.wasCalled());
 
-  t.is(eleventyMock.calls.get('on'), 3); // eleventy.config, eleventy.extensionmap, eleventy.after
+  t.is(eleventyMock.calls.get('on'), 4); // eleventy.config, eleventy.extensionmap, eleventy.after, eleventy.beforeWatch
   t.is(eleventyMock.calls.get('amendLibrary'), 1); // Adding Markdown-it ext
   t.is(eleventyMock.calls.get('addGlobalData'), 1); // Adding global eleventyComputed data
 });
@@ -52,6 +52,13 @@ test('registers parse and render rules with markdown-it', t => {
     inline: {
       ruler: {
         push: function (name, fn) {
+          this[name] = fn;
+        }
+      }
+    },
+    block: {
+      ruler: {
+        before: function (_, name, fn) {
           this[name] = fn;
         }
       }
@@ -71,12 +78,12 @@ test('registers parse and render rules with markdown-it', t => {
     t.is(typeof fn, 'function');
 
     t.is(typeof mdMock.inline.ruler.inline_wikilink, 'undefined');
-    t.is(typeof mdMock.renderer.rules.inline_wikilink, 'undefined');
+    t.is(typeof mdMock.block.ruler.block_wikilink, 'undefined');
 
     fn(mdMock);
 
     t.is(typeof mdMock.inline.ruler.inline_wikilink, 'function');
-    t.is(typeof mdMock.renderer.rules.inline_wikilink, 'function');
+    t.is(typeof mdMock.block.ruler.block_wikilink, 'function');
   });
 
   plugin(eleventyMock);
