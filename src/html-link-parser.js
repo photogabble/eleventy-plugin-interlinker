@@ -1,6 +1,5 @@
-import {JSDOM} from 'jsdom';
+import { JSDOM, VirtualConsole } from "jsdom";
 export default class HTMLLinkParser {
-
   /**
    * This regex finds all html tags with a href that begins with / denoting they are internal links.
    *
@@ -33,7 +32,7 @@ export default class HTMLLinkParser {
       isEmbed: false,
     };
 
-    const {found, page} = pageDirectory.findByLink(meta);
+    const { found, page } = pageDirectory.findByLink(meta);
 
     if (!found) {
       this.deadLinks.add(link);
@@ -52,7 +51,7 @@ export default class HTMLLinkParser {
    * @return {Array<import('@photogabble/eleventy-plugin-interlinker').LinkMeta>}
    */
   parseMultiple(links, pageDirectory) {
-    return links.map(link => this.parseSingle(link, pageDirectory));
+    return links.map((link) => this.parseSingle(link, pageDirectory));
   }
 
   /**
@@ -62,20 +61,31 @@ export default class HTMLLinkParser {
    * @return {Array<import('@photogabble/eleventy-plugin-interlinker').LinkMeta>}
    */
   find(document, pageDirectory) {
-    const dom = new JSDOM(document);
-    const anchors = dom.window.document.getElementsByTagName('a');
+    // Create a virtual console that silences CSS parsing errors
+    const virtualConsole = new VirtualConsole();
+    virtualConsole.on("jsdomError", (error) => {
+      // heads-up! in later versions this is called "css-parsing" but the currently used version is "css parsing"
+      // see: https://github.com/jsdom/jsdom/commit/4e367964e2b172649d453f1fc477c1888703dee6#diff-ce956096896fea55b804d05339bc43858497345af764b35a0ba24588ba30acbcL39
+      if (error.type === "css parsing" || error.type === "css-parsing") {
+        console.warn(
+          `[@photogabble/eleventy-plugin-interlinker] CSS parsing error (ignored): ${error.message}`
+        );
+      } else {
+        console.error(error);
+      }
+    });
+
+    const dom = new JSDOM(document, { virtualConsole });
+    const anchors = dom.window.document.getElementsByTagName("a");
     const toParse = [];
 
     for (const anchor of anchors) {
       // Ignore any anchor tags within either code or pre tags
-      if (anchor.closest('code,pre')) continue;
+      if (anchor.closest("code,pre")) continue;
       // Ignore any links that don't begin with / denoting internal links
-      if (anchor.href.startsWith('/')) toParse.push(anchor.href);
+      if (anchor.href.startsWith("/")) toParse.push(anchor.href);
     }
 
-    return this.parseMultiple(
-      toParse,
-      pageDirectory
-    )
+    return this.parseMultiple(toParse, pageDirectory);
   }
 }
