@@ -7,13 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1]
+- Bugfix: Suppress CSS parsing errors (#74), with thanks to @finn-matti
+
 ## [1.1.0]
 
 - Correctly parse block level wikilink embeds with a block level rule (#68)
 - Bugfix: Render embed templates correctly (#67)
 - Do not parse anchor tags within code blocks (#64)
 - Accept either string or array as page alias (#63)
-- Fix compatibility with Eleventy v3 (#60)
 - Make the stub post destination configurable (#59)
 - Fix compatibility with Eleventy v3 (#60)
 - Check that Wikilinks do not contain new lines (#55)
@@ -75,4 +77,5 @@ First release
 [1.0.5]: https://github.com/photogabble/eleventy-plugin-interlinker/releases/tag/v1.0.5
 [1.0.6]: https://github.com/photogabble/eleventy-plugin-interlinker/releases/tag/v1.0.6
 [1.1.0]: https://github.com/photogabble/eleventy-plugin-interlinker/releases/tag/v1.1.0
+[1.1.1]: https://github.com/photogabble/eleventy-plugin-interlinker/releases/tag/v1.1.1
 [Unreleased]: https://github.com/photogabble/eleventy-plugin-interlinker/tree/dev-next
