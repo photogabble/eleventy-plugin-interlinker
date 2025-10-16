@@ -66,7 +66,7 @@ export const wikilinkBlockRule = (wikilinkParser) => (state, startLine, endLine,
   let lineText = state.src.slice(pos, max);
   if (lineText.substring(0, 3) !== '![[') return false;
 
-  const wikiLink = wikilinkParser.linkCache.get(lineText);
+  const wikiLink = wikiLink.content ? wikiLink.content.trim() : undefined;
   if (!wikiLink) return false;
 
   if (!silent) {
