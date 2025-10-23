@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2]
+- Bugfix: Undefined property error for default layouts (#75), with thanks to [@rg-wood](https://github.com/rg-wood)
+
 ## [1.1.1]
-- Bugfix: Suppress CSS parsing errors (#74), with thanks to @finn-matti
+- Bugfix: Suppress CSS parsing errors (#74), with thanks to [@finn-matti](https://github.com/finn-matti)
 
 ## [1.1.0]
 
@@ -78,4 +81,5 @@ First release
 [1.0.6]: https://github.com/photogabble/eleventy-plugin-interlinker/releases/tag/v1.0.6
 [1.1.0]: https://github.com/photogabble/eleventy-plugin-interlinker/releases/tag/v1.1.0
 [1.1.1]: https://github.com/photogabble/eleventy-plugin-interlinker/releases/tag/v1.1.1
+[1.1.2]: https://github.com/photogabble/eleventy-plugin-interlinker/releases/tag/v1.1.2
 [Unreleased]: https://github.com/photogabble/eleventy-plugin-interlinker/tree/dev-next
