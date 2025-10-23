@@ -71,7 +71,7 @@ export const wikilinkBlockRule = (wikilinkParser) => (state, startLine, endLine,
 
   if (!silent) {
     const token = state.push('html_block', '', 0);
-    token.content = wikiLink.content.trim();
+    token.content = wikiLink.content ? wikiLink.content.trim() : undefined;
   }
 
   // Block level Wikilink embeds should be on a single line, increment the line counter and continue.
