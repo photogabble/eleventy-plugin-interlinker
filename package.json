@@ -36,10 +36,12 @@
     "files": [
       "./tests/*.test.js"
     ],
-    "ignoredByWatcher": [
-      "**/_site/**",
-      ".cache"
-    ]
+    "watchMode": {
+      "ignoreChanges": [
+        "**/_site/**",
+        ".cache"
+      ]
+    }
   },
   "type": "module",
   "exports": {
@@ -51,17 +53,17 @@
     "node": ">=18"
   },
   "dependencies": {
-    "chalk": "^4.1.1",
-    "entities": "^4.5.0",
-    "jsdom": "^25.0.1",
-    "markdown-it": "^14.1.0"
+    "chalk": "^5.6.2",
+    "entities": "^8.1.0",
+    "jsdom": "^29.1.1",
+    "markdown-it": "^15.0.2"
   },
   "devDependencies": {
     "@11ty/eleventy": "3.0.0",
-    "ava": "^5.2.0",
-    "c8": "^7.12.0",
-    "rollup": "^4.24.0",
-    "sinon": "^17.0.1"
+    "ava": "^7.0.0",
+    "c8": "^12.0.0",
+    "rollup": "^4.64.7",
+    "sinon": "^22.1.0"
   },
   "directories": {
     "test": "tests"

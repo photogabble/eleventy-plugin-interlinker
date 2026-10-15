@@ -44,7 +44,7 @@ test("Sample small Website (hash in page title)", async t => {
   let results = await elev.toJSON();
   t.is(
     normalize(findResultByUrl(results, '/linking-to-hash-in-title/').content),
-    `<p>This should work: <a href="/hash-in-title/">Building a self-contained game in C&num; under 2 kilobytes</a>.</p>`
+    `<p>This should work: <a href="/hash-in-title/">Building a self&#x2d;contained game in C&num; under 2 kilobytes</a>.</p>`
   );
 });
 
