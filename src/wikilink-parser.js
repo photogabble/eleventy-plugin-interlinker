@@ -23,10 +23,13 @@ export default class WikilinkParser {
    * @param {string} link
    * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
    * @param {string|undefined} filePathStem
+   * @param {string|undefined} fileSrc
    * @return {import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta}
    */
-  parseSingle(link, pageDirectory, filePathStem = undefined) {
+  parseSingle(link, pageDirectory, filePathStem = undefined, fileSrc = undefined) {
     if (this.linkCache.has(link)) {
+      // A cached dead link may have been found within another file, so we record this one too.
+      if (this.deadLinks.has(link)) this.deadLinks.add(link, fileSrc);
       return this.linkCache.get(link);
     }
 
@@ -125,7 +128,7 @@ export default class WikilinkParser {
     } else if (['default', 'default-embed'].includes(meta.resolvingFnName)) {
       // If this wikilink goes to a page that doesn't exist, add to deadLinks list and
       // update href for stub post.
-      this.deadLinks.add(link);
+      this.deadLinks.add(link, fileSrc);
       meta.href = this.opts.stubUrl;
 
       if (isEmbed) meta.resolvingFnName = '404-embed';
@@ -142,10 +145,11 @@ export default class WikilinkParser {
    * @param {Array<string>} links
    * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
    * @param {string|undefined} filePathStem
+   * @param {string|undefined} fileSrc
    * @return {Array<import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta>}
    */
-  parseMultiple(links, pageDirectory, filePathStem) {
-    return links.map(link => this.parseSingle(link, pageDirectory, filePathStem));
+  parseMultiple(links, pageDirectory, filePathStem, fileSrc) {
+    return links.map(link => this.parseSingle(link, pageDirectory, filePathStem, fileSrc));
   }
 
   /**
@@ -155,13 +159,15 @@ export default class WikilinkParser {
    * @param {string} document
    * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
    * @param {string|undefined} filePathStem
+   * @param {string|undefined} fileSrc
    * @return {Array<import('@photogabble/eleventy-plugin-interlinker').WikilinkMeta>}
    */
-  find(document, pageDirectory, filePathStem) {
+  find(document, pageDirectory, filePathStem, fileSrc) {
     return this.parseMultiple(
       (document.match(this.wikiLinkRegExp) || []),
       pageDirectory,
-      filePathStem
+      filePathStem,
+      fileSrc
     )
   }
 }

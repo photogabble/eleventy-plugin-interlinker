@@ -50,8 +50,7 @@ export default class Interlinker {
     const dependencies = [data.title, data.page, data.collections.all];
     if (dependencies[0] === undefined || !dependencies[1].inputPath || dependencies[2].length === 0) return [];
 
-    this.deadLinks.setFileSrc(data.page.inputPath);
-
+    const fileSrc = data.page.inputPath;
     const compilePromises = [];
     const pageDirectory = pageLookup(data.collections.all);
 
@@ -67,8 +66,8 @@ export default class Interlinker {
     if (template?.content) {
       const pageContent = template.content;
       const outboundLinks = [
-        ...this.wikiLinkParser.find(pageContent, pageDirectory, currentPage.filePathStem),
-        ...this.HTMLLinkParser.find(pageContent, pageDirectory),
+        ...this.wikiLinkParser.find(pageContent, pageDirectory, currentPage.filePathStem, fileSrc),
+        ...this.HTMLLinkParser.find(pageContent, pageDirectory, fileSrc),
       ];
 
       // Foreach link on this page, if it has its own resolving function we invoke that

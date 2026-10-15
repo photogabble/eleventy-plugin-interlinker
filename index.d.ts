@@ -1,20 +1,19 @@
 interface DeadLinks {
   gravestones: Map<string, Array<string>>
-  fileSrc: string
 
-  setFileSrc(fileSrc: string): void
+  has(link: string): boolean
 
-  add(link: string): void
+  add(link: string, fileSrc?: string): void
 
   report(): void
 }
 
 interface Parser {
-  parseSingle(link: string, pageDirectory: PageDirectoryService, filePathStem: undefined | string): WikilinkMeta
+  parseSingle(link: string, pageDirectory: PageDirectoryService, filePathStem: undefined | string, fileSrc?: string): WikilinkMeta
 
-  parseMultiple(link: string, pageDirectory: PageDirectoryService, filePathStem: undefined | string): Array<WikilinkMeta>
+  parseMultiple(link: string, pageDirectory: PageDirectoryService, filePathStem: undefined | string, fileSrc?: string): Array<WikilinkMeta>
 
-  find(document: string, pageDirectory: PageDirectoryService, filePathStem: undefined | string): Array<WikilinkMeta>
+  find(document: string, pageDirectory: PageDirectoryService, filePathStem: undefined | string, fileSrc?: string): Array<WikilinkMeta>
 }
 
 interface Interlinker {

@@ -20,9 +20,10 @@ export default class HTMLLinkParser {
    *
    * @param {string} link
    * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
+   * @param {string|undefined} fileSrc
    * @return {import('@photogabble/eleventy-plugin-interlinker').LinkMeta}
    */
-  parseSingle(link, pageDirectory) {
+  parseSingle(link, pageDirectory, fileSrc = undefined) {
     const meta = {
       href: link
         .replace(/.(md|markdown)\s?$/i, "")
@@ -35,7 +36,7 @@ export default class HTMLLinkParser {
     const { found, page } = pageDirectory.findByLink(meta);
 
     if (!found) {
-      this.deadLinks.add(link);
+      this.deadLinks.add(link, fileSrc);
       return meta;
     }
 
@@ -48,19 +49,21 @@ export default class HTMLLinkParser {
   /**
    * @param {Array<string>} links
    * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
+   * @param {string|undefined} fileSrc
    * @return {Array<import('@photogabble/eleventy-plugin-interlinker').LinkMeta>}
    */
-  parseMultiple(links, pageDirectory) {
-    return links.map((link) => this.parseSingle(link, pageDirectory));
+  parseMultiple(links, pageDirectory, fileSrc) {
+    return links.map((link) => this.parseSingle(link, pageDirectory, fileSrc));
   }
 
   /**
    * Find's all internal href links within an HTML document and returns the parsed result.
    * @param {string} document
    * @param {import('@photogabble/eleventy-plugin-interlinker').PageDirectoryService} pageDirectory
+   * @param {string|undefined} fileSrc
    * @return {Array<import('@photogabble/eleventy-plugin-interlinker').LinkMeta>}
    */
-  find(document, pageDirectory) {
+  find(document, pageDirectory, fileSrc) {
     // Create a virtual console that silences CSS parsing errors
     const virtualConsole = new VirtualConsole();
     virtualConsole.on("jsdomError", (error) => {
@@ -86,6 +89,6 @@ export default class HTMLLinkParser {
       if (anchor.href.startsWith("/")) toParse.push(anchor.href);
     }
 
-    return this.parseMultiple(toParse, pageDirectory);
+    return this.parseMultiple(toParse, pageDirectory, fileSrc);
   }
 }

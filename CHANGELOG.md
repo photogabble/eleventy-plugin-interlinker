@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Update dependencies and support for Eleventy 3.1.x
+- Bugfix: The deadlink report attributes links to the wrong file in Eleventy 3.1.x
 
 ## [1.1.2]
 - Bugfix: Undefined property error for default layouts (#75), with thanks to [@rg-wood](https://github.com/rg-wood)

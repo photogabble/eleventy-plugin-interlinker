@@ -18,9 +18,11 @@ const projectRoot = process.cwd();
 test.afterEach(() => {
   process.chdir(projectRoot);
 
-  const deadLinksPathname = fixturePath('website-with-custom-resolving-fn/.dead-links.json');
-  if (fs.existsSync(deadLinksPathname)) {
-    fs.rmSync(deadLinksPathname);
+  for (const fixture of ['website-with-custom-resolving-fn', 'website-with-dead-link-report']) {
+    const deadLinksPathname = fixturePath(`${fixture}/.dead-links.json`);
+    if (fs.existsSync(deadLinksPathname)) {
+      fs.rmSync(deadLinksPathname);
+    }
   }
 })
 
@@ -267,6 +269,38 @@ test.serial("Custom resolving functions (are invoked)", async t => {
   );
 
   t.true(fs.existsSync(fixturePath('website-with-custom-resolving-fn/.dead-links.json')));
+});
+
+/**
+ * This test checks that the dead links report attributes each dead link to the file(s) it
+ * was found within. Since 11ty v3.1.0 computed data is evaluated concurrently, which
+ * caused every dead link to be reported as found within the same file.
+ *
+ * Must be serial test due to usage of process.chdir and fs.existsSync.
+ */
+test.serial("Dead link report (attributes links to correct files)", async t => {
+  process.chdir(fixturePath('website-with-dead-link-report'));
+
+  let elev = new Eleventy(fixturePath('website-with-dead-link-report'), fixturePath('website-with-dead-link-report/_site'), {
+    configPath: fixturePath('website-with-dead-link-report/eleventy.config.js'),
+  });
+
+  await elev.toJSON();
+
+  const deadLinksPathname = fixturePath('website-with-dead-link-report/.dead-links.json');
+  t.true(fs.existsSync(deadLinksPathname));
+
+  const report = JSON.parse(fs.readFileSync(deadLinksPathname, {encoding: 'utf8'}));
+
+  // Sorted as the order in which 11ty computes page data isn't guaranteed.
+  for (const link of Object.keys(report)) report[link].sort();
+
+  t.deepEqual(report, {
+    '[[shared broken link]]': ['./page-a.md', './page-b.md'],
+    '[[page a broken link]]': ['./page-a.md'],
+    '[[page b broken link]]': ['./page-b.md'],
+    '/page-c-broken': ['./page-c.liquid'],
+  });
 });
 
 /**

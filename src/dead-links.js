@@ -5,24 +5,30 @@ import fs from 'node:fs';
 export default class DeadLinks {
   constructor() {
     this.gravestones = new Map;
-    this.fileSrc = 'unknown';
-  }
-
-  setFileSrc(fileSrc) {
-    this.fileSrc = fileSrc;
   }
 
   /**
    * @param {string} link
+   * @return {boolean}
    */
-  add(link) {
-    if (!this.fileSrc) this.fileSrc = 'unknown';
+  has(link) {
+    return this.gravestones.has(link);
+  }
+
+  /**
+   * Add a deadlink to the graveyard.
+   *
+   * @param {string} link
+   * @param {string|undefined} fileSrc
+   */
+  add(link, fileSrc = 'unknown') {
+    if (!fileSrc) fileSrc = 'unknown';
 
     const names = this.gravestones.has(link)
       ? this.gravestones.get(link)
       : [];
 
-    names.push(this.fileSrc)
+    if (!names.includes(fileSrc)) names.push(fileSrc);
 
     this.gravestones.set(link, names);
   }
@@ -61,7 +67,6 @@ export default class DeadLinks {
    * Reset to initial state
    */
   clear() {
-    this.fileSrc = 'unknown';
     this.gravestones.clear();
   }
 }
