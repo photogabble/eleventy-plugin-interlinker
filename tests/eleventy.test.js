@@ -1,5 +1,6 @@
 import Eleventy from '@11ty/eleventy';
 import {normalize, consoleMockMessages, findResultByUrl, fixturePath} from './helpers.js';
+import process from 'node:process';
 import fs from 'node:fs';
 import sinon from 'sinon';
 import test from 'ava';
@@ -9,7 +10,14 @@ import test from 'ava';
 // avoid the "Attempted to wrap warn which is already wrapped" error.
 // @see https://stackoverflow.com/a/37900956/1225977
 
+// Since 11ty v3.1.0, process.env.ELEVENTY_ROOT is set to the current working
+// directory rather than the config directory. Tests that depend upon it
+// chdir into their fixture directory, so we revert back to the project root.
+const projectRoot = process.cwd();
+
 test.afterEach(() => {
+  process.chdir(projectRoot);
+
   const deadLinksPathname = fixturePath('website-with-custom-resolving-fn/.dead-links.json');
   if (fs.existsSync(deadLinksPathname)) {
     fs.rmSync(deadLinksPathname);
@@ -48,7 +56,9 @@ test("Sample small Website (hash in page title)", async t => {
   );
 });
 
-test("Sample small Website (path links)", async t => {
+test.serial("Sample small Website (path links)", async t => {
+  process.chdir(fixturePath('sample-small-website'));
+
   let elev = new Eleventy(fixturePath('sample-small-website'), fixturePath('sample-small-website/_site'), {
     configPath: fixturePath('sample-small-website/eleventy.config.js'),
   });
@@ -240,6 +250,8 @@ test("Permalink should be used for link href", async t => {
  * single test, but fail when run as part of a parallel set.
  */
 test.serial("Custom resolving functions (are invoked)", async t => {
+  process.chdir(fixturePath('website-with-custom-resolving-fn'));
+
   let elev = new Eleventy(fixturePath('website-with-custom-resolving-fn'), fixturePath('website-with-custom-resolving-fn/_site'), {
     configPath: fixturePath('website-with-custom-resolving-fn/eleventy.config.js'),
   });
@@ -262,6 +274,8 @@ test.serial("Custom resolving functions (are invoked)", async t => {
  * with other tests.
  */
 test.serial("Custom resolving functions (throw exception on not found)", async t => {
+  process.chdir(fixturePath('website-with-broken-resolving-fn'));
+
   let elev = new Eleventy(fixturePath('website-with-broken-resolving-fn'), fixturePath('website-with-broken-resolving-fn/_site'), {
     configPath: fixturePath('website-with-broken-resolving-fn/eleventy.config.js'),
   });
