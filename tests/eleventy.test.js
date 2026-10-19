@@ -322,6 +322,27 @@ test.serial("Custom resolving functions (throw exception on not found)", async t
   t.is(error.message, 'Unable to find resolving fn [PHP Space Mines] for wikilink [[PHP Space Mines: Introduction|Moon Miner]] on page [/index]');
 });
 
+/**
+ * Written for issue #46
+ * @see https://github.com/photogabble/eleventy-plugin-interlinker/issues/46
+ */
+test.serial("Duplicate aliases (throw exception when two pages share an alias)", async t => {
+  process.chdir(fixturePath('website-with-duplicate-aliases'));
+
+  let elev = new Eleventy(fixturePath('website-with-duplicate-aliases'), fixturePath('website-with-duplicate-aliases/_site'), {
+    configPath: fixturePath('website-with-duplicate-aliases/eleventy.config.js'),
+  });
+
+  // Disable the console log output of 11tys error handler
+  const errorHandler = elev.errorHandler;
+  errorHandler.log = () => {};
+
+  const error = await t.throwsAsync(elev.toJSON());
+  t.regex(error.message, /Shared Alias/);
+  t.regex(error.message, /page-a\.md/);
+  t.regex(error.message, /page-b\.md/);
+});
+
 test("Stub URL Config (can be customised)", async t => {
   let elev = new Eleventy(fixturePath('website-with-custom-stub-url'), fixturePath('website-with-custom-stub-url/_site'), {
     configPath: fixturePath('website-with-custom-stub-url/eleventy.config.js'),
