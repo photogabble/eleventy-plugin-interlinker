@@ -326,7 +326,7 @@ test.serial("Custom resolving functions (throw exception on not found)", async t
  * Written for issue #46
  * @see https://github.com/photogabble/eleventy-plugin-interlinker/issues/46
  */
-test.serial("Duplicate aliases (throw exception when two pages share an alias)", async t => {
+test.serial("Duplicate aliases (throw exception listing every alias shared between pages)", async t => {
   process.chdir(fixturePath('website-with-duplicate-aliases'));
 
   let elev = new Eleventy(fixturePath('website-with-duplicate-aliases'), fixturePath('website-with-duplicate-aliases/_site'), {
@@ -338,9 +338,23 @@ test.serial("Duplicate aliases (throw exception when two pages share an alias)",
   errorHandler.log = () => {};
 
   const error = await t.throwsAsync(elev.toJSON());
-  t.regex(error.message, /Shared Alias/);
-  t.regex(error.message, /page-a\.md/);
-  t.regex(error.message, /page-b\.md/);
+  const lines = error.message.split('\n');
+
+  // Check that every clashing alias is reported at once.
+  t.is(lines[0], 'Duplicate aliases found:');
+  t.is(lines.length, 3);
+
+  const sharedLine = lines.find(line => line.startsWith('  [Shared Alias]'));
+  t.truthy(sharedLine);
+  t.regex(sharedLine, /\.\/page-a\.md/);
+  t.regex(sharedLine, /\.\/page-b\.md/);
+  t.regex(sharedLine, /\.\/page-c\.md/);
+
+  const otherLine = lines.find(line => line.startsWith('  [Other Alias]'));
+  t.truthy(otherLine);
+  t.regex(otherLine, /\.\/page-a\.md/);
+  t.notRegex(otherLine, /page-b\.md/);
+  t.regex(otherLine, /\.\/page-c\.md/);
 });
 
 test("Stub URL Config (can be customised)", async t => {
