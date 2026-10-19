@@ -99,13 +99,19 @@ aliases:
 ---
 ```
 
-Aliases should be unique identifiers, this plugin will halt the build with an error if it finds two pages sharing the same alias.
+Aliases **must** be unique identifiers, this plugin will halt the build with an error if it finds two pages sharing the same alias with output similar to the below:
+
+```text
+Duplicate aliases found:
+  [Shared Alias] on pages [./page-a.md, ./page-b.md, ./page-c.md]
+  [Other Alias] on pages [./page-a.md, ./page-c.md]
+```
 
 ### Linking to Pagination generated pages
 
 A common use of pagination in 11ty is [pagination of an object](https://www.11ty.dev/docs/pagination/#paging-an-object) or data file, by default these generated pages aren't included in the all pages collection and therefore are invisible to this plugin unless you set `addAllPagesToCollections: true`.
 
-Once done you will also need to set the title of each generated page so that this plugin can reference them, that can be done with `eleventyComputed` for example:
+Once done, you will also need to set the title of each generated page so that this plugin can reference them, that can be done with `eleventyComputed` for example:
 
 ```yaml
 ---
@@ -123,7 +129,7 @@ eleventyComputed:
 
 ### Custom Resolving Functions
 
-Custom resolving functions can be considered pluggable extensions to the wikilink lookup and rendering logic and can be invoked by usage of a `:` character in a wikilink prefixed by the functions name, for example: `[[issue:19]]`.
+Custom resolving functions can be considered pluggable extensions to the wikilink lookup and rendering logic and can be invoked by usage of a `:` character in a wikilink prefixed by the function name, for example: `[[issue:19]]`.
 
 These functions are added to the interlinker via its `resolvingFns` configuration options, for example:
 
@@ -136,7 +142,7 @@ const config = {
 };
 ```
 
-When invoked the resolving function will be passed three arguments, the parsed Wikilink object (see _Wikilink Data Structure_ section below.) The linking page object from 11ty and the interlinker class instance.
+When invoked, the resolving function will be passed three arguments, the parsed Wikilink object (see _Wikilink Data Structure_ section below.) The linking page object from 11ty and the interlinker class instance.
 
 The plugin has three internal resolving functions which are defined only if not already via the plugin config:
 
@@ -148,7 +154,7 @@ The plugin has three internal resolving functions which are defined only if not 
 
 Embedding files allows you to reuse content across your website while tracking what pages have used it.
 
-To embed a file add an exclamation mark (`!`) in front of any wiki link for example: `![Artificial Intelligence]`. The embedded file will be rendered using 11ty's Template Engine. If you have defined a default embedding layout through `defaultLayout` or the page being embedded has front matter keyed as `layoutKey` then the embed will be rendered wrapped with the discovered template.
+To embed a file, add an exclamation mark (`!`) in front of any wiki link for example: `![Artificial Intelligence]`. The embedded file will be rendered using 11ty's Template Engine. If you have defined a default embedding layout through `defaultLayout` or the page being embedded has front matter keyed as `layoutKey` then the embed will be rendered wrapped with the discovered template.
 
 For example, with the default `layoutKey` your front matter might look like:
 
@@ -162,7 +168,7 @@ When embedding that page its data and content will be injected in to `layouts/bo
 
 #### Inline Embeds
 
-When rendering each embed this plugin will use the template engine as set on the file being embedded.
+When rendering each embed, this plugin will use the template engine as set on the file being embedded.
 
 For most 11ty projects this defaults to `liquid,md`. The Markdown parser will wrap any inline html elements in a pair of `<p>` tags which may not be what you want to happen, especially if your using the embed inline within a paragraph of text. To overcome this you may define which template language(s) should be used to compile the embed layout by using front matter keyed as `layoutTemplateLangKey`.
 

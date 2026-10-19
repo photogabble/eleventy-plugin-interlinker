@@ -1,7 +1,7 @@
 import HTMLLinkParser from './html-link-parser.js';
 import WikilinkParser from './wikilink-parser.js';
 import DeadLinks from './dead-links.js';
-import {pageLookup} from './find-page.js';
+import {pageLookup, pageAliases} from './find-page.js';
 
 /**
  * Interlinker:
@@ -26,6 +26,9 @@ export default class Interlinker {
     // Instance of EleventyExtensionMap loaded by the `eleventy.extensionmap` event
     this.extensionMap = undefined;
 
+    // Collections that have already been checked for duplicate aliases
+    this.aliasCheckedCollections = new WeakSet();
+
     this.wikiLinkParser = new WikilinkParser(opts, this.deadLinks, this.linkCache);
     this.HTMLLinkParser = new HTMLLinkParser(this.deadLinks);
   }
@@ -33,6 +36,35 @@ export default class Interlinker {
   reset() {
     this.deadLinks.clear();
     this.linkCache.clear();
+  }
+
+  /**
+   * Throws an exception listing every alias defined by more than one page. 11ty passes
+   * the same collection to every page, so each collection is only checked once.
+   *
+   * @param {Array<any>} allPages
+   */
+  checkForDuplicateAliases(allPages) {
+    if (this.aliasCheckedCollections.has(allPages)) return;
+
+    // Map of alias to the input paths of every page defining it
+    const definedAliases = new Map();
+
+    for (const page of allPages) {
+      for (const alias of pageAliases(page)) {
+        if (!definedAliases.has(alias)) definedAliases.set(alias, []);
+        definedAliases.get(alias).push(page.inputPath);
+      }
+    }
+
+    const duplicates = [...definedAliases].filter(([, inputPaths]) => inputPaths.length > 1);
+
+    if (duplicates.length > 0) {
+      const lines = duplicates.map(([alias, inputPaths]) => `  [${alias}] on pages [${inputPaths.join(', ')}]`);
+      throw new Error(`Duplicate aliases found:\n${lines.join('\n')}`);
+    }
+
+    this.aliasCheckedCollections.add(allPages);
   }
 
   /**
@@ -57,7 +89,7 @@ export default class Interlinker {
     const currentPage = pageDirectory.findByFile(data);
     if (!currentPage) return [];
 
-    // TODO: 1.1.0 keep track of defined aliases and throw exception if duplicates are found (#46)
+    this.checkForDuplicateAliases(data.collections.all);
 
     // Identify this pages outbound internal links both as wikilink _and_ regular html anchor tags. For each out-link
     // lookup the other page and add this to its backlinks data value.
