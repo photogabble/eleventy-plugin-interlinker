@@ -1,4 +1,18 @@
 /**
+ * Returns the set of aliases defined by a page, its aliases value may be either
+ * a string or an array of strings.
+ *
+ * @param {any} page
+ * @return {Set<string>}
+ */
+export const pageAliases = (page) => {
+  const aliases = page.data.aliases;
+  if (Array.isArray(aliases)) return new Set(aliases);
+  if (typeof aliases === 'string') return new Set([aliases]);
+  return new Set();
+}
+
+/**
  * Page Lookup Service:
  * This wraps the 11ty all pages collection providing two methods for finding pages.
  *
@@ -30,15 +44,7 @@ export const pageLookup = (allPages = []) => {
           return true;
         }
 
-        const aliases = ((page.data.aliases && Array.isArray(page.data.aliases))
-            ? page.data.aliases
-            : (typeof page.data.aliases === 'string' ? [page.data.aliases] : [])
-        ).reduce(function (set, alias) {
-          set.add(alias);
-          return set;
-        }, new Set());
-
-        foundByAlias = aliases.has(link.name);
+        foundByAlias = pageAliases(page).has(link.name);
         return foundByAlias;
       });
 

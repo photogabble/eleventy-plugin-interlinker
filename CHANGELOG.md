@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Update dependencies and support for Eleventy 3.1.x
 - Bugfix: The deadlink report attributes links to the wrong file in Eleventy 3.1.x
+- Throw an exception when more than one page defines the same alias (#46)
 
 ## [1.1.2]
 - Bugfix: Undefined property error for default layouts (#75), with thanks to [@rg-wood](https://github.com/rg-wood)
