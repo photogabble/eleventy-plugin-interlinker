@@ -2,6 +2,14 @@ import path from 'node:path';
 import chalk from 'chalk';
 import fs from 'node:fs';
 
+/**
+ * Wikilinks are text looking like `[[...]]` or `![[...]]` which makes them easy to tell from regular HTML links.
+ *
+ * @param {string} link
+ * @return {boolean}
+ */
+const isWikilink = (link) => /^!?\[\[/.test(link);
+
 export default class DeadLinks {
   constructor() {
     this.gravestones = new Map;
@@ -42,7 +50,7 @@ export default class DeadLinks {
         console.warn(
           chalk.blue('[@photogabble/wikilinks]'),
           chalk.yellow('WARNING'),
-          `${(link.includes('href') ? 'Link' : 'Wikilink')} (${link}) found pointing to to non-existent page in:`
+          `${(isWikilink(link) ? 'Wikilink' : 'Internal Link')} (${link}) found pointing to non-existent page in:`
         );
 
         for (const file of files) {
