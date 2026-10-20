@@ -426,3 +426,29 @@ test.serial("HTML links within markdown code get ignored", async t => {
   // The anchor that isn't within code should still be reported.
   t.is(messages.filter(message => message.includes('/not-in-code')).length, 1);
 });
+
+test.serial("Wikilinks within markdown code are not treated as links", async t => {
+  const mock = sinon.stub(console, 'warn');
+
+  let elev = new Eleventy(fixturePath('website-with-wikilinks-in-code'), fixturePath('website-with-wikilinks-in-code/_site'), {
+    configPath: fixturePath('website-with-wikilinks-in-code/eleventy.config.js'),
+  });
+
+  const results = await elev.toJSON();
+  mock.restore();
+
+  const messages = consoleMockMessages(mock);
+
+  // Wikilinks within inline code, fenced code and indented code blocks are only example
+  // text and should not be reported as links pointing to non-existent pages.
+  t.deepEqual(messages.filter(message => /Missing (Inline|Fenced|Indented)/.test(message)), []);
+
+  // The wikilink that isn't within code should still be reported.
+  t.is(messages.filter(message => message.includes('[[Missing Outside]]')).length, 1);
+
+  // A page only linked to from within code should not gain a backlink.
+  t.is(
+    normalize(findResultByUrl(results, '/target-page/').content),
+    `<div><p>This page is only linked to from within code.</p></div><div></div>`
+  );
+});
