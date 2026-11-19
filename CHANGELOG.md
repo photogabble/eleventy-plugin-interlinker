@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bugfix: The deadlink report attributes links to the wrong file in Eleventy 3.1.x
 - Throw an exception when more than one page defines the same alias (#46)
 - Bugfix: Dead internal HTML links were reported as Wikilinks, they are now reported as Internal Links
+- Bugfix: Wikilinks and HTML links within Markdown inline code, fenced code and indented code blocks are no longer treated as links
 
 ## [1.1.2]
 - Bugfix: Undefined property error for default layouts (#75), with thanks to [@rg-wood](https://github.com/rg-wood)
