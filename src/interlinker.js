@@ -2,6 +2,13 @@ import HTMLLinkParser from './html-link-parser.js';
 import WikilinkParser from './wikilink-parser.js';
 import DeadLinks from './dead-links.js';
 import {pageLookup, pageAliases} from './find-page.js';
+import {markdownLinkSources} from './markdown-source.js';
+
+/**
+ * @param {any} page 11ty page data
+ * @return {boolean}
+ */
+const isMarkdown = (page) => (page.templateSyntax || '').split(',').includes('md');
 
 /**
  * Interlinker:
@@ -96,10 +103,14 @@ export default class Interlinker {
     const template = await currentPage.template.read();
 
     if (template?.content) {
-      const pageContent = template.content;
+      // Markdown code isn't yet wrapped in code tags, so it's removed before searching for links.
+      const {wikilinkSource, htmlSource} = isMarkdown(data.page)
+        ? markdownLinkSources(template.content)
+        : {wikilinkSource: template.content, htmlSource: template.content};
+
       const outboundLinks = [
-        ...this.wikiLinkParser.find(pageContent, pageDirectory, currentPage.filePathStem, fileSrc),
-        ...this.HTMLLinkParser.find(pageContent, pageDirectory, fileSrc),
+        ...this.wikiLinkParser.find(wikilinkSource, pageDirectory, currentPage.filePathStem, fileSrc),
+        ...this.HTMLLinkParser.find(htmlSource, pageDirectory, fileSrc),
       ];
 
       // Foreach link on this page, if it has its own resolving function we invoke that
